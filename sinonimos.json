@@ -1,0 +1,10 @@
+{
+  "_comentario": "Siglas y sinónimos del buscador. A la izquierda lo que escribe la gente, a la derecha cómo figura en los nombres. Se pueden agregar líneas sin tocar código (cuidá las comas y las comillas).",
+  "fifa": ["fc", "ea sports fc"],
+  "cod": ["call of duty"],
+  "gta": ["grand theft auto"],
+  "rdr": ["red dead redemption"],
+  "mk": ["mortal kombat"],
+  "re": ["resident evil"],
+  "spiderman": ["spider-man"]
+}
