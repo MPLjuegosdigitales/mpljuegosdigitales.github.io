@@ -40,6 +40,8 @@
       </button>
     </form>
     <div class="consolas" role="group" aria-label="Mostrar">
+      <!-- Ofertas: el texto lo pone js/tienda.js con el nombre de la promoción; sin ofertas vigentes no se ve. -->
+      <button class="boton-ofertas" type="button" data-consola="ofertas" aria-pressed="false" hidden></button>
       <button type="button" data-consola="populares" aria-pressed="true">Populares</button>
       <button type="button" data-consola="" aria-pressed="false">Todos</button>
       <button type="button" data-consola="PS5" aria-pressed="false">PS5</button>
@@ -50,6 +52,7 @@
   <main id="contenido">
     <h1 class="titulo">Juegos digitales de PS4 y PS5</h1>
     <p class="aclaracion" id="aclaracion" data-con-cuotas="Cuenta primaria: lo jugás desde tu propio usuario, con o sin internet. Pagás contado, por transferencia o en 3 cuotas sin interés.">Cuenta primaria: lo jugás desde tu propio usuario, con o sin internet. Pagás en efectivo o por transferencia.</p>
+    <p class="aviso-ofertas" id="aviso-ofertas" hidden></p>
     <div class="resultados">
       <p class="conteo" id="conteo" aria-live="polite">Cargando juegos…</p>
       <label class="oculto" for="orden">Ordenar</label>

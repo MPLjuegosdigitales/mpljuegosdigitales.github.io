@@ -46,6 +46,12 @@ catalogue (~2,100 games) priced daily and an instalment price shown up front.
 - Each game: name (cleaned), console (PS4, PS5, rarely "PS4 / PS5"), tags ("Versión PS4" for a PS4
   version that runs on PS5, "Preventa dd/mm[/aaaa]", "Solo DLC"), cover image (480px webp, may be
   missing), contado, and cuota/tarjeta only when catalog.json has "mostrar_cuotas": true.
+- Offers ("ofertas" in catalog.json): the page picks, at that moment, the cheapest offer still valid ("hasta"
+  already has the safety margin, Argentina time). The card shows a tag with the promotion and the discount
+  ("Black Friday −27%") under the cover, the old price struck through, the new price and "Válido hasta el
+  19/11"; the WhatsApp message says it is an offer price and until when. A filter button named after the
+  promotion (first in the filter row, which scrolls sideways if it does not fit) shows only offers; with no
+  valid offer it is hidden. Games flagged "solo_oferta" only exist while their offer is valid.
 - Instalments are switched off for now ("mostrar_cuotas": false in mpl-precios/config.json): the price
   reads "Efectivo o transferencia $X" and nothing names cuotas or tarjeta. With true it goes back to
   "Contado / transferencia $X" + "3 cuotas sin interés de $Y", and the WhatsApp message adds the

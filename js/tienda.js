@@ -20,11 +20,11 @@
   var botonesConsola = document.querySelectorAll('[data-consola]');
   var hoja = $('hoja');
 
-  var juegos = [], buscador = null, lista = [], mostrados = 0;
+  var todos = [], juegos = [], buscador = null, lista = [], mostrados = 0, sinonimos = {}, sagas = {};
   // consola: 'populares' (al abrir), '' (todos), 'PS5' o 'PS4'. orden: 'auto' depende de lo que se mira
   // (buscando: más parecidos; en Populares: el orden de populares; si no: A a Z), o el que eligió la persona.
   var estado = { texto: '', consola: 'populares', orden: 'auto' };
-  var NOMBRE_AUTO = { parecido: 'Más parecidos', popular: 'Más populares', nombre: 'A a Z' };
+  var NOMBRE_AUTO = { parecido: 'Más parecidos', popular: 'Más populares', nombre: 'A a Z', descuento: 'Mayor descuento' };
 
   var formato = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
   function pesos(n) { return '$' + formato.format(n); }
@@ -37,8 +37,94 @@
     return conCuotas && j.cuota ? '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(j.cuota) + '</b></span>' : '';
   }
   function textoPago(j) {
-    return rotuloPago() + ': ' + pesos(j.contado) + '.' +
-      (conCuotas && j.cuota ? ' O en 3 cuotas sin interés de ' + pesos(j.cuota) + '.' : '');
+    var p = pago(j);
+    return rotuloPago() + ': ' + pesos(p.contado) + '.' +
+      (conCuotas && p.cuota ? ' O en 3 cuotas sin interés de ' + pesos(p.cuota) + '.' : '');
+  }
+
+  // ---------- Ofertas ----------
+  // catalog.json trae en cada juego en oferta una lista "ofertas": [{promo, contado, anterior, hasta}]. Acá se
+  // elige, en el momento, la vigente más barata ("hasta" ya viene con el margen de seguridad y la hora de
+  // Argentina). Cuando vencen todas, el juego vuelve a su precio normal ("contado") sin esperar al robot; los
+  // que existen solo por la oferta ("solo_oferta") desaparecen.
+  var PROMO_DEFECTO = 'Ofertas semanales', relojOfertas = null;
+
+  function refrescarOfertas() {
+    var t = Date.now(), proxima = Infinity;
+    todos.forEach(function (j) {
+      j._o = null;
+      (j.ofertas || []).forEach(function (o) {
+        var fin = Date.parse(o.hasta);
+        if (!(fin >= t) || !(o.contado > 0)) return;          // vencida o con datos rotos: no se usa
+        if (!j._o || o.contado < j._o.contado) j._o = o;
+        proxima = Math.min(proxima, fin);
+      });
+      j._precio = j._o ? j._o.contado : j.contado;
+    });
+    juegos = todos.filter(function (j) { return !j.solo_oferta || j._o; });
+    buscador = window.crearBuscador(juegos, sinonimos, sagas);
+    clearTimeout(relojOfertas);
+    // Si la página queda abierta, a la hora de vencer se vuelve a pintar sola.
+    if (proxima < Infinity && proxima - t < 864e5) {
+      relojOfertas = setTimeout(function () {
+        refrescarOfertas();
+        if (estado.consola === 'ofertas' && !hayOfertas()) elegirConsola(juegos.some(function (j) { return j.popular; }) ? 'populares' : '');
+        pintar(true);
+        if (destacadoCfg !== undefined) pintarDestacado(destacadoCfg);
+      }, proxima - t + 1000);
+    }
+    pintarBotonOfertas();
+  }
+
+  function hayOfertas() { return juegos.some(function (j) { return j._o; }); }
+  function pago(j) { return j._o || j; }
+  function descuento(o) { return o.anterior > o.contado ? Math.round((1 - o.contado / o.anterior) * 100) : 0; }
+  function diaMes(iso) { return iso.slice(8, 10) + '/' + iso.slice(5, 7); }
+  function nombrePromos() {
+    var nombres = [];
+    juegos.forEach(function (j) { if (j._o && nombres.indexOf(j._o.promo) < 0) nombres.push(j._o.promo); });
+    return nombres.length === 1 ? nombres[0] || PROMO_DEFECTO : 'Ofertas';
+  }
+
+  // El botón de la sección va en la fila de filtros (lo arma index.html, para moverlo fácil). Sin ofertas
+  // vigentes no aparece.
+  var botonOfertas = document.querySelector('[data-consola="ofertas"]');
+  function pintarBotonOfertas() {
+    if (!botonOfertas) return;
+    var hay = hayOfertas();
+    botonOfertas.hidden = !hay;
+    botonOfertas.textContent = hay ? nombrePromos() : '';
+    botonOfertas.parentNode.classList.toggle('con-ofertas', hay);
+  }
+
+  function etiquetaOferta(o) {
+    var d = descuento(o);
+    return '<span class="etiqueta oferta">' + escapar(o.promo || PROMO_DEFECTO) + (d ? ' −' + d + '%' : '') + '</span>';
+  }
+
+  // El cartel de precio: con oferta, el precio anterior tachado, el nuevo y hasta cuándo vale.
+  function cartelPrecio(j) {
+    var o = j._o;
+    if (!o) {
+      return '<span class="rotulo">' + rotuloPago() + '</span>' +
+        '<span class="contado">' + pesos(j.contado) + '</span>' + lineaCuotas(j);
+    }
+    return '<span class="rotulo">' + rotuloPago() + '</span>' +
+      (descuento(o) ? '<s class="anterior"><span class="oculto">Antes </span>' + pesos(o.anterior) + '</s>' : '') +
+      '<span class="contado">' + pesos(o.contado) + '</span>' + lineaCuotas(o) +
+      '<span class="vence">Válido hasta el ' + diaMes(o.hasta) + '</span>';
+  }
+
+  function avisoOfertas() {
+    var porPromo = {};
+    juegos.forEach(function (j) {
+      if (!j._o) return;
+      var p = j._o.promo || PROMO_DEFECTO;
+      if (!porPromo[p] || j._o.hasta > porPromo[p]) porPromo[p] = j._o.hasta;
+    });
+    return Object.keys(porPromo).map(function (p) {
+      return '<b>' + escapar(p) + '</b>: válido hasta el ' + diaMes(porPromo[p]) + ' a las 23:59.';
+    }).join(' ');
   }
 
   function escapar(s) {
@@ -49,8 +135,10 @@
 
   // ---------- Lista visible ----------
 
-  function consolaElegida() { return estado.consola === 'populares' ? '' : estado.consola; }
-  function ordenAuto() { return estado.texto ? 'parecido' : estado.consola === 'populares' ? 'popular' : 'nombre'; }
+  function consolaElegida() { return estado.consola === 'populares' || estado.consola === 'ofertas' ? '' : estado.consola; }
+  function ordenAuto() {
+    return estado.texto ? 'parecido' : estado.consola === 'populares' ? 'popular' : estado.consola === 'ofertas' ? 'descuento' : 'nombre';
+  }
 
   function calcularLista() {
     var base;
@@ -59,14 +147,19 @@
       base = buscador.buscar(estado.texto).map(function (r) { return r.juego; });
     } else if (estado.consola === 'populares') {
       base = juegos.filter(function (j) { return j.popular; });
+    } else if (estado.consola === 'ofertas') {
+      base = juegos.filter(function (j) { return j._o; });
     } else {
       base = juegos.slice();
     }
     var consola = consolaElegida();
     if (consola) base = base.filter(function (j) { return j.consola.indexOf(consola) >= 0; });
     var orden = estado.orden === 'auto' ? ordenAuto() : estado.orden;
-    if (orden === 'menor') base.sort(function (a, b) { return a.contado - b.contado; });
-    else if (orden === 'mayor') base.sort(function (a, b) { return b.contado - a.contado; });
+    if (orden === 'menor') base.sort(function (a, b) { return a._precio - b._precio; });
+    else if (orden === 'mayor') base.sort(function (a, b) { return b._precio - a._precio; });
+    else if (orden === 'descuento') base.sort(function (a, b) {
+      return descuento(b._o) - descuento(a._o) || a.nombre.localeCompare(b.nombre, 'es');
+    });
     else if (orden === 'nombre') base.sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
     else if (orden === 'popular') base.sort(function (a, b) { return a.popular - b.popular; });
     return base;
@@ -90,6 +183,7 @@
   function tarjeta(j, indice) {
     // Nada va encima de la tapa: la consola y las etiquetas (Versión PS4, Preventa, Solo DLC) van debajo.
     var etiquetas = '<span class="etiqueta consola">' + escapar(j.consola) + '</span>' +
+      (j._o ? etiquetaOferta(j._o) : '') +
       (j.etiquetas || []).map(function (e) {
         return '<span class="etiqueta">' + escapar(e) + '</span>';
       }).join('');
@@ -107,11 +201,7 @@
           '<span class="nombre">' + escapar(j.nombre) + '</span>' +
           '<span class="ver-detalles">Ver detalles' + ICONO_FLECHA + '</span>' +
         '</button></h3>' +
-        '<p class="precio">' +
-          '<span class="rotulo">' + rotuloPago() + '</span>' +
-          '<span class="contado">' + pesos(j.contado) + '</span>' +
-          lineaCuotas(j) +
-        '</p>' +
+        '<p class="precio' + (j._o ? ' en-oferta' : '') + '">' + cartelPrecio(j) + '</p>' +
         '<button class="boton-pedir" type="button" data-pedir="' + indice + '">' + ICONO_WA + 'Pedir</button>' +
       '</div>' +
     '</li>';
@@ -130,12 +220,16 @@
     mostrados = hasta;
 
     var hay = lista.length > 0;
+    var aviso = $('aviso-ofertas');
+    aviso.hidden = estado.consola !== 'ofertas' || !hay;
+    if (!aviso.hidden) aviso.innerHTML = avisoOfertas();
     sinResultados.hidden = hay || !juegos.length;
     cargarMas.hidden = mostrados >= lista.length;
     if (!cargarMas.hidden) cargarMas.textContent = 'Cargar más juegos (quedan ' + formato.format(lista.length - mostrados) + ')';
     conteo.textContent = !hay ? '' :
       formato.format(lista.length) + (lista.length === 1 ? ' juego' : ' juegos') +
-      (estado.texto ? ' para “' + estado.texto + '”' : estado.consola === 'populares' ? ' populares' : '') +
+      (estado.texto ? ' para “' + estado.texto + '”' : estado.consola === 'populares' ? ' populares' :
+        estado.consola === 'ofertas' ? ' en oferta' : '') +
       (consolaElegida() ? ' de ' + consolaElegida() : '');
   }
 
@@ -157,10 +251,13 @@
     busqueda.focus();
   });
 
+  function elegirConsola(valor) {
+    estado.consola = valor;
+    botonesConsola.forEach(function (o) { o.setAttribute('aria-pressed', String(o.getAttribute('data-consola') === valor)); });
+  }
   botonesConsola.forEach(function (b) {
     b.addEventListener('click', function () {
-      estado.consola = b.getAttribute('data-consola');
-      botonesConsola.forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      elegirConsola(b.getAttribute('data-consola'));
       pintar(true);
     });
   });
@@ -175,7 +272,9 @@
   // ---------- WhatsApp ----------
 
   function mensajeJuego(j) {
-    return '¡Hola! Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPago(j);
+    return '¡Hola! Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' +
+      (j._o ? 'Precio de oferta ' + (j._o.promo || PROMO_DEFECTO) + ', válido hasta el ' + diaMes(j._o.hasta) + '. ' : '') +
+      textoPago(j);
   }
 
   function abrirHoja(mensaje, detalle) {
@@ -189,7 +288,8 @@
   }
 
   function pedir(j) {
-    abrirHoja(mensajeJuego(j), j.nombre + ' · ' + j.consola + ' · ' + pesos(j.contado));
+    abrirHoja(mensajeJuego(j), j.nombre + ' · ' + j.consola + ' · ' + pesos(j._precio) +
+      (j._o ? ' · oferta hasta el ' + diaMes(j._o.hasta) : ''));
   }
 
   grilla.addEventListener('click', function (e) {
@@ -244,6 +344,7 @@
     fichaJuego = j;
     var datos = [['Audio', j.audio], ['Peso', j.peso], ['Género', (j.generos || []).join(', ')]].filter(function (d) { return d[1]; });
     var etiquetas = '<span class="etiqueta consola">' + escapar(j.consola) + '</span>' +
+      (j._o ? etiquetaOferta(j._o) : '') +
       (j.etiquetas || []).map(function (e) { return '<span class="etiqueta">' + escapar(e) + '</span>'; }).join('');
     fichaCuerpo.innerHTML =
       '<div class="ficha-cabeza">' +
@@ -254,11 +355,7 @@
       (datos.length ? '<dl class="ficha-datos">' + datos.map(function (d) {
         return '<dt>' + d[0] + '</dt><dd>' + escapar(d[1]) + '</dd>';
       }).join('') + '</dl>' : '') +
-      '<p class="precio">' +
-        '<span class="rotulo">' + rotuloPago() + '</span>' +
-        '<span class="contado">' + pesos(j.contado) + '</span>' +
-        lineaCuotas(j) +
-      '</p>' +
+      '<p class="precio' + (j._o ? ' en-oferta' : '') + '">' + cartelPrecio(j) + '</p>' +
       '<button class="boton-pedir" type="button" data-pedir-ficha>' + ICONO_WA + 'Pedir</button>';
     fichaCuerpo.scrollTop = 0;
     fichaHoja.style.transform = '';
@@ -319,9 +416,10 @@
     return 'Sale el ' + (+m[1]) + ' de ' + MESES[+m[2] - 1] + (m[3] ? ' de ' + (m[3].length === 2 ? '20' + m[3] : m[3]) : '');
   }
 
-  var destacado = $('destacado'), edicionesDestacado = [];
+  var destacado = $('destacado'), edicionesDestacado = [], destacadoCfg;
 
   function pintarDestacado(cfg) {
+    destacadoCfg = cfg;
     destacado.classList.remove('cargando');
     var n = buscador.normalizar;
     edicionesDestacado = (cfg && cfg.activo !== false ? cfg.ediciones || [] : []).map(function (e) {
@@ -349,8 +447,10 @@
           return '<div class="edicion">' +
             '<p class="precio">' +
               '<span class="edicion-nombre">' + escapar(e.cfg.titulo || e.juego.nombre) + '</span>' +
-              '<span class="contado">' + pesos(e.juego.contado) + '</span>' +
-              (conCuotas ? lineaCuotas(e.juego) : '<span class="rotulo">' + rotuloPago() + '</span>') +
+              (e.juego._o && descuento(e.juego._o) ? '<s class="anterior">' + pesos(e.juego._o.anterior) + '</s>' : '') +
+              '<span class="contado">' + pesos(e.juego._precio) + '</span>' +
+              (conCuotas ? lineaCuotas(pago(e.juego)) : '<span class="rotulo">' + rotuloPago() + '</span>') +
+              (e.juego._o ? '<span class="vence">' + escapar(e.juego._o.promo) + ', hasta el ' + diaMes(e.juego._o.hasta) + '</span>' : '') +
             '</p>' +
             '<button class="boton-pedir" type="button" data-destacado="' + i + '">' + ICONO_WA + (e.preventa ? 'Reservar' : 'Pedir') + '</button>' +
           '</div>';
@@ -364,8 +464,9 @@
     var ed = edicionesDestacado[+b.getAttribute('data-destacado')], j = ed.juego;
     var nombre = ed.cfg.en_el_mensaje || j.nombre;
     abrirHoja('¡Hola! Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' +
+      (j._o ? 'Precio de oferta ' + (j._o.promo || PROMO_DEFECTO) + ', válido hasta el ' + diaMes(j._o.hasta) + '. ' : '') +
       textoPago(j),
-      nombre + ' · ' + j.consola + ' · ' + pesos(j.contado));
+      nombre + ' · ' + j.consola + ' · ' + pesos(j._precio));
   });
 
   $('consultar-busqueda').addEventListener('click', function () {
@@ -441,10 +542,11 @@
     fetch('sagas.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('destacado.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (datos) {
-    juegos = datos[0].juegos || [];
+    todos = datos[0].juegos || [];
+    sinonimos = datos[1]; sagas = datos[2];
     conCuotas = datos[0].mostrar_cuotas === true;
     if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
-    buscador = window.crearBuscador(juegos, datos[1], datos[2]);
+    refrescarOfertas();
     // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.
     if (!juegos.some(function (j) { return j.popular; })) {
       document.querySelector('[data-consola="populares"]').hidden = true;
