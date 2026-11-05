@@ -19,7 +19,10 @@
   var hoja = $('hoja');
 
   var juegos = [], buscador = null, lista = [], mostrados = 0;
-  var estado = { texto: '', consola: '', orden: 'nombre' };
+  // consola: 'populares' (al abrir), '' (todos), 'PS5' o 'PS4'. orden: 'auto' depende de lo que se mira
+  // (buscando: más parecidos; en Populares: el orden de populares; si no: A a Z), o el que eligió la persona.
+  var estado = { texto: '', consola: 'populares', orden: 'auto' };
+  var NOMBRE_AUTO = { parecido: 'Más parecidos', popular: 'Más populares', nombre: 'A a Z' };
 
   var formato = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
   function pesos(n) { return '$' + formato.format(n); }
@@ -32,20 +35,42 @@
 
   // ---------- Lista visible ----------
 
+  function consolaElegida() { return estado.consola === 'populares' ? '' : estado.consola; }
+  function ordenAuto() { return estado.texto ? 'parecido' : estado.consola === 'populares' ? 'popular' : 'nombre'; }
+
   function calcularLista() {
     var base;
     if (estado.texto) {
+      // Buscando se busca en todo el catálogo, aunque esté elegido Populares.
       base = buscador.buscar(estado.texto).map(function (r) { return r.juego; });
+    } else if (estado.consola === 'populares') {
+      base = juegos.filter(function (j) { return j.popular; });
     } else {
       base = juegos.slice();
     }
-    if (estado.consola) {
-      base = base.filter(function (j) { return j.consola.indexOf(estado.consola) >= 0; });
-    }
-    if (estado.orden === 'menor') base.sort(function (a, b) { return a.contado - b.contado; });
-    else if (estado.orden === 'mayor') base.sort(function (a, b) { return b.contado - a.contado; });
-    else if (estado.orden === 'nombre' && !estado.texto) base.sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
+    var consola = consolaElegida();
+    if (consola) base = base.filter(function (j) { return j.consola.indexOf(consola) >= 0; });
+    var orden = estado.orden === 'auto' ? ordenAuto() : estado.orden;
+    if (orden === 'menor') base.sort(function (a, b) { return a.contado - b.contado; });
+    else if (orden === 'mayor') base.sort(function (a, b) { return b.contado - a.contado; });
+    else if (orden === 'nombre') base.sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
+    else if (orden === 'popular') base.sort(function (a, b) { return a.popular - b.popular; });
     return base;
+  }
+
+  // La primera opción del orden dice qué hace "auto" ahora. "A a Z" no se repite cuando auto ya es A a Z.
+  // (Las opciones se sacan y se ponen porque Safari de iPhone ignora <option hidden>.)
+  var opcionNombre = orden.querySelector('[value="nombre"]');
+  function actualizarOrden() {
+    var auto = ordenAuto();
+    orden.querySelector('[value="auto"]').textContent = NOMBRE_AUTO[auto];
+    if (auto === 'nombre') {
+      if (estado.orden === 'nombre') estado.orden = 'auto';
+      if (opcionNombre.parentNode) orden.removeChild(opcionNombre);
+    } else if (!opcionNombre.parentNode) {
+      orden.insertBefore(opcionNombre, orden.options[1] || null);
+    }
+    orden.value = estado.orden;
   }
 
   function tarjeta(j, indice) {
@@ -76,6 +101,7 @@
 
   function pintar(desdeCero) {
     if (desdeCero) {
+      actualizarOrden();
       lista = calcularLista();
       mostrados = 0;
       grilla.innerHTML = '';
@@ -91,8 +117,8 @@
     if (!cargarMas.hidden) cargarMas.textContent = 'Cargar más juegos (quedan ' + formato.format(lista.length - mostrados) + ')';
     conteo.textContent = !hay ? '' :
       formato.format(lista.length) + (lista.length === 1 ? ' juego' : ' juegos') +
-      (estado.texto ? ' para “' + estado.texto + '”' : '') +
-      (estado.consola ? ' de ' + estado.consola : '');
+      (estado.texto ? ' para “' + estado.texto + '”' : estado.consola === 'populares' ? ' populares' : '') +
+      (consolaElegida() ? ' de ' + consolaElegida() : '');
   }
 
   // ---------- Controles ----------
@@ -102,12 +128,7 @@
     limpiar.hidden = !busqueda.value;
     clearTimeout(espera);
     espera = setTimeout(function () {
-      var antes = estado.texto;
       estado.texto = busqueda.value.trim();
-      // Mientras se busca, el orden pasa a "Más parecidos", salvo que se haya elegido un precio.
-      if (estado.texto && !antes && estado.orden === 'nombre') { estado.orden = 'parecido'; orden.value = 'parecido'; }
-      if (!estado.texto && estado.orden === 'parecido') { estado.orden = 'nombre'; orden.value = 'nombre'; }
-      orden.querySelector('[value="parecido"]').hidden = !estado.texto;
       pintar(true);
     }, 160);
   });
@@ -159,7 +180,7 @@
 
   $('consultar-busqueda').addEventListener('click', function () {
     var texto = estado.texto;
-    abrirHoja('¡Hola! Estoy buscando ' + (texto || 'un juego') + (estado.consola ? ' para ' + estado.consola : '') + '. ¿Lo tienen?',
+    abrirHoja('¡Hola! Estoy buscando ' + (texto || 'un juego') + (consolaElegida() ? ' para ' + consolaElegida() : '') + '. ¿Lo tienen?',
       'Te escribimos para preguntar por “' + texto + '”.');
   });
 
@@ -198,6 +219,13 @@
   ]).then(function (datos) {
     juegos = datos[0].juegos || [];
     buscador = window.crearBuscador(juegos, datos[1], datos[2]);
+    // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.
+    if (!juegos.some(function (j) { return j.popular; })) {
+      document.querySelector('[data-consola="populares"]').hidden = true;
+      document.querySelector('.consolas').classList.add('sin-populares');
+      estado.consola = '';
+      botonesConsola.forEach(function (o) { o.setAttribute('aria-pressed', String(o.getAttribute('data-consola') === '')); });
+    }
     if (datos[0].actualizado) {
       var f = new Date(datos[0].actualizado);
       $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';

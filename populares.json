@@ -1,0 +1,25 @@
+{
+  "_comentario": "Filtro Populares de la tienda. Lo usa el bot de mpl-precios en cada corrida: primero van los 'fijos' (en este orden, en PS4 y PS5 cuando existan) y después los más vendidos de la semana, hasta unos 36 juegos, mezclando PS4 y PS5. Cada línea es un pedazo del nombre tal como figura en la tienda (mayúsculas, tildes y signos no importan). Si un juego se escribe de dos formas, van juntas entre corchetes. 'el más nuevo: ...' elige solo el de número más alto (FC 27 antes que FC 26). En 'ocultos' va lo que no queremos mostrar nunca en Populares. Se puede editar sin tocar código (cuidá las comas y las comillas); el cambio se ve después de la próxima corrida del bot.",
+
+  "fijos": [
+    ["gta 5", "grand theft auto v"],
+    "el más nuevo: ea sports fc",
+    "mortal kombat 11",
+    "mortal kombat 1",
+    "red dead redemption 2",
+    ["the last of us 1", "the last of us parte 1", "the last of us remastered"],
+    ["the last of us 2", "the last of us parte 2"],
+    "gran turismo 7",
+    "el más nuevo: f1",
+    "need for speed unbound",
+    "crash team racing",
+    "spider man 2",
+    "god of war ragnarok",
+    "minecraft"
+  ],
+
+  "ocultos": [
+  ],
+
+  "total": 36
+}
