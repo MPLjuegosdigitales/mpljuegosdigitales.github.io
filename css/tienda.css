@@ -1,0 +1,294 @@
+/* MPL Juegos Digitales: la vidriera del local, donde cada juego lleva su cartel de precio en cartulina.
+   Paleta fija de la marca (lila, violeta, violeta oscuro) más neutros solo para texto. */
+
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../fuentes/barlow-condensed-800.woff2") format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../fuentes/barlow-condensed-600.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
+:root {
+  --lila: #E5AFFB;
+  --violeta: #975AB7;
+  --violeta-oscuro: #4F1964;
+  --blanco: #FFFFFF;
+  --texto: #4F1964;
+  --texto-suave: #555555;
+  --fondo: #FFFFFF;
+
+  --cartel: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --texto-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --margen: 16px;
+  --hueco: 12px;
+  --radio: 12px;
+  --toque: 44px;
+  --salida: cubic-bezier(.16, 1, .3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 140px; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font: 16px/1.45 var(--texto-ui);
+  -webkit-tap-highlight-color: transparent;
+}
+img { display: block; max-width: 100%; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+::selection { background: var(--lila); color: var(--violeta-oscuro); }
+:focus-visible { outline: 3px solid var(--violeta); outline-offset: 2px; }
+input { caret-color: var(--violeta-oscuro); }
+.oculto {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* El letrero del local: lila, con el logo tal cual */
+.encabezado {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--lila);
+  padding: 8px var(--margen);
+  padding-top: max(8px, env(safe-area-inset-top));
+}
+.marca { display: block; border-radius: 6px; }
+.marca img { height: 56px; width: auto; }
+.boton-consultar {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: var(--toque); padding: 0 14px;
+  border: 0; border-radius: 999px;
+  background: var(--violeta-oscuro); color: var(--blanco);
+  font-weight: 600; font-size: 15px;
+  transition: transform .15s var(--salida);
+}
+.boton-consultar svg { width: 18px; height: 18px; fill: currentColor; }
+.boton-consultar:active { transform: scale(.96); }
+
+/* Buscador y filtros: fijos arriba al hacer scroll */
+.barra {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--lila);
+  padding: 4px var(--margen) 10px;
+}
+.barra.pegada { box-shadow: 0 6px 16px -10px rgba(79, 25, 100, .55); }
+.buscador { position: relative; margin: 0; }
+.buscador input {
+  width: 100%; height: 48px;
+  padding: 0 48px 0 44px;
+  border: 2px solid var(--violeta-oscuro); border-radius: var(--radio);
+  background: var(--blanco); color: var(--violeta-oscuro);
+  font-size: 16px; /* 16px: iOS no hace zoom al tocar */
+  -webkit-appearance: none; appearance: none;
+}
+.buscador input::placeholder { color: var(--texto-suave); }
+.buscador input::-webkit-search-cancel-button { display: none; }
+.buscador input:focus { outline: none; border-color: var(--violeta); box-shadow: 0 0 0 3px var(--violeta); }
+.lupa {
+  position: absolute; left: 12px; top: 12px; width: 24px; height: 24px;
+  fill: var(--violeta-oscuro); pointer-events: none;
+}
+.limpiar {
+  position: absolute; right: 2px; top: 2px;
+  width: var(--toque); height: var(--toque);
+  display: grid; place-items: center;
+  border: 0; background: none; border-radius: 10px;
+}
+.limpiar[hidden] { display: none; }
+.limpiar svg { width: 20px; height: 20px; fill: var(--violeta-oscuro); }
+
+.filtros { display: flex; gap: 8px; margin-top: 8px; }
+.consolas {
+  flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--blanco); border-radius: var(--radio); padding: 2px;
+}
+.consolas button {
+  min-height: 44px; border: 0; border-radius: 10px;
+  background: transparent; color: var(--violeta-oscuro);
+  font-weight: 700; font-size: 15px;
+  transition: background-color .18s var(--salida), color .18s var(--salida);
+}
+.consolas button[aria-pressed="true"] { background: var(--violeta); color: var(--blanco); }
+#orden {
+  flex: 0 0 auto; min-height: 48px; max-width: 46%;
+  padding: 0 34px 0 12px;
+  border: 0; border-radius: var(--radio);
+  background: var(--blanco) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234F1964' d='M7 9.5 12 15l5-5.5z'/%3E%3C/svg%3E") no-repeat right 8px center / 22px;
+  color: var(--violeta-oscuro); font-weight: 600; font-size: 15px;
+  -webkit-appearance: none; appearance: none;
+}
+
+/* Contenido */
+main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
+.titulo {
+  margin: 0;
+  font: 800 24px/1 var(--cartel);
+  letter-spacing: -.01em; text-transform: uppercase;
+  color: var(--violeta-oscuro);
+}
+.aclaracion { margin: 6px 0 0; font-size: 15px; color: var(--texto-suave); max-width: 60ch; }
+.conteo { margin: 14px 0 10px; font-size: 14px; font-weight: 600; color: var(--violeta-oscuro); }
+
+.grilla {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px var(--hueco);
+}
+
+/* Cada juego: la tapa y su cartel de precio */
+.juego { display: flex; flex-direction: column; min-width: 0; }
+.tapa {
+  position: relative; aspect-ratio: 4 / 5; overflow: hidden;
+  border-radius: var(--radio) var(--radio) 0 0;
+  background: var(--lila);
+}
+.tapa img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s var(--salida); }
+.tapa img.lista { opacity: 1; }
+.tapa .sin-tapa {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 12px;
+  font: 800 22px/1 var(--cartel); text-align: center; text-transform: uppercase; color: var(--violeta-oscuro);
+}
+.consola {
+  position: absolute; left: 8px; top: 8px;
+  padding: 3px 8px; border-radius: 6px;
+  background: var(--violeta-oscuro); color: var(--blanco);
+  font: 800 15px/1.1 var(--cartel); letter-spacing: .02em;
+}
+
+.cartel {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--lila);
+  padding: 10px 10px 10px;
+  border-radius: 0 0 var(--radio) var(--radio);
+}
+.nombre {
+  margin: 0; font-size: 15px; line-height: 1.25; font-weight: 600; color: var(--violeta-oscuro);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  min-height: 2.5em;
+}
+.etiquetas { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.etiqueta {
+  padding: 2px 6px; border-radius: 5px; font-size: 12px; font-weight: 700; line-height: 1.3;
+  background: var(--blanco); color: var(--violeta-oscuro);
+}
+.etiqueta.preventa { background: var(--violeta-oscuro); color: var(--blanco); }
+.etiqueta.dlc { background: transparent; box-shadow: inset 0 0 0 2px var(--violeta-oscuro); }
+
+.precio { margin-top: auto; padding-top: 8px; }
+.precio .rotulo { display: block; font-size: 12px; font-weight: 600; color: var(--violeta-oscuro); }
+.precio .contado {
+  display: block;
+  font: 800 34px/0.95 var(--cartel); letter-spacing: -.01em; color: var(--violeta-oscuro);
+  font-variant-numeric: tabular-nums;
+}
+.precio .cuotas {
+  display: block; margin-top: 4px;
+  font: 600 18px/1.1 var(--cartel); color: var(--violeta-oscuro);
+}
+.precio .cuotas b { font-weight: 800; }
+
+.boton-pedir {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: var(--toque); margin-top: 10px;
+  border: 0; border-radius: 10px;
+  background: var(--violeta); color: var(--blanco);
+  font-weight: 700; font-size: 15px;
+  transition: transform .15s var(--salida), background-color .15s var(--salida);
+}
+.boton-pedir svg { width: 18px; height: 18px; fill: currentColor; }
+.boton-pedir:hover { background: var(--violeta-oscuro); }
+.boton-pedir:active { transform: scale(.97); }
+
+.cargar-mas, .boton-secundario {
+  display: block; width: 100%; max-width: 420px; min-height: 52px; margin: 24px auto 0;
+  border: 2px solid var(--violeta-oscuro); border-radius: var(--radio);
+  background: var(--blanco); color: var(--violeta-oscuro);
+  font-weight: 700; font-size: 16px;
+}
+.cargar-mas:active, .boton-secundario:active { background: var(--lila); }
+
+.sin-resultados, .error {
+  margin-top: 8px; padding: 28px 20px; border-radius: var(--radio);
+  background: var(--lila); text-align: center;
+}
+.sin-resultados h2, .error h2 { margin: 0; font: 800 28px/1 var(--cartel); text-transform: uppercase; }
+.sin-resultados p, .error p { margin: 8px auto 0; max-width: 32ch; }
+.sin-resultados .boton-pedir { max-width: 320px; margin: 18px auto 0; }
+
+/* Esqueleto mientras carga */
+.juego.cargando .tapa, .juego.cargando .cartel { background: var(--lila); }
+.juego.cargando .cartel { min-height: 170px; }
+
+.pie {
+  background: var(--lila); padding: 28px var(--margen) calc(28px + env(safe-area-inset-bottom));
+  text-align: center; color: var(--violeta-oscuro);
+}
+.pie img { height: 64px; width: auto; margin: 0 auto 10px; }
+.pie p { margin: 4px 0; }
+.pie a { color: var(--violeta-oscuro); font-weight: 700; text-underline-offset: 3px; }
+.actualizado { font-size: 13px; }
+
+/* Menú de WhatsApp: hoja que sube desde abajo */
+.hoja {
+  width: 100%; max-width: 480px; margin: auto auto 0; padding: 0;
+  border: 0; border-radius: 20px 20px 0 0;
+  background: var(--blanco); color: var(--violeta-oscuro);
+}
+.hoja::backdrop { background: rgba(79, 25, 100, .55); }
+.hoja[open] { animation: subir .28s var(--salida); }
+@keyframes subir { from { transform: translateY(100%); } to { transform: none; } }
+.hoja-cuerpo { padding: 22px var(--margen) calc(18px + env(safe-area-inset-bottom)); }
+.hoja h2 { margin: 0; font: 800 28px/1 var(--cartel); text-transform: uppercase; }
+.hoja-juego { margin: 8px 0 0; font-size: 15px; }
+.contactos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.contacto {
+  display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 12px;
+  border-radius: var(--radio); background: var(--violeta); color: var(--blanco); text-decoration: none;
+}
+.contacto:active { background: var(--violeta-oscuro); }
+.contacto .inicial {
+  flex: 0 0 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--lila); color: var(--violeta-oscuro); font: 800 20px/1 var(--cartel);
+}
+.contacto strong { display: block; font-size: 17px; }
+.contacto small { display: block; font-size: 13px; opacity: .92; }
+.hoja .boton-secundario { margin-top: 12px; max-width: none; min-height: 48px; }
+
+/* Tablet y compu */
+@media (min-width: 600px) {
+  :root { --margen: 24px; --hueco: 16px; }
+  .grilla { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .barra { padding-bottom: 12px; }
+  .titulo { font-size: 30px; }
+}
+@media (min-width: 900px) {
+  .encabezado, .barra { padding-left: max(var(--margen), calc((100vw - 1240px) / 2 + var(--margen)));
+                        padding-right: max(var(--margen), calc((100vw - 1240px) / 2 + var(--margen))); }
+  .barra { display: flex; gap: 12px; align-items: center; padding-top: 0; }
+  .buscador { flex: 1; }
+  .filtros { margin-top: 0; flex: 0 0 auto; }
+  .consolas { width: 300px; }
+  .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 20px; }
+  .marca img { height: 64px; }
+  .hoja { margin: auto; border-radius: 20px; }
+}
+@media (min-width: 1200px) {
+  .grilla { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* El nombre en grande solo aparece cuando el juego no tiene tapa */
+.tapa .sin-tapa { visibility: hidden; }
+.tapa.falta .sin-tapa { visibility: visible; }

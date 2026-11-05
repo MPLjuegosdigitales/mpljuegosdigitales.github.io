@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MPL Juegos Digitales · Juegos de PS4 y PS5</title>
+  <meta name="description" content="Juegos digitales de PS4 y PS5. Precio contado o en 3 cuotas sin interés. Pedilo por WhatsApp.">
+  <meta name="theme-color" content="#E5AFFB">
+  <link rel="preload" href="fuentes/barlow-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/tienda.css">
+</head>
+<body>
+  <header class="encabezado">
+    <a class="marca" href="./" aria-label="MPL Juegos Digitales, inicio">
+      <img src="LOGO_MPL_sin_fondo.png" width="763" height="404" alt="MPL Juegos Digitales">
+    </a>
+    <button class="boton-consultar" type="button" data-consultar>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3Z"/></svg>
+      Consultar
+    </button>
+  </header>
+
+  <div class="barra" id="barra">
+    <form class="buscador" role="search" onsubmit="return false">
+      <label class="oculto" for="busqueda">Buscar un juego</label>
+      <svg class="lupa" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.8 4.8-1.4 1.4-4.8-4.8A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+      <input id="busqueda" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
+             placeholder="Buscá tu juego (ej: fifa, gta)">
+      <button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>
+      </button>
+    </form>
+    <div class="filtros">
+      <div class="consolas" role="group" aria-label="Consola">
+        <button type="button" data-consola="" aria-pressed="true">Todos</button>
+        <button type="button" data-consola="PS5" aria-pressed="false">PS5</button>
+        <button type="button" data-consola="PS4" aria-pressed="false">PS4</button>
+      </div>
+      <label class="oculto" for="orden">Ordenar</label>
+      <select id="orden">
+        <option value="parecido" hidden>Más parecidos</option>
+        <option value="nombre" selected>A a Z</option>
+        <option value="menor">Menor precio</option>
+        <option value="mayor">Mayor precio</option>
+      </select>
+    </div>
+  </div>
+
+  <main id="contenido">
+    <h1 class="titulo">Juegos digitales de PS4 y PS5</h1>
+    <p class="aclaracion">Cuenta primaria: lo jugás desde tu propio usuario, con o sin internet. Pagás contado, por transferencia o en 3 cuotas sin interés.</p>
+    <p class="conteo" id="conteo" aria-live="polite">Cargando juegos…</p>
+
+    <ul class="grilla" id="grilla"></ul>
+
+    <div class="sin-resultados" id="sin-resultados" hidden>
+      <h2>No encontramos ese juego</h2>
+      <p>Puede que lo tengamos igual. Preguntanos por WhatsApp y te respondemos.</p>
+      <button class="boton-pedir" type="button" id="consultar-busqueda">Consultar por WhatsApp</button>
+    </div>
+
+    <div class="error" id="error" hidden>
+      <h2>No pudimos cargar los juegos</h2>
+      <p>Revisá tu conexión y probá de nuevo.</p>
+      <button class="boton-secundario" type="button" onclick="location.reload()">Reintentar</button>
+    </div>
+
+    <button class="cargar-mas" type="button" id="cargar-mas" hidden>Cargar más juegos</button>
+  </main>
+
+  <footer class="pie">
+    <img src="LOGO_MPL_sin_fondo.png" width="763" height="404" alt="MPL Juegos Digitales" loading="lazy">
+    <p>Pedidos por WhatsApp con <a href="https://wa.me/5493482664743">Mateo</a> o <a href="https://wa.me/5493482209654">Luca</a>.</p>
+    <p class="actualizado" id="actualizado"></p>
+  </footer>
+
+  <dialog class="hoja" id="hoja" aria-labelledby="hoja-titulo">
+    <form method="dialog" class="hoja-cuerpo">
+      <h2 id="hoja-titulo">¿Con quién querés hablar?</h2>
+      <p class="hoja-juego" id="hoja-juego"></p>
+      <div class="contactos">
+        <a class="contacto" id="contacto-mateo" href="#" target="_blank" rel="noopener">
+          <span class="inicial" aria-hidden="true">M</span>
+          <span><strong>Mateo</strong><small>3482 66-4743</small></span>
+        </a>
+        <a class="contacto" id="contacto-luca" href="#" target="_blank" rel="noopener">
+          <span class="inicial" aria-hidden="true">L</span>
+          <span><strong>Luca</strong><small>3482 20-9654</small></span>
+        </a>
+      </div>
+      <button class="boton-secundario" value="cerrar">Cancelar</button>
+    </form>
+  </dialog>
+
+  <script src="js/buscar.js"></script>
+  <script src="js/tienda.js"></script>
+</body>
+</html>
