@@ -85,19 +85,19 @@
     <p class="actualizado" id="actualizado"></p>
   </footer>
 
-  <dialog class="hoja" id="hoja" aria-labelledby="hoja-titulo">
+  <dialog class="hoja hoja-contacto" id="hoja" aria-labelledby="hoja-titulo" aria-describedby="hoja-sub hoja-juego">
+    <!-- Mateo y Luca asoman por arriba del menú. Las imágenes se bajan cuando terminó de cargar la página (js/tienda.js). -->
+    <div class="figuras" id="figuras" aria-hidden="true">
+      <img class="figura" id="figura-mateo" data-src="img/mateo-gta.webp" alt="" width="896" height="900">
+      <img class="figura" id="figura-luca" data-src="img/luca-gta.webp" alt="" width="828" height="900">
+    </div>
     <form method="dialog" class="hoja-cuerpo">
       <h2 id="hoja-titulo">¿Con quién querés hablar?</h2>
+      <p class="hoja-sub" id="hoja-sub">Seleccioná uno</p>
       <p class="hoja-juego" id="hoja-juego"></p>
       <div class="contactos">
-        <a class="contacto" id="contacto-mateo" href="#" target="_blank" rel="noopener">
-          <span class="inicial" aria-hidden="true">M</span>
-          <span><strong>Mateo</strong><small>3482 66-4743</small></span>
-        </a>
-        <a class="contacto" id="contacto-luca" href="#" target="_blank" rel="noopener">
-          <span class="inicial" aria-hidden="true">L</span>
-          <span><strong>Luca</strong><small>3482 20-9654</small></span>
-        </a>
+        <a class="contacto" id="contacto-mateo" data-contacto="mateo" href="#" target="_blank" rel="noopener">Mateo</a>
+        <a class="contacto" id="contacto-luca" data-contacto="luca" href="#" target="_blank" rel="noopener">Luca</a>
       </div>
       <button class="boton-secundario" value="cerrar">Cancelar</button>
     </form>

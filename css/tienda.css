@@ -280,20 +280,53 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 @keyframes subir { from { transform: translateY(100%); } to { transform: none; } }
 .hoja-cuerpo { padding: 22px var(--margen) calc(18px + env(safe-area-inset-bottom)); }
 .hoja h2 { margin: 0; font: 800 28px/1 var(--cartel); text-transform: uppercase; color: var(--lila); }
+.hoja-sub { margin: 6px 0 0; font-size: 16px; font-weight: 700; color: var(--texto); }
 .hoja-juego { margin: 8px 0 0; font-size: 15px; color: var(--texto-suave); }
 .contactos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
 .contacto {
-  display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 12px;
+  display: grid; place-items: center; min-height: 56px; padding: 10px 12px;
   border-radius: var(--radio); background: var(--violeta); color: var(--blanco); text-decoration: none;
+  font: 800 22px/1 var(--cartel); text-transform: uppercase; letter-spacing: .02em;
 }
 .contacto:active { background: var(--violeta-oscuro); }
-.contacto .inicial {
-  flex: 0 0 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--lila); color: var(--violeta-oscuro); font: 800 20px/1 var(--cartel);
-}
-.contacto strong { display: block; font-size: 17px; }
-.contacto small { display: block; font-size: 13px; }
 .hoja .boton-secundario { margin-top: 12px; max-width: none; min-height: 48px; }
+
+/* Mateo y Luca parados detrás del menú: el fondo va en el formulario (por delante) y las figuras asoman
+   por arriba; el corte de abajo de cada imagen queda tapado por el menú. Cada uno sobre su botón. */
+.hoja-contacto { overflow: visible; background: transparent; }
+.hoja-contacto .hoja-cuerpo {
+  position: relative; z-index: 1;
+  background: var(--superficie); border-radius: 20px 20px 0 0;
+}
+.figuras {
+  position: absolute; z-index: 0; left: var(--margen); right: var(--margen); bottom: calc(100% - 26px);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; pointer-events: none;
+}
+.figura {
+  justify-self: center; width: auto; height: clamp(112px, 34vw, 148px);
+  position: relative; z-index: 0;
+  filter: brightness(.7) saturate(.8);                /* apagadas */
+  transform-origin: 50% 100%;                          /* crece hacia arriba desde la base */
+  transition: filter .25s var(--salida), transform .25s var(--salida);
+}
+.figura:not([src]) { visibility: hidden; }
+/* Al abrir, cada una se ilumina y se agranda un 10 % unos 2 s (entrada y salida suaves de 0,5 s) y después le toca
+   a la otra. La que está iluminada pasa por delante. El zoom es con transform para que vaya fluido en el celular. */
+.hoja-contacto[open] .figuras:not(.eligiendo) .figura { animation: invitar 3s ease-in-out .35s both; }
+.hoja-contacto[open] .figuras:not(.eligiendo) .figura + .figura { animation-delay: 2.85s; }
+@keyframes invitar {
+  0%, 100% { filter: brightness(.7) saturate(.8); transform: none; z-index: 0; }
+  16.67%, 83.33% { filter: brightness(1) saturate(1); transform: scale(1.1); z-index: 1; }
+}
+/* Elegido: brillo normal, agrandada y con resplandor lila alrededor de la silueta; el otro queda apagado. */
+.figuras.eligiendo .figura { animation: none; filter: brightness(.7) saturate(.8); }
+.figuras.eligiendo .figura.elegido {
+  z-index: 2; transform: scale(1.1);
+  filter: brightness(1) saturate(1) drop-shadow(0 0 3px #E5AFFB) drop-shadow(0 0 12px rgba(229, 175, 251, .75));
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoja-contacto .figuras .figura { animation: none !important; transition: none; filter: none; transform: none; }
+}
 
 /* Tablet y compu */
 @media (min-width: 600px) {
@@ -311,6 +344,7 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
   .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 20px; }
   .marca img { height: 64px; }
   .hoja { margin: auto; border-radius: 20px; }
+  .hoja-contacto .hoja-cuerpo { border-radius: 20px; }
 }
 @media (min-width: 1200px) {
   .grilla { grid-template-columns: repeat(5, minmax(0, 1fr)); }

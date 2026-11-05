@@ -169,6 +169,7 @@
   }
 
   function abrirHoja(mensaje, detalle) {
+    soltarEleccion();
     $('hoja-juego').textContent = detalle;
     Object.keys(CONTACTOS).forEach(function (clave) {
       $('contacto-' + clave).href = 'https://wa.me/' + CONTACTOS[clave].numero + '?text=' + encodeURIComponent(mensaje);
@@ -367,10 +368,43 @@
     abrirHoja('¡Hola! Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
   });
 
-  // Tocar fuera de la hoja la cierra; elegir un contacto también.
+  // Tocar fuera de la hoja la cierra. Al elegir un contacto se ilumina su figura y ~400 ms después se abre
+  // WhatsApp (con "reducir movimiento", al instante). Si el navegador bloquea la pestaña nueva, va en la misma.
+  var figuras = $('figuras');
+  var reducirMovimiento = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+  function soltarEleccion() {
+    figuras.classList.remove('eligiendo');
+    figuras.querySelectorAll('.elegido').forEach(function (f) { f.classList.remove('elegido'); });
+    delete hoja.dataset.eligiendo;
+  }
+
   hoja.addEventListener('click', function (e) {
-    if (e.target === hoja || e.target.closest('.contacto')) hoja.close();
+    if (e.target === hoja) return hoja.close();
+    var contacto = e.target.closest('.contacto');
+    if (!contacto) return;
+    e.preventDefault();
+    if (hoja.dataset.eligiendo) return;
+    hoja.dataset.eligiendo = '1';
+    var destino = contacto.href;
+    var irAWhatsApp = function () {
+      var ventana = window.open(destino, '_blank');
+      if (ventana) ventana.opener = null; else location.href = destino;
+      hoja.close();
+    };
+    if (reducirMovimiento.matches) return irAWhatsApp();
+    figuras.classList.add('eligiendo');
+    $('figura-' + contacto.dataset.contacto).classList.add('elegido');
+    setTimeout(irAWhatsApp, 400);
   });
+  hoja.addEventListener('close', soltarEleccion);
+
+  // Las figuras se bajan después de que cargó la página, así aparecen al instante al abrir el menú.
+  function precargarFiguras() {
+    figuras.querySelectorAll('img[data-src]').forEach(function (img) { img.src = img.dataset.src; });
+  }
+  if (document.readyState === 'complete') precargarFiguras();
+  else window.addEventListener('load', precargarFiguras);
 
   // ---------- Barra fija: sombra solo cuando ya quedó pegada arriba ----------
   var barra = $('barra');
