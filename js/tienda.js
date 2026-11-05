@@ -49,21 +49,21 @@
   }
 
   function tarjeta(j, indice) {
-    var etiquetas = (j.etiquetas || []).map(function (e) {
-      var clase = /^preventa/i.test(e) ? ' preventa' : /dlc/i.test(e) ? ' dlc' : '';
-      return '<span class="etiqueta' + clase + '">' + escapar(e) + '</span>';
-    }).join('');
+    // Nada va encima de la tapa: la consola y las etiquetas (Versión PS4, Preventa, Solo DLC) van debajo.
+    var etiquetas = '<span class="etiqueta consola">' + escapar(j.consola) + '</span>' +
+      (j.etiquetas || []).map(function (e) {
+        return '<span class="etiqueta">' + escapar(e) + '</span>';
+      }).join('');
     var tapa = j.imagen
-      ? '<img src="' + escapar(j.imagen) + '" alt="" width="480" height="600" loading="lazy" decoding="async" onload="this.classList.add(\'lista\')" onerror="this.parentNode.classList.add(\'falta\');this.remove()">'
+      ? '<img src="' + escapar(j.imagen) + '" alt="" width="480" height="605" loading="lazy" decoding="async" onload="this.classList.add(\'lista\')" onerror="this.parentNode.classList.add(\'falta\');this.remove()">'
       : '';
     return '<li class="juego">' +
       '<div class="tapa' + (j.imagen ? '' : ' falta') + '">' +
         '<span class="sin-tapa" aria-hidden="true">' + escapar(j.nombre) + '</span>' + tapa +
-        '<span class="consola">' + escapar(j.consola) + '</span>' +
       '</div>' +
-      '<div class="cartel">' +
+      '<div class="datos">' +
+        '<div class="etiquetas">' + etiquetas + '</div>' +
         '<h3 class="nombre">' + escapar(j.nombre) + '</h3>' +
-        (etiquetas ? '<div class="etiquetas">' + etiquetas + '</div>' : '') +
         '<p class="precio">' +
           '<span class="rotulo">Contado / transferencia</span>' +
           '<span class="contado">' + pesos(j.contado) + '</span>' +
@@ -186,7 +186,7 @@
 
   function esqueleto() {
     var html = '';
-    for (var i = 0; i < 4; i++) html += '<li class="juego cargando" aria-hidden="true"><div class="tapa"></div><div class="cartel"></div></li>';
+    for (var i = 0; i < 4; i++) html += '<li class="juego cargando" aria-hidden="true"><div class="tapa"></div><div class="datos"></div></li>';
     grilla.innerHTML = html;
   }
 
