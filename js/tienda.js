@@ -11,6 +11,8 @@
   };
   var ICONO_WA = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3Z"/></svg>';
 
+  var ICONO_FLECHA = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9.3 5.3 7.9 6.7l5.3 5.3-5.3 5.3 1.4 1.4 6.7-6.7z"/></svg>';
+
   var $ = function (id) { return document.getElementById(id); };
   var grilla = $('grilla'), conteo = $('conteo'), cargarMas = $('cargar-mas');
   var sinResultados = $('sin-resultados'), errorCaja = $('error');
@@ -82,13 +84,17 @@
     var tapa = j.imagen
       ? '<img src="' + escapar(j.imagen) + '" alt="" width="480" height="605" loading="lazy" decoding="async" onload="this.classList.add(\'lista\')" onerror="this.parentNode.classList.add(\'falta\');this.remove()">'
       : '';
+    // La tapa y el nombre abren la ficha del juego.
     return '<li class="juego">' +
-      '<div class="tapa' + (j.imagen ? '' : ' falta') + '">' +
+      '<button class="tapa' + (j.imagen ? '' : ' falta') + '" type="button" data-ficha="' + indice + '" aria-label="Ver detalles de ' + escapar(j.nombre) + '">' +
         '<span class="sin-tapa" aria-hidden="true">' + escapar(j.nombre) + '</span>' + tapa +
-      '</div>' +
+      '</button>' +
       '<div class="datos">' +
         '<div class="etiquetas">' + etiquetas + '</div>' +
-        '<h3 class="nombre">' + escapar(j.nombre) + '</h3>' +
+        '<h3 class="titulo-juego"><button class="abrir-ficha" type="button" data-ficha="' + indice + '">' +
+          '<span class="nombre">' + escapar(j.nombre) + '</span>' +
+          '<span class="ver-detalles">Ver detalles' + ICONO_FLECHA + '</span>' +
+        '</button></h3>' +
         '<p class="precio">' +
           '<span class="rotulo">Contado / transferencia</span>' +
           '<span class="contado">' + pesos(j.contado) + '</span>' +
@@ -171,11 +177,184 @@
     else hoja.setAttribute('open', '');
   }
 
-  grilla.addEventListener('click', function (e) {
-    var boton = e.target.closest('[data-pedir]');
-    if (!boton) return;
-    var j = lista[+boton.getAttribute('data-pedir')];
+  function pedir(j) {
     abrirHoja(mensajeJuego(j), j.nombre + ' · ' + j.consola + ' · ' + pesos(j.contado));
+  }
+
+  grilla.addEventListener('click', function (e) {
+    var ficha = e.target.closest('[data-ficha]');
+    if (ficha) return abrirFicha(lista[+ficha.getAttribute('data-ficha')]);
+    var boton = e.target.closest('[data-pedir]');
+    if (boton) pedir(lista[+boton.getAttribute('data-pedir')]);
+  });
+
+  // ---------- Ficha del juego ----------
+  // Sinopsis e "Incluye" salen de descripciones.json (textos propios; se baja una sola vez). Audio, peso y
+  // género vienen en catalog.json. Si un juego no tiene sinopsis, la ficha muestra igual lo que haya.
+
+  var fichaHoja = $('ficha'), fichaCuerpo = $('ficha-cuerpo'), fichaJuego = null, descripciones = null;
+
+  function cargarDescripciones() {
+    if (!descripciones) {
+      descripciones = fetch('descripciones.json').then(function (r) { return r.ok ? r.json() : {}; })
+        .catch(function () { return {}; })
+        .then(function (crudo) {
+          var porEdicion = {};
+          Object.keys(crudo.juegos || {}).forEach(function (titulo) {
+            var d = crudo.juegos[titulo] || {}, ediciones = d.ediciones || {};
+            Object.keys(ediciones).forEach(function (nombre) {
+              // Cada edición es una lista ("incluye") o {"incluye": [...], "nota": "aclaración"}.
+              var e = ediciones[nombre] || [];
+              porEdicion[buscador.normalizar(nombre)] = {
+                sinopsis: d.sinopsis || '',
+                incluye: Array.isArray(e) ? e : (e.incluye || []),
+                nota: Array.isArray(e) ? '' : (e.nota || '')
+              };
+            });
+          });
+          return porEdicion;
+        });
+    }
+    return descripciones;
+  }
+
+  function textoFicha(d) {
+    if (!d) return '';
+    var html = d.sinopsis ? '<p class="ficha-sinopsis">' + escapar(d.sinopsis) + '</p>' : '';
+    if (d.incluye && d.incluye.length) {
+      html += '<div class="ficha-incluye"><h3>Este juego incluye:</h3><ul>' +
+        d.incluye.map(function (x) { return '<li>' + escapar(x) + '</li>'; }).join('') + '</ul></div>';
+    }
+    if (d.nota) html += '<p class="ficha-nota">' + escapar(d.nota) + '</p>';
+    return html;
+  }
+
+  function abrirFicha(j) {
+    fichaJuego = j;
+    var datos = [['Audio', j.audio], ['Peso', j.peso], ['Género', (j.generos || []).join(', ')]].filter(function (d) { return d[1]; });
+    var etiquetas = '<span class="etiqueta consola">' + escapar(j.consola) + '</span>' +
+      (j.etiquetas || []).map(function (e) { return '<span class="etiqueta">' + escapar(e) + '</span>'; }).join('');
+    fichaCuerpo.innerHTML =
+      '<div class="ficha-cabeza">' +
+        (j.imagen ? '<img class="ficha-tapa" src="' + escapar(j.imagen) + '" alt="" width="96" height="121">' : '<div class="ficha-tapa"></div>') +
+        '<div><div class="etiquetas">' + etiquetas + '</div><h2 id="ficha-nombre">' + escapar(j.nombre) + '</h2></div>' +
+      '</div>' +
+      '<div id="ficha-texto"></div>' +
+      (datos.length ? '<dl class="ficha-datos">' + datos.map(function (d) {
+        return '<dt>' + d[0] + '</dt><dd>' + escapar(d[1]) + '</dd>';
+      }).join('') + '</dl>' : '') +
+      '<p class="precio">' +
+        '<span class="rotulo">Contado / transferencia</span>' +
+        '<span class="contado">' + pesos(j.contado) + '</span>' +
+        '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(j.cuota) + '</b></span>' +
+      '</p>' +
+      '<button class="boton-pedir" type="button" data-pedir-ficha>' + ICONO_WA + 'Pedir</button>';
+    fichaCuerpo.scrollTop = 0;
+    fichaHoja.style.transform = '';
+    if (typeof fichaHoja.showModal === 'function') fichaHoja.showModal(); else fichaHoja.setAttribute('open', '');
+    cargarDescripciones().then(function (mapa) {
+      if (fichaJuego === j) $('ficha-texto').innerHTML = textoFicha(mapa[buscador.normalizar(j.nombre)]);
+    });
+  }
+
+  function cerrarFicha() {
+    fichaHoja.style.transform = '';
+    if (fichaHoja.open) fichaHoja.close();
+  }
+
+  fichaHoja.addEventListener('click', function (e) {
+    if (e.target === fichaHoja || e.target.closest('.ficha-cerrar')) return cerrarFicha();   // afuera o la X
+    if (e.target.closest('[data-pedir-ficha]')) { var j = fichaJuego; cerrarFicha(); pedir(j); }
+  });
+
+  // Deslizar hacia abajo la cierra (solo con el contenido arriba de todo, para no pelear con el scroll).
+  var arrastre = null;
+  fichaHoja.addEventListener('touchstart', function (e) {
+    if (fichaCuerpo.scrollTop > 0 && fichaCuerpo.contains(e.target)) return;
+    arrastre = { y: e.touches[0].clientY, dy: 0 };
+    fichaHoja.classList.add('arrastrando');
+  }, { passive: true });
+  fichaHoja.addEventListener('touchmove', function (e) {
+    if (!arrastre) return;
+    arrastre.dy = Math.max(0, e.touches[0].clientY - arrastre.y);
+    fichaHoja.style.transform = arrastre.dy ? 'translateY(' + arrastre.dy + 'px)' : '';
+  }, { passive: true });
+  fichaHoja.addEventListener('touchend', function () {
+    if (!arrastre) return;
+    fichaHoja.classList.remove('arrastrando');
+    var lejos = arrastre.dy > 90;
+    arrastre = null;
+    if (lejos) return cerrarFicha();
+    fichaHoja.style.transition = 'transform .2s ease-out';
+    fichaHoja.style.transform = '';
+    setTimeout(function () { fichaHoja.style.transition = ''; }, 220);
+  });
+
+  // ---------- Destacado de la portada (destacado.json + precios del catálogo) ----------
+
+  var MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  function preventaDe(j) {
+    for (var i = 0; i < (j.etiquetas || []).length; i++) {
+      var m = /^preventa\s*(.*)$/i.exec(j.etiquetas[i]);
+      if (m) return { fecha: m[1].trim() };
+    }
+    return null;
+  }
+
+  function fechaLarga(texto) {
+    var m = /^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/.exec(texto || '');
+    if (!m || +m[2] < 1 || +m[2] > 12) return texto ? 'Sale el ' + texto : '';
+    return 'Sale el ' + (+m[1]) + ' de ' + MESES[+m[2] - 1] + (m[3] ? ' de ' + (m[3].length === 2 ? '20' + m[3] : m[3]) : '');
+  }
+
+  var destacado = $('destacado'), edicionesDestacado = [];
+
+  function pintarDestacado(cfg) {
+    destacado.classList.remove('cargando');
+    var n = buscador.normalizar;
+    edicionesDestacado = (cfg && cfg.activo !== false ? cfg.ediciones || [] : []).map(function (e) {
+      var j = juegos.filter(function (x) { return n(x.nombre) === n(e.nombre) && (!cfg.consola || x.consola === cfg.consola); })[0];
+      return j && { cfg: e, juego: j, preventa: preventaDe(j) };
+    }).filter(Boolean);
+    if (!edicionesDestacado.length) { destacado.hidden = true; return; }   // ya no está disponible
+
+    var primera = edicionesDestacado[0].juego;
+    var enPreventa = edicionesDestacado.filter(function (e) { return e.preventa; })[0];
+    var tapa = primera.imagen_grande || primera.imagen;
+    destacado.innerHTML =
+      '<div class="destacado-cabeza">' +
+        (tapa ? '<img class="destacado-tapa" src="' + escapar(tapa) + '" alt="Tapa de ' + escapar(cfg.titulo || primera.nombre) + '" width="480" height="605" fetchpriority="high">' : '') +
+        '<div class="destacado-texto">' +
+          '<span class="estado">' + (enPreventa ? 'Preventa' : 'Ya disponible') + '</span>' +
+          '<h2 id="destacado-titulo">' + escapar(cfg.titulo || primera.nombre) + '</h2>' +
+          (enPreventa && enPreventa.preventa.fecha ? '<p class="fecha">' + escapar(fechaLarga(enPreventa.preventa.fecha)) + '</p>' : '') +
+          (cfg.texto ? '<p class="bajada">' + escapar(cfg.texto) + '</p>' : '') +
+          '<div class="consola-destacado"><span class="etiqueta consola">' + escapar(primera.consola) + '</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ediciones' + (edicionesDestacado.length === 1 ? ' una' : '') + '">' +
+        edicionesDestacado.map(function (e, i) {
+          return '<div class="edicion">' +
+            '<p class="precio">' +
+              '<span class="edicion-nombre">' + escapar(e.cfg.titulo || e.juego.nombre) + '</span>' +
+              '<span class="contado">' + pesos(e.juego.contado) + '</span>' +
+              '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(e.juego.cuota) + '</b></span>' +
+            '</p>' +
+            '<button class="boton-pedir" type="button" data-destacado="' + i + '">' + ICONO_WA + (e.preventa ? 'Reservar' : 'Pedir') + '</button>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+  }
+
+  destacado.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-destacado]');
+    if (!b) return;
+    var ed = edicionesDestacado[+b.getAttribute('data-destacado')], j = ed.juego;
+    var nombre = ed.cfg.en_el_mensaje || j.nombre;
+    abrirHoja('¡Hola! Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' +
+      'Contado / transferencia: ' + pesos(j.contado) + '. O en 3 cuotas sin interés de ' + pesos(j.cuota) + '.',
+      nombre + ' · ' + j.consola + ' · ' + pesos(j.contado));
   });
 
   $('consultar-busqueda').addEventListener('click', function () {
@@ -215,7 +394,8 @@
   Promise.all([
     fetch('catalog.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw r; return r.json(); }),
     fetch('sinonimos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    fetch('sagas.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('sagas.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    fetch('destacado.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (datos) {
     juegos = datos[0].juegos || [];
     buscador = window.crearBuscador(juegos, datos[1], datos[2]);
@@ -230,8 +410,12 @@
       var f = new Date(datos[0].actualizado);
       $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
     }
+    pintarDestacado(datos[3]);
     pintar(true);
+    // Las descripciones se bajan cuando el celular está libre, así la primera ficha abre con el texto.
+    (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(cargarDescripciones);
   }).catch(function () {
+    destacado.hidden = true;
     grilla.innerHTML = '';
     conteo.textContent = '';
     errorCaja.hidden = false;

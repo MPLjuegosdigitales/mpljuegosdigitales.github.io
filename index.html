@@ -26,6 +26,9 @@
     </div>
   </header>
 
+  <!-- Destacado: lo arma js/tienda.js con destacado.json y catalog.json. Se reserva el lugar mientras carga. -->
+  <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
+
   <div class="barra" id="barra">
     <form class="buscador" role="search" onsubmit="return false">
       <label class="oculto" for="busqueda">Buscar un juego</label>
@@ -98,6 +101,14 @@
       </div>
       <button class="boton-secundario" value="cerrar">Cancelar</button>
     </form>
+  </dialog>
+
+  <dialog class="hoja ficha" id="ficha" aria-labelledby="ficha-nombre">
+    <div class="ficha-agarre" aria-hidden="true"></div>
+    <button class="ficha-cerrar" type="button" aria-label="Cerrar">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>
+    </button>
+    <div class="ficha-cuerpo" id="ficha-cuerpo"></div>
   </dialog>
 
   <script src="js/buscar.js"></script>

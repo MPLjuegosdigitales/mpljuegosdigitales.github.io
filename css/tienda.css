@@ -170,7 +170,8 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
   background: var(--superficie); border-radius: var(--radio); overflow: hidden;
 }
 .tapa {
-  position: relative; aspect-ratio: 480 / 605;   /* la tapa más alta del catálogo: ninguna se recorta */
+  position: relative; display: block; width: 100%; padding: 0; border: 0;
+  aspect-ratio: 480 / 605;   /* la tapa más alta del catálogo: ninguna se recorta */
   background: var(--superficie);
 }
 .tapa img {
@@ -195,11 +196,22 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
   font-size: 12px; font-weight: 700; line-height: 1.35;
 }
 .etiqueta.consola { font: 800 14px/1.2 var(--cartel); letter-spacing: .03em; }
+.abrir-ficha {
+  display: block; width: 100%; margin: 0 0 10px; padding: 0 0 2px; border: 0;
+  background: none; text-align: left; color: inherit;
+}
 .nombre {
-  margin: 0 0 10px; font-size: 15px; line-height: 1.25; font-weight: 600; color: var(--texto);
+  margin: 0; font-size: 15px; line-height: 1.25; font-weight: 600; color: var(--texto);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   min-height: 2.5em;
 }
+/* Indicio de que se puede tocar para ver más */
+.ver-detalles {
+  display: inline-flex; align-items: center; gap: 2px; margin-top: 4px;
+  font-size: 13px; font-weight: 600; color: var(--lila);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px;
+}
+.ver-detalles svg { width: 14px; height: 14px; fill: currentColor; }
 
 /* El cartel de precio: cartulina lila con letra violeta oscuro */
 .precio {
@@ -310,3 +322,94 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 
 /* Si el catálogo todavía no trae populares, quedan tres botones parejos */
 .consolas.sin-populares { grid-template-columns: repeat(3, 1fr); }
+
+
+/* ---------- Destacado (portada): la tapa grande y una tarjeta por edición ---------- */
+.destacado {
+  background: var(--superficie);
+  padding: 20px var(--margen) 22px;
+}
+.destacado.cargando { min-height: 400px; }
+.destacado-cabeza { display: grid; grid-template-columns: 50% 1fr; gap: 14px; align-items: end; }
+.destacado-tapa {
+  width: 100%; height: auto; aspect-ratio: 480 / 605; object-fit: contain;
+  border-radius: 10px; background: var(--violeta-oscuro);
+}
+.destacado-texto { min-width: 0; padding-bottom: 2px; }
+.estado {
+  display: inline-block; padding: 3px 9px; border-radius: 6px;
+  background: var(--lila); color: var(--violeta-oscuro);
+  font: 800 15px/1.2 var(--cartel); letter-spacing: .04em; text-transform: uppercase;
+}
+.destacado h2 {
+  margin: 8px 0 0; color: var(--texto);
+  font: 800 52px/.9 var(--cartel); letter-spacing: -.01em; text-transform: uppercase;
+}
+.destacado .fecha { margin: 8px 0 0; font-weight: 700; font-size: 15px; line-height: 1.25; color: var(--lila); }
+.destacado .bajada { margin: 6px 0 0; font-size: 14px; line-height: 1.35; color: var(--texto-suave); }
+@media (max-width: 374px) { .destacado .bajada { display: none; } }
+.destacado .consola-destacado { margin-top: 8px; }
+.ediciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.ediciones.una { grid-template-columns: 1fr; }
+.edicion { display: flex; flex-direction: column; min-width: 0; }
+.edicion .precio { margin: 0; flex: 1; }
+.edicion h3 { margin: 0 0 2px; font-size: 13px; font-weight: 700; line-height: 1.2; }
+.edicion .precio .contado { font-size: 30px; }
+.edicion .precio .cuotas { font-size: 16px; }
+.edicion .boton-pedir { margin-top: 8px; min-height: 48px; font-size: 16px; }
+
+/* ---------- Ficha del juego: hoja que sube desde abajo ---------- */
+.ficha { max-height: 92svh; overflow: hidden; display: none; flex-direction: column; touch-action: pan-y; }
+.ficha[open] { display: flex; }
+.ficha.arrastrando { transition: none; }
+.ficha-agarre { flex: 0 0 auto; width: 40px; height: 5px; margin: 10px auto 0; border-radius: 3px; background: var(--texto-suave); opacity: .6; }
+.ficha-cerrar {
+  position: absolute; top: 6px; right: 8px; z-index: 1;
+  width: var(--toque); height: var(--toque); display: grid; place-items: center;
+  border: 0; border-radius: 999px; background: var(--violeta-oscuro);
+}
+.ficha-cerrar svg { width: 20px; height: 20px; fill: var(--lila); }
+.ficha-cuerpo {
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  padding: 10px var(--margen) calc(18px + env(safe-area-inset-bottom));
+}
+.ficha-cabeza { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: start; padding-right: 44px; }
+.ficha-tapa { width: 96px; height: auto; aspect-ratio: 480 / 605; object-fit: contain; border-radius: 8px; background: var(--violeta-oscuro); }
+.ficha-cabeza .etiquetas { margin: 2px 0 6px; }
+.ficha h2 { margin: 0; font: 700 19px/1.25 var(--texto-ui); text-transform: none; color: var(--texto); }
+.ficha-sinopsis { margin: 16px 0 0; font-size: 15px; line-height: 1.5; color: var(--texto); }
+.ficha-incluye { margin-top: 14px; }
+.ficha h3 { margin: 0 0 6px; font: 700 14px/1.3 var(--texto-ui); text-transform: none; color: var(--lila); }
+.ficha-incluye ul { margin: 0; padding-left: 18px; color: var(--texto); font-size: 14px; line-height: 1.45; }
+.ficha-incluye li + li { margin-top: 3px; }
+.ficha-datos {
+  display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 16px 0 0;
+  padding: 12px; border-radius: 10px; background: var(--violeta-oscuro); font-size: 14px;
+}
+.ficha-datos dt { color: var(--texto-suave); }
+.ficha-datos dd { margin: 0; color: var(--texto); font-weight: 600; }
+.ficha .precio { margin-top: 16px; }
+.ficha .boton-pedir { min-height: 48px; font-size: 16px; }
+
+@media (min-width: 600px) {
+  .destacado-cabeza { grid-template-columns: 220px 1fr; }
+  .destacado .ediciones { max-width: 560px; }
+}
+@media (min-width: 900px) {
+  .destacado { padding-left: max(var(--margen), calc((100vw - 1240px) / 2 + var(--margen)));
+               padding-right: max(var(--margen), calc((100vw - 1240px) / 2 + var(--margen))); }
+  .destacado { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: end; }
+  .destacado-cabeza { grid-template-columns: 240px 1fr; }
+  .destacado .ediciones { margin-top: 0; width: 520px; justify-self: end; }
+}
+.titulo-juego { margin: 0; font: inherit; }
+.precio .edicion-nombre { display: block; margin-bottom: 2px; font-size: 13px; font-weight: 800; line-height: 1.2; }
+
+/* En el celular el destacado ocupa ~57 % de la pantalla y el buscador sigue a la vista */
+@media (max-width: 899px) {
+  .destacado { display: flex; flex-direction: column; justify-content: center; min-height: 57vh; min-height: 57svh; }
+}
+.ficha-nota {
+  margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--lila); border-radius: 0 8px 8px 0;
+  background: var(--violeta-oscuro); color: var(--texto); font-size: 14px; line-height: 1.4;
+}
