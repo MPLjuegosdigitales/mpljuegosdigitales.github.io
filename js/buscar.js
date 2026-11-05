@@ -6,10 +6,11 @@
  *     1. palabra por palabra (cada palabra buscada contra la más parecida del nombre);
  *     2. todo junto sin espacios, buscando el texto dentro del nombre con hasta 1 error cada 4 letras.
  * - Sinónimos y siglas en sinonimos.json ("cod" → "call of duty"), que se amplía sin tocar código.
- * - Orden: primero lo que más se parece; dentro de un mismo parecido, la edición base antes que las
- *   variantes (Ultimate, Deluxe…) y el número más nuevo primero (FC 27, FC 26, FC 25…).
+ * - Orden: primero lo que más se parece; dentro de un mismo parecido, si los dos juegos son de la misma
+ *   saga de sagas.json, el más nuevo primero según esa lista (Ragnarok antes que GOW 2018); si no, la
+ *   edición base antes que las variantes (Ultimate, Deluxe…) y el número más nuevo primero (FC 27, FC 26…).
  *
- * Uso: const b = crearBuscador(juegos, sinonimos); b.buscar('fifa') → [{juego, puntaje}, …]
+ * Uso: const b = crearBuscador(juegos, sinonimos, sagas); b.buscar('fifa') → [{juego, puntaje}, …]
  */
 (function (global) {
   'use strict';
@@ -141,10 +142,38 @@
     return m ? parseInt(m[1], 10) : -1;
   }
 
-  function crearBuscador(juegos, sinonimosCrudos) {
+  // sagas.json → lista de {saga, puesto, texto}: puesto 0 es el juego más nuevo de la saga.
+  function prepararSagas(crudas) {
+    var tramos = [];
+    Object.keys(crudas || {}).forEach(function (saga) {
+      if (saga.charAt(0) === '_' || !Array.isArray(crudas[saga])) return;
+      crudas[saga].forEach(function (linea, puesto) {
+        [].concat(linea).forEach(function (t) {
+          var texto = normalizar(t);
+          if (texto) tramos.push({ saga: saga, puesto: puesto, texto: ' ' + texto + ' ' });
+        });
+      });
+    });
+    return tramos;
+  }
+
+  // La línea de sagas.json que mejor describe al juego: la más larga que aparece entera en su nombre.
+  function sagaDe(nombreNormalizado, tramos) {
+    var nombre = ' ' + nombreNormalizado + ' ', mejor = null;
+    for (var i = 0; i < tramos.length; i++) {
+      if (nombre.indexOf(tramos[i].texto) >= 0 && (!mejor || tramos[i].texto.length > mejor.texto.length)) mejor = tramos[i];
+    }
+    return mejor;
+  }
+
+  function crearBuscador(juegos, sinonimosCrudos, sagasCrudas) {
     var sinonimos = prepararSinonimos(sinonimosCrudos);
+    var tramos = prepararSagas(sagasCrudas);
     juegos.forEach(function (j) {
       var n = normalizar(j.nombre);
+      var s = sagaDe(n, tramos);
+      j._saga = s ? s.saga : '';
+      j._sagaPuesto = s ? s.puesto : -1;
       j._palabras = n.split(' ').filter(Boolean);
       j._junto = n.replace(/ /g, '');
       j._numero = numero(n);
@@ -172,7 +201,9 @@
       resultados = resultados.filter(function (r) { return r.puntaje >= tope - DISTANCIA_AL_MEJOR; });
       resultados.sort(function (a, b) {
         var pa = Math.round(a.puntaje * 20), pb = Math.round(b.puntaje * 20);   // parecido en tramos de 0,05
+        var mismaSaga = a.juego._saga && a.juego._saga === b.juego._saga;
         return (pb - pa) ||
+          (mismaSaga ? a.juego._sagaPuesto - b.juego._sagaPuesto : 0) ||
           (a.juego._variante - b.juego._variante) ||
           (b.juego._numero - a.juego._numero) ||
           (a.juego._junto.length - b.juego._junto.length) ||

@@ -1,0 +1,21 @@
+{
+  "_comentario": "Destacado de arriba de todo en la portada. 'ediciones': cada 'nombre' tiene que ser el nombre tal como figura en la tienda (mayúsculas, tildes y signos no importan) y de la consola de 'consola'; 'titulo' es lo que se ve en el destacado y 'en_el_mensaje' cómo se nombra en el mensaje de WhatsApp. Precios, fecha de salida y si sigue en preventa salen solos del catálogo: si la tienda le saca la marca de preventa dice 'Ya disponible' y el botón pasa a 'Pedir'; si ninguna edición está disponible, el destacado no se muestra. Con \"activo\": false se apaga. Para destacar otro juego, cambiá titulo, texto y ediciones (la tapa grande la baja el bot en la próxima corrida).",
+
+  "activo": true,
+  "consola": "PS5",
+  "titulo": "GTA 6",
+  "texto": "Volvé a Vice City. Reservá tu copia digital y jugalo desde el día que sale.",
+
+  "ediciones": [
+    {
+      "nombre": "GTA 6 - Grand Theft Auto VI",
+      "titulo": "Edición estándar",
+      "en_el_mensaje": "GTA 6"
+    },
+    {
+      "nombre": "GTA 6 - Grand Theft Auto VI Ultimate Edition",
+      "titulo": "Ultimate Edition",
+      "en_el_mensaje": "GTA 6 Ultimate Edition"
+    }
+  ]
+}
