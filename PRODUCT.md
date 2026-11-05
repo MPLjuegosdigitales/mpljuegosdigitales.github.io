@@ -11,7 +11,7 @@ web
 Static HTML, CSS and JavaScript, no build step, served by GitHub Pages from `main`
 (https://mpljuegosdigitales.github.io). The catalogue arrives as `catalog.json`, published daily at
 9:00 (Argentina) by the private repo mpl-precios; covers in `img/j/`. Search is `js/buscar.js` with
-`sinonimos.json`, no external libraries; anything third-party must be vendored into the repo.
+`sinonimos.json` and `sagas.json` (newest-first order of the most searched series), no external libraries; anything third-party must be vendored into the repo.
 
 ## Users
 
@@ -67,7 +67,7 @@ catalogue (~2,100 games) priced daily and an instalment price shown up front.
 ## Evidence on Hand
 
 - Real catalogue and prices (`catalog.json`), real covers (`img/j/`), the logo.
-- The shop has an Instagram account; the handle is still to be confirmed by the owners (not shown until then).
+- Instagram: @mpljuegosdigitales (https://www.instagram.com/mpljuegosdigitales/), linked in the footer.
 - No testimonials, sales figures, reviews or press: none may be invented.
 
 ## Product Principles

@@ -1,0 +1,125 @@
+{
+  "_comentario": "Orden de las sagas más buscadas: dentro de cada saga, del juego más nuevo (arriba) al más viejo (abajo). Cada línea es un pedazo del nombre del juego tal como figura en el catálogo (mayúsculas, tildes y signos no importan). Si un juego se escribe de dos formas, van juntas entre corchetes en la misma línea. Si un nombre coincide con varias líneas, gana la más larga. Los juegos que no están acá se ordenan por el número del nombre. Se puede editar sin tocar código (cuidá las comas y las comillas).",
+
+  "FC / FIFA": [
+    "fc 27",
+    "fc 26",
+    "fc 25",
+    "fc 24",
+    "fifa 23",
+    "fifa 22",
+    "fifa 21",
+    "fifa 20",
+    "fifa 19",
+    "fifa 18",
+    "fifa 17"
+  ],
+
+  "Call of Duty": [
+    "modern warfare 4",
+    "black ops 7",
+    "black ops 6",
+    "modern warfare 3",
+    ["modern warfare 2", "modern warfare 2 espanol latino"],
+    "vanguard",
+    "black ops cold war",
+    "modern warfare 2 campana remasterizada",
+    "modern warfare",
+    "black ops 4",
+    "modern warfare 1 campana remasterizada",
+    "wwii",
+    "infinite warfare",
+    ["black ops 3", "black ops iii"],
+    "advanced warfare",
+    "ghosts",
+    "black ops 2",
+    ["black ops", "black ops 1"]
+  ],
+
+  "GTA": [
+    ["grand theft auto vi", "gta 6"],
+    "gta the trilogy",
+    ["grand theft auto v", "gta 5"]
+  ],
+
+  "God of War": [
+    "god of war sons of sparta",
+    "god of war ragnarok",
+    ["god of war 4", "god of war 2018"],
+    "god of war 3"
+  ],
+
+  "Spider-Man": [
+    "spider man 2",
+    "miles morales",
+    "spider man remastered",
+    "spider man"
+  ],
+
+  "Resident Evil": [
+    "resident evil requiem",
+    "resident evil 4 remake",
+    ["resident evil 8", "resident evil village"],
+    "resident evil 3",
+    "resident evil 2 remake",
+    "resident evil 7",
+    "resident evil revelations 2",
+    "resident evil 6",
+    "resident evil revelations",
+    "resident evil 5",
+    ["resident evil 4 2005", "resident evil 4 remasterizado"],
+    "resident evil 0",
+    "resident evil",
+    "resident evil code veronica",
+    "resident evil 3 nemesis",
+    "resident evil 2 original"
+  ],
+
+  "Mortal Kombat": [
+    ["mortal kombat 1", "mortal kombat lote dios antiguo"],
+    "mortal kombat 11",
+    ["mortal kombat x", "mortal kombat xl"],
+    "mortal kombat legacy kollection"
+  ],
+
+  "NBA 2K": [
+    "nba 2k27",
+    "nba 2k26",
+    "nba 2k25",
+    "nba 2k24",
+    "nba 2k23",
+    "nba 2k22",
+    "nba 2k21",
+    "nba 2k20",
+    "nba 2k19",
+    "nba 2k18",
+    "nba 2k17",
+    "nba 2k16",
+    "nba 2k15"
+  ],
+
+  "Assassin's Creed": [
+    "creed black flag resynced",
+    "creed shadows",
+    "creed mirage",
+    "creed valhalla",
+    "creed odyssey",
+    "creed origins",
+    "creed syndicate",
+    "creed unity",
+    "creed rogue",
+    ["creed 4 black flag", "creed black flag"],
+    "creed 3",
+    "creed chronicles",
+    "creed the ezio collection"
+  ],
+
+  "Need for Speed": [
+    "need for speed unbound",
+    "need for speed hot pursuit remastered",
+    "need for speed heat",
+    "need for speed payback",
+    "need for speed",
+    "need for speed rivals"
+  ]
+}

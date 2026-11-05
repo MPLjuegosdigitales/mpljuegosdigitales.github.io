@@ -136,8 +136,8 @@
   // ---------- WhatsApp ----------
 
   function mensajeJuego(j) {
-    return 'Hola! Quiero pedir ' + j.nombre + ' (' + j.consola + ').\n' +
-      'Contado / transferencia: ' + pesos(j.contado) + '.\n' +
+    return '¡Hola! Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' +
+      'Contado / transferencia: ' + pesos(j.contado) + '. ' +
       'O en 3 cuotas sin interés de ' + pesos(j.cuota) + '.';
   }
 
@@ -159,12 +159,12 @@
 
   $('consultar-busqueda').addEventListener('click', function () {
     var texto = estado.texto;
-    abrirHoja('Hola! Estoy buscando ' + (texto || 'un juego') + (estado.consola ? ' para ' + estado.consola : '') + '. ¿Lo tienen?',
+    abrirHoja('¡Hola! Estoy buscando ' + (texto || 'un juego') + (estado.consola ? ' para ' + estado.consola : '') + '. ¿Lo tienen?',
       'Te escribimos para preguntar por “' + texto + '”.');
   });
 
   document.querySelector('[data-consultar]').addEventListener('click', function () {
-    abrirHoja('Hola! Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
+    abrirHoja('¡Hola! Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
   });
 
   // Tocar fuera de la hoja la cierra; elegir un contacto también.
@@ -193,10 +193,11 @@
   esqueleto();
   Promise.all([
     fetch('catalog.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw r; return r.json(); }),
-    fetch('sinonimos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('sinonimos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    fetch('sagas.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
   ]).then(function (datos) {
     juegos = datos[0].juegos || [];
-    buscador = window.crearBuscador(juegos, datos[1]);
+    buscador = window.crearBuscador(juegos, datos[1], datos[2]);
     if (datos[0].actualizado) {
       var f = new Date(datos[0].actualizado);
       $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
