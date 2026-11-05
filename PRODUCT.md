@@ -45,9 +45,11 @@ catalogue (~2,100 games) priced daily and an instalment price shown up front.
 
 - Each game: name (cleaned), console (PS4, PS5, rarely "PS4 / PS5"), tags ("Versión PS4" for a PS4
   version that runs on PS5, "Preventa dd/mm[/aaaa]", "Solo DLC"), cover image (480px webp, may be
-  missing), contado, cuota and tarjeta (tarjeta = cuota × 3).
-- Price copy: "Contado / transferencia $X" and "3 cuotas sin interés de $Y". The WhatsApp message
-  mentions the instalment value.
+  missing), contado, and cuota/tarjeta only when catalog.json has "mostrar_cuotas": true.
+- Instalments are switched off for now ("mostrar_cuotas": false in mpl-precios/config.json): the price
+  reads "Efectivo o transferencia $X" and nothing names cuotas or tarjeta. With true it goes back to
+  "Contado / transferencia $X" + "3 cuotas sin interés de $Y", and the WhatsApp message adds the
+  instalment value.
 - Search tolerant of typos and synonyms; filter PS4 / PS5; sort by price. While a query is typed the
   order is by relevance; choosing a price order re-sorts by price. With no match: "No encontramos ese
   juego" and a WhatsApp button to ask.

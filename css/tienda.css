@@ -390,6 +390,7 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 .edicion h3 { margin: 0 0 2px; font-size: 13px; font-weight: 700; line-height: 1.2; }
 .edicion .precio .contado { font-size: 30px; }
 .edicion .precio .cuotas { font-size: 16px; }
+.edicion .precio .contado + .rotulo { margin-top: 4px; }
 .edicion .boton-pedir { margin-top: 8px; min-height: 48px; font-size: 16px; }
 
 /* ---------- Ficha del juego: hoja que sube desde abajo ---------- */

@@ -29,6 +29,18 @@
   var formato = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
   function pesos(n) { return '$' + formato.format(n); }
 
+  // Cuotas: solo si catalog.json trae "mostrar_cuotas": true (lo decide config.json de mpl-precios).
+  // Por ahora no se trabaja con tarjeta: sin el dato, o con false, se muestra solo efectivo o transferencia.
+  var conCuotas = false;
+  function rotuloPago() { return conCuotas ? 'Contado / transferencia' : 'Efectivo o transferencia'; }
+  function lineaCuotas(j) {
+    return conCuotas && j.cuota ? '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(j.cuota) + '</b></span>' : '';
+  }
+  function textoPago(j) {
+    return rotuloPago() + ': ' + pesos(j.contado) + '.' +
+      (conCuotas && j.cuota ? ' O en 3 cuotas sin interés de ' + pesos(j.cuota) + '.' : '');
+  }
+
   function escapar(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -96,9 +108,9 @@
           '<span class="ver-detalles">Ver detalles' + ICONO_FLECHA + '</span>' +
         '</button></h3>' +
         '<p class="precio">' +
-          '<span class="rotulo">Contado / transferencia</span>' +
+          '<span class="rotulo">' + rotuloPago() + '</span>' +
           '<span class="contado">' + pesos(j.contado) + '</span>' +
-          '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(j.cuota) + '</b></span>' +
+          lineaCuotas(j) +
         '</p>' +
         '<button class="boton-pedir" type="button" data-pedir="' + indice + '">' + ICONO_WA + 'Pedir</button>' +
       '</div>' +
@@ -163,9 +175,7 @@
   // ---------- WhatsApp ----------
 
   function mensajeJuego(j) {
-    return '¡Hola! Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' +
-      'Contado / transferencia: ' + pesos(j.contado) + '. ' +
-      'O en 3 cuotas sin interés de ' + pesos(j.cuota) + '.';
+    return '¡Hola! Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPago(j);
   }
 
   function abrirHoja(mensaje, detalle) {
@@ -245,9 +255,9 @@
         return '<dt>' + d[0] + '</dt><dd>' + escapar(d[1]) + '</dd>';
       }).join('') + '</dl>' : '') +
       '<p class="precio">' +
-        '<span class="rotulo">Contado / transferencia</span>' +
+        '<span class="rotulo">' + rotuloPago() + '</span>' +
         '<span class="contado">' + pesos(j.contado) + '</span>' +
-        '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(j.cuota) + '</b></span>' +
+        lineaCuotas(j) +
       '</p>' +
       '<button class="boton-pedir" type="button" data-pedir-ficha>' + ICONO_WA + 'Pedir</button>';
     fichaCuerpo.scrollTop = 0;
@@ -340,7 +350,7 @@
             '<p class="precio">' +
               '<span class="edicion-nombre">' + escapar(e.cfg.titulo || e.juego.nombre) + '</span>' +
               '<span class="contado">' + pesos(e.juego.contado) + '</span>' +
-              '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(e.juego.cuota) + '</b></span>' +
+              (conCuotas ? lineaCuotas(e.juego) : '<span class="rotulo">' + rotuloPago() + '</span>') +
             '</p>' +
             '<button class="boton-pedir" type="button" data-destacado="' + i + '">' + ICONO_WA + (e.preventa ? 'Reservar' : 'Pedir') + '</button>' +
           '</div>';
@@ -354,7 +364,7 @@
     var ed = edicionesDestacado[+b.getAttribute('data-destacado')], j = ed.juego;
     var nombre = ed.cfg.en_el_mensaje || j.nombre;
     abrirHoja('¡Hola! Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' +
-      'Contado / transferencia: ' + pesos(j.contado) + '. O en 3 cuotas sin interés de ' + pesos(j.cuota) + '.',
+      textoPago(j),
       nombre + ' · ' + j.consola + ' · ' + pesos(j.contado));
   });
 
@@ -432,6 +442,8 @@
     fetch('destacado.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (datos) {
     juegos = datos[0].juegos || [];
+    conCuotas = datos[0].mostrar_cuotas === true;
+    if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
     buscador = window.crearBuscador(juegos, datos[1], datos[2]);
     // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.
     if (!juegos.some(function (j) { return j.popular; })) {
