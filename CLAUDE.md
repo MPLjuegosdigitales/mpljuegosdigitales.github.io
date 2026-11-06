@@ -9,7 +9,8 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   `img/j/` a main todos los días**: sin el pull, tu rama queda vieja.
 - Cada cambio en su propia rama, con PR a main. No pushear directo a main (solo el bot) ni unir un PR
   sin el OK del socio que lo pidió.
-- No editar a mano `catalog.json` ni `img/j/`: los pisa el bot. Los precios se cambian en la planilla.
+- No editar a mano `catalog.json`, `capturas.json` ni `img/j/`: los pisa el bot. Los precios se cambian en la
+  planilla; las fotos de la ficha de un juego, pegando el link de la PS Store en la columna M de Catálogo.
 - Commits y PRs **sin `Co-Authored-By` ni ninguna atribución a Claude** (ni "Generated with Claude Code").
 
 ## Contenido
