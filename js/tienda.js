@@ -329,6 +329,68 @@
     return descripciones;
   }
 
+  // Fotos del juego: capturas.json lo escribe el bot (mpl-precios, capturas.py). Dice de dónde salen las fotos
+  // de cada juego (Steam o la PS Store) y se muestran directo desde ahí. Se baja una sola vez.
+  var capturas = null;
+
+  function cargarCapturas() {
+    if (!capturas) {
+      capturas = fetch('capturas.json').then(function (r) { return r.ok ? r.json() : {}; })
+        .catch(function () { return {}; });
+    }
+    return capturas;
+  }
+
+  function fotosDe(datos, j) {
+    var c = (datos.juegos || {})[buscador.normalizar(j.nombre)];
+    if (!c) return [];
+    if (c.s && c.f) return c.f.map(function (f) { return datos.steam + c.s + '/' + f; });
+    if (c.p) return c.p.map(function (p) { return datos.ps + p + '?w=640'; });
+    return [];
+  }
+
+  function pintarFotos(fotos, nombre) {
+    var caja = $('ficha-fotos');
+    if (!fotos.length) { caja.hidden = true; return; }
+    caja.innerHTML =
+      '<div class="fotos-tira" tabindex="0" aria-label="Fotos de ' + escapar(nombre) + '">' +
+        fotos.map(function (url, i) {
+          return '<img src="' + escapar(url) + '" alt="Foto ' + (i + 1) + ' de ' + fotos.length + ' de ' + escapar(nombre) + '"' +
+            ' width="600" height="338" decoding="async"' + (i ? ' loading="lazy"' : '') + '>';
+        }).join('') +
+      '</div>' +
+      '<button class="fotos-flecha anterior" type="button" aria-label="Foto anterior">' + ICONO_FLECHA + '</button>' +
+      '<button class="fotos-flecha siguiente" type="button" aria-label="Foto siguiente">' + ICONO_FLECHA + '</button>' +
+      '<span class="fotos-cuenta" aria-hidden="true"></span>';
+    caja.hidden = false;
+    var tira = caja.querySelector('.fotos-tira');
+    // Una foto que ya no existe en Steam o la PS Store se saca; sin ninguna, no hay galería.
+    tira.querySelectorAll('img').forEach(function (img) {
+      img.addEventListener('error', function () {
+        img.remove();
+        if (!tira.children.length) caja.hidden = true; else contarFotos();
+      });
+    });
+    tira.addEventListener('scroll', contarFotos, { passive: true });
+    contarFotos();
+  }
+
+  // Lo que se corre la tira de una foto a la siguiente (ancho de la foto + el hueco entre fotos).
+  function pasoFotos(tira) {
+    var a = tira.children[0], b = tira.children[1];
+    return (b ? b.offsetLeft - a.offsetLeft : a.offsetWidth) || 1;
+  }
+
+  function contarFotos() {
+    var caja = $('ficha-fotos'), tira = caja && caja.querySelector('.fotos-tira');
+    if (!tira || !tira.children.length) return;
+    var paso = pasoFotos(tira), total = tira.children.length;
+    var actual = Math.min(total - 1, Math.round(tira.scrollLeft / paso));
+    caja.querySelector('.fotos-cuenta').textContent = (actual + 1) + ' / ' + total;
+    caja.querySelector('.anterior').disabled = actual === 0;
+    caja.querySelector('.siguiente').disabled = actual === total - 1;
+  }
+
   function textoFicha(d) {
     if (!d) return '';
     var html = d.sinopsis ? '<p class="ficha-sinopsis">' + escapar(d.sinopsis) + '</p>' : '';
@@ -351,6 +413,7 @@
         (j.imagen ? '<img class="ficha-tapa" src="' + escapar(j.imagen) + '" alt="" width="96" height="121">' : '<div class="ficha-tapa"></div>') +
         '<div><div class="etiquetas">' + etiquetas + '</div><h2 id="ficha-nombre">' + escapar(j.nombre) + '</h2></div>' +
       '</div>' +
+      '<div class="ficha-fotos" id="ficha-fotos" hidden></div>' +
       '<div id="ficha-texto"></div>' +
       (datos.length ? '<dl class="ficha-datos">' + datos.map(function (d) {
         return '<dt>' + d[0] + '</dt><dd>' + escapar(d[1]) + '</dd>';
@@ -363,6 +426,9 @@
     cargarDescripciones().then(function (mapa) {
       if (fichaJuego === j) $('ficha-texto').innerHTML = textoFicha(mapa[buscador.normalizar(j.nombre)]);
     });
+    cargarCapturas().then(function (datos) {
+      if (fichaJuego === j) pintarFotos(fotosDe(datos, j), j.nombre);
+    });
   }
 
   function cerrarFicha() {
@@ -373,11 +439,19 @@
   fichaHoja.addEventListener('click', function (e) {
     if (e.target === fichaHoja || e.target.closest('.ficha-cerrar')) return cerrarFicha();   // afuera o la X
     if (e.target.closest('[data-pedir-ficha]')) { var j = fichaJuego; cerrarFicha(); pedir(j); }
+    var flecha = e.target.closest('.fotos-flecha');
+    if (flecha) {
+      var tira = $('ficha-fotos').querySelector('.fotos-tira'), paso = pasoFotos(tira);
+      var suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      tira.scrollBy({ left: flecha.classList.contains('anterior') ? -paso : paso, behavior: suave ? 'smooth' : 'auto' });
+    }
   });
 
   // Deslizar hacia abajo la cierra (solo con el contenido arriba de todo, para no pelear con el scroll).
+  // En las fotos no: ahí el dedo pasa de una foto a otra.
   var arrastre = null;
   fichaHoja.addEventListener('touchstart', function (e) {
+    if (e.target.closest('.ficha-fotos')) return;
     if (fichaCuerpo.scrollTop > 0 && fichaCuerpo.contains(e.target)) return;
     arrastre = { y: e.touches[0].clientY, dy: 0 };
     fichaHoja.classList.add('arrastrando');
@@ -562,6 +636,8 @@
     pintar(true);
     // Las descripciones se bajan cuando el celular está libre, así la primera ficha abre con el texto.
     (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(cargarDescripciones);
+    // La lista de fotos también (solo la lista: las fotos se bajan al abrir la ficha).
+    (window.requestIdleCallback || function (f) { setTimeout(f, 3000); })(cargarCapturas);
   }).catch(function () {
     destacado.hidden = true;
     grilla.innerHTML = '';
