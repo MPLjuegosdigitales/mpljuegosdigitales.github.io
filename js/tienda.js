@@ -56,7 +56,8 @@
       (j.ofertas || []).forEach(function (o) {
         var fin = Date.parse(o.hasta);
         if (!(fin >= t) || !(o.contado > 0)) return;          // vencida o con datos rotos: no se usa
-        if (!j._o || o.contado < j._o.contado) j._o = o;
+        // La más barata; si dos empatan en precio, la que dura más (el precio sigue igual hasta esa fecha).
+        if (!j._o || o.contado < j._o.contado || (o.contado === j._o.contado && fin > Date.parse(j._o.hasta))) j._o = o;
         proxima = Math.min(proxima, fin);
       });
       j._precio = j._o ? j._o.contado : j.contado;
@@ -115,16 +116,14 @@
       '<span class="vence">Válido hasta el ' + diaMes(o.hasta) + '</span>';
   }
 
-  function avisoOfertas() {
-    var porPromo = {};
-    juegos.forEach(function (j) {
-      if (!j._o) return;
-      var p = j._o.promo || PROMO_DEFECTO;
-      if (!porPromo[p] || j._o.hasta > porPromo[p]) porPromo[p] = j._o.hasta;
+  // Arriba de la sección: si todas las ofertas que se ven vencen el mismo día, esa fecha (ya con el margen);
+  // si no, que cada tarjeta dice la suya ("Válido hasta el …" en el cartel de precio).
+  function avisoOfertas(visibles) {
+    var dias = [];
+    visibles.forEach(function (j) {
+      if (j._o && dias.indexOf(diaMes(j._o.hasta)) < 0) dias.push(diaMes(j._o.hasta));
     });
-    return Object.keys(porPromo).map(function (p) {
-      return '<b>' + escapar(p) + '</b>: válido hasta el ' + diaMes(porPromo[p]) + ' a las 23:59.';
-    }).join(' ');
+    return dias.length === 1 ? 'Ofertas válidas hasta el <b>' + dias[0] + '</b>.' : 'Cada oferta indica hasta cuándo es válida.';
   }
 
   function escapar(s) {
@@ -222,7 +221,7 @@
     var hay = lista.length > 0;
     var aviso = $('aviso-ofertas');
     aviso.hidden = estado.consola !== 'ofertas' || !hay;
-    if (!aviso.hidden) aviso.innerHTML = avisoOfertas();
+    if (!aviso.hidden) aviso.innerHTML = avisoOfertas(lista);
     sinResultados.hidden = hay || !juegos.length;
     cargarMas.hidden = mostrados >= lista.length;
     if (!cargarMas.hidden) cargarMas.textContent = 'Cargar más juegos (quedan ' + formato.format(lista.length - mostrados) + ')';

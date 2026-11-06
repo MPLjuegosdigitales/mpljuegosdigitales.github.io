@@ -368,8 +368,10 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 }
 .consolas.con-ofertas::-webkit-scrollbar { display: none; }
 .consolas.con-ofertas button { flex: 1 0 auto; padding: 0 14px; scroll-snap-align: start; }
-.consolas .boton-ofertas { color: var(--oferta); }
-.consolas .boton-ofertas[aria-pressed="true"] { background: var(--oferta); color: var(--oferta-texto); }
+/* Siempre amarillo con texto oscuro; elegido, con un borde oscuro por dentro */
+.consolas .boton-ofertas,
+.consolas .boton-ofertas[aria-pressed="true"] { background: var(--oferta); color: var(--oferta-texto); font-weight: 800; }
+.consolas .boton-ofertas[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--oferta-texto); }
 @media (min-width: 900px) { .consolas.con-ofertas { width: auto; } }
 
 .etiqueta.oferta { background: var(--oferta); color: var(--oferta-texto); font-weight: 800; }
