@@ -36,12 +36,6 @@
   function lineaCuotas(j) {
     return conCuotas && j.cuota ? '<span class="cuotas">3 cuotas sin interés de <b>' + pesos(j.cuota) + '</b></span>' : '';
   }
-  function textoPago(j) {
-    var p = pago(j);
-    return rotuloPago() + ': ' + pesos(p.contado) + '.' +
-      (conCuotas && p.cuota ? ' O en 3 cuotas sin interés de ' + pesos(p.cuota) + '.' : '');
-  }
-
   // ---------- Ofertas ----------
   // catalog.json trae en cada juego en oferta una lista "ofertas": [{promo, contado, anterior, hasta}]. Acá se
   // elige, en el momento, la vigente más barata ("hasta" ya viene con el margen de seguridad y la hora de
@@ -272,16 +266,20 @@
   // ---------- WhatsApp ----------
 
   function mensajeJuego(j) {
-    return '¡Hola! Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' +
-      (j._o ? 'Precio de oferta ' + (j._o.promo || PROMO_DEFECTO) + ', válido hasta el ' + diaMes(j._o.hasta) + '. ' : '') +
-      textoPago(j);
+    return 'Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j);
   }
 
+  function textoPrecio(j) {
+    return (j._o ? 'Precio en oferta: ' : 'Precio: ') + pesos(j._precio) + '.';
+  }
+
+  // El mensaje llega con el saludo a quien se eligió: "¡Hola Mateo! ..." o "¡Hola Luca! ...".
   function abrirHoja(mensaje, detalle) {
     soltarEleccion();
     $('hoja-juego').textContent = detalle;
     Object.keys(CONTACTOS).forEach(function (clave) {
-      $('contacto-' + clave).href = 'https://wa.me/' + CONTACTOS[clave].numero + '?text=' + encodeURIComponent(mensaje);
+      var texto = '¡Hola ' + CONTACTOS[clave].nombre + '! ' + mensaje;
+      $('contacto-' + clave).href = 'https://wa.me/' + CONTACTOS[clave].numero + '?text=' + encodeURIComponent(texto);
     });
     if (typeof hoja.showModal === 'function') hoja.showModal();
     else hoja.setAttribute('open', '');
@@ -463,20 +461,18 @@
     if (!b) return;
     var ed = edicionesDestacado[+b.getAttribute('data-destacado')], j = ed.juego;
     var nombre = ed.cfg.en_el_mensaje || j.nombre;
-    abrirHoja('¡Hola! Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' +
-      (j._o ? 'Precio de oferta ' + (j._o.promo || PROMO_DEFECTO) + ', válido hasta el ' + diaMes(j._o.hasta) + '. ' : '') +
-      textoPago(j),
+    abrirHoja('Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j),
       nombre + ' · ' + j.consola + ' · ' + pesos(j._precio));
   });
 
   $('consultar-busqueda').addEventListener('click', function () {
     var texto = estado.texto;
-    abrirHoja('¡Hola! Estoy buscando ' + (texto || 'un juego') + (consolaElegida() ? ' para ' + consolaElegida() : '') + '. ¿Lo tienen?',
+    abrirHoja('Estoy buscando ' + (texto || 'un juego') + (consolaElegida() ? ' para ' + consolaElegida() : '') + '. ¿Lo tienen?',
       'Te escribimos para preguntar por “' + texto + '”.');
   });
 
   document.querySelector('[data-consultar]').addEventListener('click', function () {
-    abrirHoja('¡Hola! Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
+    abrirHoja('Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
   });
 
   // Tocar fuera de la hoja la cierra. Al elegir un contacto se ilumina su figura y ~400 ms después se abre
