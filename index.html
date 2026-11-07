@@ -86,9 +86,23 @@
     <button class="cargar-mas" type="button" id="cargar-mas" hidden>Cargar más juegos</button>
   </main>
 
+  <!-- Preguntas frecuentes: las arma js/preguntas.js con preguntas.json (solo las "confirmada"). Sin ninguna, no se ve. -->
+  <section class="preguntas" id="preguntas" aria-labelledby="preguntas-titulo" hidden>
+    <h2 class="titulo" id="preguntas-titulo">Preguntas frecuentes</h2>
+    <div class="preguntas-lista" id="preguntas-lista"></div>
+  </section>
+
   <footer class="pie">
     <img src="LOGO_MPL_sin_fondo.png" width="763" height="404" alt="MPL Juegos Digitales" loading="lazy">
-    <p>Pedidos por WhatsApp con <a href="https://wa.me/5493482664743">Mateo</a> o <a href="https://wa.me/5493482209654">Luca</a>.</p>
+    <!-- Horarios y entrega salen de config.json de mpl-precios (llegan en catalog.json): js/preguntas.js. -->
+    <dl class="pie-datos">
+      <div hidden><dt>Horarios de atención</dt><dd id="pie-horarios"></dd></div>
+      <div hidden><dt>Tiempo de entrega</dt><dd id="pie-entrega"></dd></div>
+    </dl>
+    <button class="boton-consultar pie-consultar" type="button" data-consultar>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3Z"/></svg>
+      Consultar
+    </button>
     <p>Instagram: <a href="https://www.instagram.com/mpljuegosdigitales/" target="_blank" rel="noopener">@mpljuegosdigitales</a></p>
     <p class="actualizado" id="actualizado"></p>
   </footer>
@@ -120,6 +134,7 @@
   </dialog>
 
   <script src="js/buscar.js"></script>
+  <script src="js/preguntas.js"></script>
   <script src="js/tienda.js"></script>
 </body>
 </html>
