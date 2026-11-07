@@ -26,8 +26,11 @@
     </div>
   </header>
 
-  <!-- Destacado: lo arma js/tienda.js con destacado.json y catalog.json. Se reserva el lugar mientras carga. -->
-  <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
+  <!-- Banner: carrusel que arma js/banner.js con los textos de banner.json. Se reserva el alto mientras carga. -->
+  <section class="banner" id="banner" aria-roledescription="carrusel" aria-label="Novedades de MPL">
+    <div class="banner-pista" id="banner-pista"></div>
+    <div class="banner-puntos" id="banner-puntos" hidden></div>
+  </section>
 
   <div class="barra" id="barra">
     <form class="buscador" role="search" onsubmit="return false">
@@ -48,6 +51,9 @@
       <button type="button" data-consola="PS4" aria-pressed="false">PS4</button>
     </div>
   </div>
+
+  <!-- Destacado: lo arma js/tienda.js con destacado.json y catalog.json. Se reserva el lugar mientras carga. -->
+  <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
 
   <main id="contenido">
     <h1 class="titulo">Juegos digitales de PS4 y PS5</h1>
@@ -114,6 +120,7 @@
     <div class="ficha-cuerpo" id="ficha-cuerpo"></div>
   </dialog>
 
+  <script src="js/banner.js"></script>
   <script src="js/buscar.js"></script>
   <script src="js/tienda.js"></script>
 </body>

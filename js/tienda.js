@@ -90,7 +90,34 @@
     botonOfertas.hidden = !hay;
     botonOfertas.textContent = hay ? nombrePromos() : '';
     botonOfertas.parentNode.classList.toggle('con-ofertas', hay);
+    avisarBanner();
   }
+
+  // Banner (js/banner.js): la diapositiva de ofertas se ve solo con ofertas vigentes, con el nombre de la
+  // promoción y el mismo aviso de vigencia que la sección. La demora de entrega viene en catalog.json
+  // ("demora_entrega", de config.json de mpl-precios).
+  var demoraEntrega = '';
+  function avisarBanner() {
+    if (!window.mplBanner) return;
+    var hay = hayOfertas();
+    window.mplBanner.datos({
+      ofertas: hay,
+      promo: hay ? nombrePromos() : '',
+      aviso: hay ? avisoOfertas(juegos.filter(function (j) { return j._o; })) : '',
+      demora: demoraEntrega
+    });
+  }
+  // Botones del banner: "Ver juegos" baja a la lista; "Ver ofertas" abre la sección; "#id" baja hasta ahí.
+  document.addEventListener('mpl-banner', function (e) {
+    var accion = e.detail, destino = $('contenido');
+    if (accion === 'ofertas' && hayOfertas()) {
+      elegirConsola('ofertas');
+      pintar(true);
+    } else if (accion && accion.charAt(0) === '#') {
+      destino = document.querySelector(accion) || destino;
+    }
+    destino.scrollIntoView({ behavior: reducirMovimiento.matches ? 'auto' : 'smooth', block: 'start' });
+  });
 
   function etiquetaOferta(o) {
     var d = descuento(o);
@@ -647,6 +674,7 @@
     todos = datos[0].juegos || [];
     sinonimos = datos[1]; sagas = datos[2];
     conCuotas = datos[0].mostrar_cuotas === true;
+    demoraEntrega = typeof datos[0].demora_entrega === 'string' ? datos[0].demora_entrega : '';
     if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
     refrescarOfertas();
     // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.

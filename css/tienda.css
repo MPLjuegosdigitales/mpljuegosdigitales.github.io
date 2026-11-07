@@ -508,3 +508,158 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
   margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--lila); border-radius: 0 8px 8px 0;
   background: var(--violeta-oscuro); color: var(--texto); font-size: 14px; line-height: 1.4;
 }
+
+/* ---------- Banner de la portada (carrusel; textos en banner.json, lo arma js/banner.js) ----------
+   Como un afiche de vidriera: Mateo y Luca a los costados, la marca al centro. Fondo de la paleta: violetas
+   oscuros con un degradé hacia #975AB7 detrás de la marca y luz lila (#E5AFFB) detrás de las figuras.
+   Celular: no se achica la versión ancha, se rearma alta (marca y textos arriba, figuras abajo a los
+   costados del botón) y no pasa del 45 % del alto en un iPhone de 390×844. */
+.banner {
+  position: relative;
+  height: clamp(318px, 44vh, 372px);
+  height: clamp(318px, 44svh, 372px);
+  background: var(--fondo);
+  border-bottom: 2px solid var(--lila);
+  overflow: hidden;
+}
+.banner-pista {
+  display: flex; height: 100%;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.banner-pista::-webkit-scrollbar { display: none; }
+.diapo {
+  flex: 0 0 100%; height: 100%;
+  scroll-snap-align: start; scroll-snap-stop: always;
+  position: relative; overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(120px, 1fr);
+  grid-template-areas: "centro centro centro" "izq boton der";
+  background:
+    radial-gradient(70% 60% at 50% 30%, rgba(151, 90, 183, .8) 0%, rgba(151, 90, 183, 0) 72%),
+    radial-gradient(45% 55% at 0% 100%, rgba(229, 175, 251, .24) 0%, rgba(229, 175, 251, 0) 70%),
+    radial-gradient(45% 55% at 100% 100%, rgba(229, 175, 251, .24) 0%, rgba(229, 175, 251, 0) 70%),
+    linear-gradient(180deg, #2A0E36 0%, #4F1964 100%);
+}
+.persona {
+  width: 100%; height: 100%; min-height: 0;
+  object-fit: contain; align-self: end;
+  pointer-events: none; user-select: none; -webkit-user-drag: none;
+}
+.persona { object-fit: cover; }
+/* Celular: las figuras llenan el alto de la fila de abajo y se cortan por el borde de afuera (entran desde el
+   costado). Nunca pasan a la columna del botón. */
+.persona.izquierda { grid-area: izq; object-position: 80% bottom; }
+.persona.derecha { grid-area: der; object-position: 30% bottom; }
+
+.diapo-centro {
+  grid-area: centro;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 14px var(--margen) 0;
+  min-width: 0;
+}
+.diapo-marca { margin: 0; }
+.diapo-logo { width: auto; }
+.diapo-logo.grande { height: 72px; }
+.diapo-logo.chico { height: 40px; margin-bottom: 6px; }
+.diapo-titulo {
+  margin: 0;
+  font: 800 clamp(46px, 14vw, 60px)/.9 var(--cartel);
+  letter-spacing: -.01em; text-transform: uppercase;
+  color: var(--texto); text-wrap: balance;
+}
+.diapo-titulo.oferta { color: var(--oferta); }
+.diapo-sub {
+  margin: 4px 0 0;
+  font: 600 20px/1.1 var(--cartel);
+  letter-spacing: .02em; text-transform: uppercase;
+  color: var(--texto);
+}
+.pildoras {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  max-width: 420px;
+}
+.pildora {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 30px; padding: 4px 12px 4px 9px;
+  border: 1.5px solid var(--lila); border-radius: 999px;
+  background: rgba(42, 14, 54, .55);
+  color: var(--texto);
+  font-size: 13px; font-weight: 700; line-height: 1.2;
+}
+.pildora b { font-weight: 800; }
+.pildora-icono {
+  flex: 0 0 auto; width: 16px; height: 16px;
+  fill: none; stroke: var(--lila); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.diapo-boton {
+  grid-area: boton; align-self: start; justify-self: center;
+  min-height: 48px; padding: 0 22px; margin: 14px 8px 48px;
+  border: 0; border-radius: 999px;
+  background: var(--lila); color: var(--violeta-oscuro);
+  font: 800 20px/1 var(--cartel); letter-spacing: .02em; text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .7);
+  transition: transform .15s var(--salida);
+}
+.diapo-boton.oferta { background: var(--oferta); color: var(--oferta-texto); }
+.diapo-boton:active { transform: scale(.96); }
+@media (hover: hover) and (pointer: fine) {
+  .diapo-boton:hover { transform: translateY(-1px); }
+}
+
+/* Puntitos: 44 px para tocar, el punto se ve chico; el actual, alargado en lila */
+.banner-puntos {
+  position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%);
+  display: flex;
+}
+.punto {
+  width: 36px; height: 36px; padding: 0;
+  display: grid; place-items: center;
+  border: 0; background: none;
+}
+.punto span {
+  display: block; width: 8px; height: 8px; border-radius: 999px;
+  background: rgba(229, 175, 251, .45);
+  transition: width .3s var(--salida), background-color .3s var(--salida);
+}
+.punto[aria-current="true"] span { width: 22px; background: var(--lila); }
+@media (pointer: coarse) { .punto { width: 44px; height: 44px; } .banner-puntos { bottom: 0; } }
+
+/* Tablet y compu: la versión ancha, figuras a los costados de punta a punta y la marca al centro */
+@media (min-width: 700px) {
+  .banner { height: 340px; }
+  .diapo {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 680px) minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    grid-template-areas: "izq centro der" "izq boton der";
+    padding: 0 max(0px, calc((100vw - 1240px) / 2));
+    background:
+      radial-gradient(42% 75% at 50% 42%, rgba(151, 90, 183, .8) 0%, rgba(151, 90, 183, 0) 72%),
+      radial-gradient(30% 70% at 0% 100%, rgba(229, 175, 251, .24) 0%, rgba(229, 175, 251, 0) 70%),
+      radial-gradient(30% 70% at 100% 100%, rgba(229, 175, 251, .24) 0%, rgba(229, 175, 251, 0) 70%),
+      linear-gradient(180deg, #2A0E36 0%, #4F1964 100%);
+  }
+  .persona { grid-row: 1 / -1; object-fit: contain; }
+  .persona.izquierda { object-position: left bottom; }
+  .persona.derecha { object-position: right bottom; }
+  .diapo-centro { align-self: end; padding: 24px 0 0; }
+  .diapo-logo.grande { height: 112px; }
+  .diapo-logo.chico { height: 52px; margin-bottom: 8px; }
+  .diapo-titulo { font-size: 84px; }
+  .diapo-sub { margin-top: 6px; font-size: 26px; }
+  .pildoras { margin-top: 14px; gap: 8px; max-width: none; }
+  .pildora { min-height: 34px; padding: 6px 14px 6px 11px; font-size: 14px; }
+  .pildora-icono { width: 18px; height: 18px; }
+  .diapo-boton { margin: 16px 0 40px; min-height: 52px; padding: 0 28px; font-size: 22px; }
+}
+@media (min-width: 1200px) {
+  .banner { height: 380px; }
+  .diapo-logo.grande { height: 136px; }
+  .diapo-titulo { font-size: 104px; }
+  .diapo-sub { font-size: 30px; }
+  .pildora { font-size: 15px; }
+}
