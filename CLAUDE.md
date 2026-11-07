@@ -26,6 +26,13 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
 - Paleta: #E5AFFB (lila claro), #975AB7 (violeta), #4F1964 (violeta oscuro). Ningún otro color salvo
   neutros para texto cuando haga falta contraste.
 - Única excepción: el acento de ofertas `--oferta` (en css/tienda.css), solo para la etiqueta de la promoción,
-  el botón de la sección y su aviso. No usarlo para nada más.
+  el botón de la sección y su aviso, y el título y el botón de la diapositiva de ofertas del banner. No usarlo
+  para nada más.
 - Logo `LOGO_MPL_sin_fondo.png`: nunca modificarlo, recortarlo ni cambiarle colores.
 - Nada de decoraciones ni motivos que no se hayan pedido. Todo lo tocable de al menos 44 px de alto.
+- Orden de la portada: encabezado → banner → buscador y filtros (fijos al bajar) → destacado (GTA 6) →
+  título y grilla.
+- Banner: carrusel en HTML/CSS (js/banner.js). Los textos se cambian en `banner.json`, no en el código.
+  La demora de entrega sale de `demora_entrega` de config.json de mpl-precios (llega en catalog.json); si no
+  llega, se usa la de banner.json. La diapositiva de ofertas se ve solo con ofertas vigentes. En un iPhone de
+  390×844 el banner no pasa del 45 % del alto, así el buscador queda en la primera pantalla.

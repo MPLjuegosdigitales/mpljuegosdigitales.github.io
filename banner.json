@@ -1,0 +1,47 @@
+{
+  "_como_editar": [
+    "Textos del banner de la portada. Se pueden cambiar acá sin tocar el código.",
+    "mostrar: \"siempre\", \"con-ofertas\" (solo mientras haya ofertas vigentes) o \"nunca\" (preparada, no se ve).",
+    "logo: \"grande\", \"chico\" o \"no\". Íconos de las píldoras: cuenta, pago, reloj, calendario.",
+    "Reemplazos: {demora} = demora_entrega de config.json de mpl-precios (llega en catalog.json; mientras no",
+    "llegue se usa la de abajo), {promo} = nombre de la promoción vigente, {aviso_ofertas} = 'Ofertas válidas",
+    "hasta el …' o 'Cada oferta indica hasta cuándo es válida' (la misma lógica que la sección).",
+    "boton.accion: \"catalogo\" (baja a la lista de juegos), \"ofertas\" (abre la sección de ofertas) o \"#id\"",
+    "(baja hasta ese elemento de la página, para cuando exista la sección de PS Plus)."
+  ],
+  "segundos_por_diapositiva": 6,
+  "demora_entrega": "30 min a 2 h",
+  "diapositivas": [
+    {
+      "id": "marca",
+      "mostrar": "siempre",
+      "logo": "grande",
+      "subtitulo": "Juegos digitales PS4 y PS5",
+      "pildoras": [
+        { "icono": "cuenta", "texto": "Cuentas primarias" },
+        { "icono": "pago", "texto": "Efectivo o transferencia" },
+        { "icono": "reloj", "texto": "Entrega de {demora}" }
+      ],
+      "boton": { "texto": "Ver juegos", "accion": "catalogo" }
+    },
+    {
+      "id": "ofertas",
+      "mostrar": "con-ofertas",
+      "logo": "chico",
+      "titulo": "{promo}",
+      "pildoras": [
+        { "icono": "calendario", "texto": "{aviso_ofertas}" }
+      ],
+      "boton": { "texto": "Ver ofertas", "accion": "ofertas" }
+    },
+    {
+      "id": "ps-plus",
+      "mostrar": "nunca",
+      "logo": "chico",
+      "titulo": "PS Plus",
+      "subtitulo": "(texto a definir cuando exista la sección)",
+      "pildoras": [],
+      "boton": { "texto": "Ver PS Plus", "accion": "#ps-plus" }
+    }
+  ]
+}
