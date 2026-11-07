@@ -442,6 +442,7 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 .ficha-tapa { width: 96px; height: auto; aspect-ratio: 480 / 605; object-fit: contain; border-radius: 8px; background: var(--violeta-oscuro); }
 .ficha-cabeza .etiquetas { margin: 2px 0 6px; }
 .ficha h2 { margin: 0; font: 700 19px/1.25 var(--texto-ui); text-transform: none; color: var(--texto); }
+.ficha-consolas { margin: 6px 0 0; color: var(--lila); font-size: 14px; line-height: 1.35; }
 /* Fotos del juego: tira que se pasa con el dedo; asoma un poco la siguiente para que se note que hay más */
 .ficha-fotos { position: relative; margin: 16px calc(-1 * var(--margen)) 0; }
 .fotos-tira {

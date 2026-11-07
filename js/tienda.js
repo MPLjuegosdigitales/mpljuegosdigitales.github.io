@@ -141,7 +141,7 @@
     } else if (estado.consola === 'populares') {
       base = juegos.filter(function (j) { return j.popular; });
     } else if (estado.consola === 'ofertas') {
-      base = juegos.filter(function (j) { return j._o; });
+      base = juntarConsolas(juegos.filter(function (j) { return j._o; }));
     } else {
       base = juegos.slice();
     }
@@ -156,6 +156,38 @@
     else if (orden === 'nombre') base.sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
     else if (orden === 'popular') base.sort(function (a, b) { return a.popular - b.popular; });
     return base;
+  }
+
+  // Solo en la sección de ofertas: si el mismo juego está en oferta en PS4 y en PS5 al mismo precio, con la
+  // misma promo y hasta el mismo día, va en una sola tarjeta "PS4/PS5" (el WhatsApp dice "para PS4/PS5" y la
+  // consola se pregunta por chat). Precio anterior: el más bajo de los dos. Si en PS5 es la "Versión PS4", la
+  // ficha lo aclara. Con precios distintos, y fuera de la sección (Todos, PS4, PS5, búsqueda), van separados.
+  var RETRO = 'Versión PS4';
+  function sinRetro(j) { return (j.etiquetas || []).filter(function (e) { return e !== RETRO; }); }
+  function claveOferta(j) {
+    return [buscador.normalizar(j.nombre), sinRetro(j).join('|'), j._o.contado, j._o.promo, j._o.hasta].join('#');
+  }
+  function juntarConsolas(base) {
+    var grupos = {}, hechos = {};
+    base.forEach(function (j) { (grupos[claveOferta(j)] = grupos[claveOferta(j)] || []).push(j); });
+    return base.map(function (j) {
+      var k = claveOferta(j), g = grupos[k];
+      var ps4 = g.filter(function (x) { return x.consola === 'PS4'; });
+      var ps5 = g.filter(function (x) { return x.consola === 'PS5'; });
+      if (g.length !== 2 || ps4.length !== 1 || ps5.length !== 1) return j;
+      if (hechos[k]) return null;
+      hechos[k] = true;
+      var a = ps4[0], b = ps5[0], retro = (b.etiquetas || []).indexOf(RETRO) >= 0, u = {};
+      Object.keys(a).forEach(function (c) { u[c] = a[c]; });
+      if (!retro && b.imagen) { u.imagen = b.imagen; u.imagen_grande = b.imagen_grande; }
+      u.consola = 'PS4/PS5';
+      u.etiquetas = sinRetro(a);
+      u.ps5_es_ps4 = retro;
+      u._o = { promo: a._o.promo, contado: a._o.contado, hasta: a._o.hasta,
+               anterior: Math.min(a._o.anterior || 0, b._o.anterior || 0) };
+      u._precio = u._o.contado;
+      return u;
+    }).filter(Boolean);
   }
 
   // La primera opción del orden dice qué hace "auto" ahora. "A a Z" no se repite cuando auto ya es A a Z.
@@ -408,7 +440,8 @@
     fichaCuerpo.innerHTML =
       '<div class="ficha-cabeza">' +
         (j.imagen ? '<img class="ficha-tapa" src="' + escapar(j.imagen) + '" alt="" width="96" height="121">' : '<div class="ficha-tapa"></div>') +
-        '<div><div class="etiquetas">' + etiquetas + '</div><h2 id="ficha-nombre">' + escapar(j.nombre) + '</h2></div>' +
+        '<div><div class="etiquetas">' + etiquetas + '</div><h2 id="ficha-nombre">' + escapar(j.nombre) + '</h2>' +
+          (j.ps5_es_ps4 ? '<p class="ficha-consolas">En PS5 se juega la versión de PS4.</p>' : '') + '</div>' +
       '</div>' +
       '<div class="ficha-fotos" id="ficha-fotos" hidden></div>' +
       '<div id="ficha-texto"></div>' +
