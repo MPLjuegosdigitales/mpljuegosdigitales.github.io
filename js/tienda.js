@@ -128,7 +128,7 @@
 
   // ---------- Lista visible ----------
 
-  function consolaElegida() { return estado.consola === 'populares' || estado.consola === 'ofertas' ? '' : estado.consola; }
+  function consolaElegida() { return /^(populares|ofertas|psplus)$/.test(estado.consola) ? '' : estado.consola; }
   function ordenAuto() {
     return estado.texto ? 'parecido' : estado.consola === 'populares' ? 'popular' : estado.consola === 'ofertas' ? 'descuento' : 'nombre';
   }
@@ -233,6 +233,10 @@
   }
 
   function pintar(desdeCero) {
+    // PS Plus elegido y sin buscar: se ve la sección de planes en vez de la lista. Buscando, se busca en los juegos.
+    var enPsPlus = estado.consola === 'psplus' && !estado.texto;
+    contenido.classList.toggle('en-psplus', enPsPlus);
+    if (enPsPlus) pintarPsPlus();
     if (desdeCero) {
       actualizarOrden();
       lista = calcularLista();
@@ -282,9 +286,84 @@
   }
   botonesConsola.forEach(function (b) {
     b.addEventListener('click', function () {
-      elegirConsola(b.getAttribute('data-consola'));
+      var valor = b.getAttribute('data-consola');
+      elegirConsola(valor);
       pintar(true);
+      // PS Plus es mucho más corto que la lista: si se eligió desde abajo, se sube al principio de la sección.
+      if (valor === 'psplus' && contenido.getBoundingClientRect().top < 0) {
+        contenido.scrollIntoView({ behavior: reducirMovimiento.matches ? 'auto' : 'smooth' });
+      }
     });
+  });
+
+  // ---------- PS Plus ----------
+  // Precios: catalog.json "ps_plus" ({plan: {meses: {contado, cuota?}}}), los pone el bot con la Ganancia PS Plus.
+  // Textos: psplus.json. Si falta algún precio (o los textos), la sección y su botón no se muestran.
+  var contenido = $('contenido'), seccionPsPlus = $('ps-plus'), botonPsPlus = document.querySelector('[data-consola="psplus"]');
+  var MESES_PS = ['1', '3', '12'], psPlus = null, mesesPs = '1';
+
+  function nombreDuracion(m) { return m === '1' ? '1 mes' : m + ' meses'; }
+
+  function prepararPsPlus(precios, textos) {
+    var planes = textos && textos.planes;
+    var completo = precios && planes && planes.length && planes.every(function (p) {
+      return precios[p.id] && MESES_PS.every(function (m) { return precios[p.id][m] && precios[p.id][m].contado > 0; });
+    });
+    psPlus = completo ? { precios: precios, textos: textos } : null;
+    if (psPlus && MESES_PS.indexOf(String(textos.duracion_inicial)) >= 0) mesesPs = String(textos.duracion_inicial);
+    botonPsPlus.hidden = !psPlus;
+    botonPsPlus.parentNode.classList.toggle('con-psplus', !!psPlus);
+    if (!psPlus && estado.consola === 'psplus') elegirConsola(juegos.some(function (j) { return j.popular; }) ? 'populares' : '');
+  }
+
+  function ahorroPs(plan, m) {
+    var p = psPlus.precios[plan];
+    return m === '1' ? 0 : Math.max(0, p['1'].contado * +m - p[m].contado);
+  }
+
+  function pintarPsPlus() {
+    if (!psPlus) return;
+    var t = psPlus.textos;
+    seccionPsPlus.innerHTML =
+      '<h2 class="titulo" id="psplus-titulo">' + escapar(t.titulo || 'PS Plus') + '</h2>' +
+      (t.bajada ? '<p class="aclaracion">' + escapar(t.bajada) + '</p>' : '') +
+      '<div class="psplus-duracion" role="group" aria-label="Duración">' +
+        MESES_PS.map(function (m) {
+          return '<button type="button" data-meses="' + m + '" aria-pressed="' + (m === mesesPs) + '">' + nombreDuracion(m) + '</button>';
+        }).join('') +
+      '</div>' +
+      '<ul class="psplus-planes">' +
+        t.planes.map(function (p) {
+          var precio = psPlus.precios[p.id][mesesPs], ahorro = ahorroPs(p.id, mesesPs);
+          return '<li class="plan plan-' + escapar(p.id) + '">' +
+            '<h3 class="plan-nombre">' + escapar(p.nombre) + '</h3>' +
+            (p.para_quien ? '<p class="plan-para">' + escapar(p.para_quien) + '</p>' : '') +
+            '<ul class="plan-incluye">' + (p.incluye || []).map(function (x) { return '<li>' + escapar(x) + '</li>'; }).join('') + '</ul>' +
+            '<p class="plan-precio">' +
+              '<span class="rotulo">' + rotuloPago() + ' · ' + nombreDuracion(mesesPs) + '</span>' +
+              '<span class="contado">' + pesos(precio.contado) + '</span>' + lineaCuotas(precio) +
+              (ahorro ? '<span class="ahorro">Ahorrás ' + pesos(ahorro) + ' contra pagar mes a mes</span>' : '') +
+            '</p>' +
+            '<button class="boton-pedir" type="button" data-plan="' + escapar(p.id) + '">' + ICONO_WA + 'Pedir</button>' +
+          '</li>';
+        }).join('') +
+      '</ul>';
+  }
+
+  seccionPsPlus.addEventListener('click', function (e) {
+    var duracion = e.target.closest('[data-meses]');
+    if (duracion) {
+      mesesPs = duracion.getAttribute('data-meses');
+      pintarPsPlus();
+      seccionPsPlus.querySelector('[data-meses="' + mesesPs + '"]').focus();
+      return;
+    }
+    var boton = e.target.closest('[data-plan]');
+    if (!boton) return;
+    var plan = psPlus.textos.planes.filter(function (p) { return p.id === boton.getAttribute('data-plan'); })[0];
+    var precio = pesos(psPlus.precios[plan.id][mesesPs].contado);
+    abrirHoja('Quiero PS Plus ' + plan.nombre + ' por ' + nombreDuracion(mesesPs) + '. Efectivo o transferencia: ' + precio + '.',
+      'PS Plus ' + plan.nombre + ' · ' + nombreDuracion(mesesPs) + ' · ' + precio);
   });
 
   orden.addEventListener('change', function () {
@@ -642,7 +721,8 @@
     fetch('catalog.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw r; return r.json(); }),
     fetch('sinonimos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('sagas.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    fetch('destacado.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch('destacado.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch('psplus.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (datos) {
     todos = datos[0].juegos || [];
     sinonimos = datos[1]; sagas = datos[2];
@@ -661,7 +741,13 @@
       $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
     }
     pintarDestacado(datos[3]);
+    prepararPsPlus(datos[0].ps_plus, datos[4]);
+    // Un link a la página con #ps-plus (por ejemplo, desde Instagram) abre directo los planes.
+    if (psPlus && location.hash === '#ps-plus') elegirConsola('psplus');
     pintar(true);
+    window.addEventListener('hashchange', function () {
+      if (psPlus && location.hash === '#ps-plus') { elegirConsola('psplus'); pintar(true); }
+    });
     // Las descripciones se bajan cuando el celular está libre, así la primera ficha abre con el texto.
     (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(cargarDescripciones);
     // La lista de fotos también (solo la lista: las fotos se bajan al abrir la ficha).
