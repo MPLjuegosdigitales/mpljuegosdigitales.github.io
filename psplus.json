@@ -1,0 +1,44 @@
+{
+  "_como_editar": [
+    "Textos de la sección PS Plus. Se pueden cambiar acá sin tocar el código.",
+    "Los precios no van acá: los pone el bot de mpl-precios en catalog.json (\"ps_plus\"), con la Ganancia PS Plus",
+    "de la pestaña Catálogo (V1). Si un día falta algún precio, la sección y su botón no se muestran.",
+    "duracion_inicial: la duración elegida al abrir (\"1\", \"3\" o \"12\").",
+    "Cada plan: id (essential, extra o deluxe; no cambiarlo), nombre, para_quien (una línea) e incluye (lista)."
+  ],
+  "titulo": "PS Plus",
+  "bajada": "Elegí por cuánto tiempo y el plan que más te sirve. Lo pedís por WhatsApp.",
+  "duracion_inicial": "1",
+  "planes": [
+    {
+      "id": "essential",
+      "nombre": "Essential",
+      "para_quien": "Para jugar online con amigos y sumar juegos cada mes.",
+      "incluye": [
+        "Juegos nuevos para descargar todos los meses",
+        "Multijugador online",
+        "Descuentos exclusivos en la PlayStation Store",
+        "Tus partidas guardadas en la nube"
+      ]
+    },
+    {
+      "id": "extra",
+      "nombre": "Extra",
+      "para_quien": "Para probar muchos juegos sin comprarlos uno por uno.",
+      "incluye": [
+        "Todo lo de Essential",
+        "Un catálogo de más de 400 juegos de PS4 y PS5 para jugar mientras dure la suscripción"
+      ]
+    },
+    {
+      "id": "deluxe",
+      "nombre": "Deluxe",
+      "para_quien": "Para tenerlo todo, también los clásicos de siempre.",
+      "incluye": [
+        "Todo lo de Extra",
+        "Clásicos de PS1, PS2 y PSP",
+        "Pruebas de juegos por tiempo limitado"
+      ]
+    }
+  ]
+}

@@ -508,3 +508,71 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
   margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--lila); border-radius: 0 8px 8px 0;
   background: var(--violeta-oscuro); color: var(--texto); font-size: 14px; line-height: 1.4;
 }
+
+/* ---------- PS Plus ---------- */
+/* Con el botón PS Plus la fila de filtros tampoco crece: se desliza de costado si no entra */
+.consolas.con-psplus {
+  display: flex; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.consolas.con-psplus::-webkit-scrollbar { display: none; }
+.consolas.con-psplus button { flex: 1 0 auto; padding: 0 12px; scroll-snap-align: start; }
+@media (min-width: 900px) { .consolas.con-psplus { width: auto; } }
+
+/* La sección reemplaza a la lista mientras está elegida (buscando, vuelve la lista) */
+main:not(.en-psplus) > .psplus,
+main.en-psplus > :not(.psplus) { display: none !important; }
+
+.psplus .aclaracion { margin-bottom: 14px; }
+/* Selector de duración: el mismo control que la fila de filtros */
+.psplus-duracion {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--superficie); border-radius: var(--radio); padding: 2px;
+}
+.psplus-duracion button {
+  min-height: 48px; border: 0; border-radius: 10px;
+  background: transparent; color: var(--texto); font-weight: 700; font-size: 16px;
+  transition: background-color .18s var(--salida), color .18s var(--salida);
+}
+.psplus-duracion button[aria-pressed="true"] { background: var(--lila); color: var(--violeta-oscuro); }
+
+/* Un plan por tarjeta, cada uno con un color de la paleta: Essential lila, Extra violeta, Deluxe violeta oscuro */
+.psplus-planes { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 14px; }
+.plan {
+  --plan-fondo: var(--lila); --plan-texto: var(--violeta-oscuro);
+  --plan-boton: var(--violeta-oscuro); --plan-boton-texto: var(--blanco);
+  display: flex; flex-direction: column; padding: 16px; border-radius: 16px;
+  background: var(--plan-fondo); color: var(--plan-texto);
+}
+.plan-extra { --plan-fondo: var(--violeta); --plan-texto: var(--blanco); }
+.plan-deluxe {
+  --plan-fondo: var(--violeta-oscuro); --plan-texto: var(--blanco);
+  --plan-boton: var(--lila); --plan-boton-texto: var(--violeta-oscuro);
+  box-shadow: inset 0 0 0 2px var(--violeta);
+}
+.plan-nombre { margin: 0; font: 800 34px/.95 var(--cartel); text-transform: uppercase; letter-spacing: .01em; }
+.plan-para { margin: 6px 0 0; font-size: 15px; font-weight: 700; line-height: 1.3; }
+.plan-incluye { margin: 12px 0 0; padding: 0; list-style: none; font-size: 15px; line-height: 1.35; }
+.plan-incluye li { position: relative; padding-left: 22px; }
+.plan-incluye li + li { margin-top: 6px; }
+.plan-incluye li::before {
+  content: ""; position: absolute; left: 2px; top: .3em; width: 12px; height: 7px;
+  border: solid currentColor; border-width: 0 0 2.5px 2.5px; transform: rotate(-45deg);
+}
+.plan-precio { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid currentColor; border-top-color: color-mix(in srgb, currentColor 35%, transparent); }
+.plan-precio .rotulo { display: block; font-size: 13px; font-weight: 600; }
+.plan-precio .contado { display: block; margin-top: 2px; font: 800 40px/.95 var(--cartel); font-variant-numeric: tabular-nums; }
+.plan-precio .cuotas { display: block; margin-top: 4px; font: 600 17px/1.1 var(--cartel); }
+.plan-precio .ahorro { display: block; margin-top: 6px; font-size: 14px; font-weight: 800; }
+.plan .boton-pedir {
+  min-height: 48px; margin-top: 12px; font-size: 16px;
+  background: var(--plan-boton); color: var(--plan-boton-texto);
+}
+.plan .boton-pedir:hover, .plan .boton-pedir:active { background: var(--plan-boton); filter: brightness(1.12); }
+
+@media (min-width: 760px) {
+  .psplus-duracion { max-width: 420px; }
+  .psplus-planes { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+  .plan-precio { margin-top: auto; }
+  .plan-incluye { margin-bottom: 16px; }
+}
