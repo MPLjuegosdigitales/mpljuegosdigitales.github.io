@@ -50,7 +50,8 @@
       (j.ofertas || []).forEach(function (o) {
         var fin = Date.parse(o.hasta);
         if (!(fin >= t) || !(o.contado > 0)) return;          // vencida o con datos rotos: no se usa
-        if (!j._o || o.contado < j._o.contado) j._o = o;
+        // La más barata; si dos empatan en precio, la que dura más (el precio sigue igual hasta esa fecha).
+        if (!j._o || o.contado < j._o.contado || (o.contado === j._o.contado && fin > Date.parse(j._o.hasta))) j._o = o;
         proxima = Math.min(proxima, fin);
       });
       j._precio = j._o ? j._o.contado : j.contado;
@@ -109,16 +110,14 @@
       '<span class="vence">Válido hasta el ' + diaMes(o.hasta) + '</span>';
   }
 
-  function avisoOfertas() {
-    var porPromo = {};
-    juegos.forEach(function (j) {
-      if (!j._o) return;
-      var p = j._o.promo || PROMO_DEFECTO;
-      if (!porPromo[p] || j._o.hasta > porPromo[p]) porPromo[p] = j._o.hasta;
+  // Arriba de la sección: si todas las ofertas que se ven vencen el mismo día, esa fecha (ya con el margen);
+  // si no, que cada tarjeta dice la suya ("Válido hasta el …" en el cartel de precio).
+  function avisoOfertas(visibles) {
+    var dias = [];
+    visibles.forEach(function (j) {
+      if (j._o && dias.indexOf(diaMes(j._o.hasta)) < 0) dias.push(diaMes(j._o.hasta));
     });
-    return Object.keys(porPromo).map(function (p) {
-      return '<b>' + escapar(p) + '</b>: válido hasta el ' + diaMes(porPromo[p]) + ' a las 23:59.';
-    }).join(' ');
+    return dias.length === 1 ? 'Ofertas válidas hasta el <b>' + dias[0] + '</b>.' : 'Cada oferta indica hasta cuándo es válida.';
   }
 
   function escapar(s) {
@@ -142,7 +141,7 @@
     } else if (estado.consola === 'populares') {
       base = juegos.filter(function (j) { return j.popular; });
     } else if (estado.consola === 'ofertas') {
-      base = juegos.filter(function (j) { return j._o; });
+      base = juntarConsolas(juegos.filter(function (j) { return j._o; }));
     } else {
       base = juegos.slice();
     }
@@ -157,6 +156,38 @@
     else if (orden === 'nombre') base.sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
     else if (orden === 'popular') base.sort(function (a, b) { return a.popular - b.popular; });
     return base;
+  }
+
+  // Solo en la sección de ofertas: si el mismo juego está en oferta en PS4 y en PS5 al mismo precio, con la
+  // misma promo y hasta el mismo día, va en una sola tarjeta "PS4/PS5" (el WhatsApp dice "para PS4/PS5" y la
+  // consola se pregunta por chat). Precio anterior: el más bajo de los dos. Si en PS5 es la "Versión PS4", la
+  // ficha lo aclara. Con precios distintos, y fuera de la sección (Todos, PS4, PS5, búsqueda), van separados.
+  var RETRO = 'Versión PS4';
+  function sinRetro(j) { return (j.etiquetas || []).filter(function (e) { return e !== RETRO; }); }
+  function claveOferta(j) {
+    return [buscador.normalizar(j.nombre), sinRetro(j).join('|'), j._o.contado, j._o.promo, j._o.hasta].join('#');
+  }
+  function juntarConsolas(base) {
+    var grupos = {}, hechos = {};
+    base.forEach(function (j) { (grupos[claveOferta(j)] = grupos[claveOferta(j)] || []).push(j); });
+    return base.map(function (j) {
+      var k = claveOferta(j), g = grupos[k];
+      var ps4 = g.filter(function (x) { return x.consola === 'PS4'; });
+      var ps5 = g.filter(function (x) { return x.consola === 'PS5'; });
+      if (g.length !== 2 || ps4.length !== 1 || ps5.length !== 1) return j;
+      if (hechos[k]) return null;
+      hechos[k] = true;
+      var a = ps4[0], b = ps5[0], retro = (b.etiquetas || []).indexOf(RETRO) >= 0, u = {};
+      Object.keys(a).forEach(function (c) { u[c] = a[c]; });
+      if (!retro && b.imagen) { u.imagen = b.imagen; u.imagen_grande = b.imagen_grande; }
+      u.consola = 'PS4/PS5';
+      u.etiquetas = sinRetro(a);
+      u.ps5_es_ps4 = retro;
+      u._o = { promo: a._o.promo, contado: a._o.contado, hasta: a._o.hasta,
+               anterior: Math.min(a._o.anterior || 0, b._o.anterior || 0) };
+      u._precio = u._o.contado;
+      return u;
+    }).filter(Boolean);
   }
 
   // La primera opción del orden dice qué hace "auto" ahora. "A a Z" no se repite cuando auto ya es A a Z.
@@ -216,7 +247,7 @@
     var hay = lista.length > 0;
     var aviso = $('aviso-ofertas');
     aviso.hidden = estado.consola !== 'ofertas' || !hay;
-    if (!aviso.hidden) aviso.innerHTML = avisoOfertas();
+    if (!aviso.hidden) aviso.innerHTML = avisoOfertas(lista);
     sinResultados.hidden = hay || !juegos.length;
     cargarMas.hidden = mostrados >= lista.length;
     if (!cargarMas.hidden) cargarMas.textContent = 'Cargar más juegos (quedan ' + formato.format(lista.length - mostrados) + ')';
@@ -409,7 +440,8 @@
     fichaCuerpo.innerHTML =
       '<div class="ficha-cabeza">' +
         (j.imagen ? '<img class="ficha-tapa" src="' + escapar(j.imagen) + '" alt="" width="96" height="121">' : '<div class="ficha-tapa"></div>') +
-        '<div><div class="etiquetas">' + etiquetas + '</div><h2 id="ficha-nombre">' + escapar(j.nombre) + '</h2></div>' +
+        '<div><div class="etiquetas">' + etiquetas + '</div><h2 id="ficha-nombre">' + escapar(j.nombre) + '</h2>' +
+          (j.ps5_es_ps4 ? '<p class="ficha-consolas">En PS5 se juega la versión de PS4.</p>' : '') + '</div>' +
       '</div>' +
       '<div class="ficha-fotos" id="ficha-fotos" hidden></div>' +
       '<div id="ficha-texto"></div>' +

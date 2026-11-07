@@ -368,8 +368,10 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 }
 .consolas.con-ofertas::-webkit-scrollbar { display: none; }
 .consolas.con-ofertas button { flex: 1 0 auto; padding: 0 14px; scroll-snap-align: start; }
-.consolas .boton-ofertas { color: var(--oferta); }
-.consolas .boton-ofertas[aria-pressed="true"] { background: var(--oferta); color: var(--oferta-texto); }
+/* Siempre amarillo con texto oscuro; elegido, con un borde oscuro por dentro */
+.consolas .boton-ofertas,
+.consolas .boton-ofertas[aria-pressed="true"] { background: var(--oferta); color: var(--oferta-texto); font-weight: 800; }
+.consolas .boton-ofertas[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--oferta-texto); }
 @media (min-width: 900px) { .consolas.con-ofertas { width: auto; } }
 
 .etiqueta.oferta { background: var(--oferta); color: var(--oferta-texto); font-weight: 800; }
@@ -440,6 +442,7 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 .ficha-tapa { width: 96px; height: auto; aspect-ratio: 480 / 605; object-fit: contain; border-radius: 8px; background: var(--violeta-oscuro); }
 .ficha-cabeza .etiquetas { margin: 2px 0 6px; }
 .ficha h2 { margin: 0; font: 700 19px/1.25 var(--texto-ui); text-transform: none; color: var(--texto); }
+.ficha-consolas { margin: 6px 0 0; color: var(--lila); font-size: 14px; line-height: 1.35; }
 /* Fotos del juego: tira que se pasa con el dedo; asoma un poco la siguiente para que se note que hay más */
 .ficha-fotos { position: relative; margin: 16px calc(-1 * var(--margen)) 0; }
 .fotos-tira {
