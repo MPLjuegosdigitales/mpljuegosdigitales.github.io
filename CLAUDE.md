@@ -33,3 +33,6 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   (buscando, vuelve la lista). También se abre con un link a `#ps-plus`. Los textos (para quién es, qué incluye)
   se cambian en `psplus.json`; los precios los pone el bot en catalog.json (`ps_plus`). Si falta un precio, no se
   ven ni el botón ni la sección. Colores de los planes: Essential lila, Extra violeta, Deluxe violeta oscuro.
+  Cada consola tiene su precio: selector PS4 / PS5 al lado del de 1 / 3 / 12 meses; arranca en la consola elegida
+  en los filtros (si no, PS5). Una consola sin todos sus precios no aparece en el selector; sin ninguna, no hay
+  sección. Mensaje: "Quiero PS Plus Extra por 12 meses para PS5. $147.999."
