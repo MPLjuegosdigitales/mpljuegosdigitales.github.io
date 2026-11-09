@@ -30,15 +30,21 @@
   <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
 
   <div class="barra" id="barra">
-    <form class="buscador" role="search" onsubmit="return false">
-      <label class="oculto" for="busqueda">Buscar un juego</label>
-      <svg class="lupa" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.8 4.8-1.4 1.4-4.8-4.8A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
-      <input id="busqueda" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
-             placeholder="Buscá tu juego (ej: fifa, gta)">
-      <button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden>
-        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>
+    <!-- Menú ☰ al lado del buscador: la barra fija no crece. Lo maneja js/menu.js. -->
+    <div class="barra-fila">
+      <form class="buscador" role="search" onsubmit="return false">
+        <label class="oculto" for="busqueda">Buscar un juego</label>
+        <svg class="lupa" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.8 4.8-1.4 1.4-4.8-4.8A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+        <input id="busqueda" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
+               placeholder="Buscá tu juego (ej: fifa, gta)" data-corto="Buscá tu juego">
+        <button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>
+        </button>
+      </form>
+      <button class="boton-menu" type="button" id="boton-menu" aria-label="Menú" aria-haspopup="dialog" aria-controls="menu">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
       </button>
-    </form>
+    </div>
     <div class="consolas" role="group" aria-label="Mostrar">
       <!-- Ofertas: el texto lo pone js/tienda.js con el nombre de la promoción; sin ofertas vigentes no se ve. -->
       <button class="boton-ofertas" type="button" data-consola="ofertas" aria-pressed="false" hidden></button>
@@ -56,7 +62,7 @@
          botón PS Plus elegido (o entrando con #ps-plus); mientras tanto la lista de juegos queda oculta. -->
     <section class="psplus" id="ps-plus" aria-labelledby="psplus-titulo"></section>
     <h1 class="titulo">Juegos digitales de PS4 y PS5</h1>
-    <p class="aclaracion" id="aclaracion" data-con-cuotas="Cuenta primaria: lo jugás desde tu propio usuario, con o sin internet. Pagás contado, por transferencia o en 3 cuotas sin interés.">Cuenta primaria: lo jugás desde tu propio usuario, con o sin internet. Pagás en efectivo o por transferencia.</p>
+    <p class="aclaracion" id="aclaracion" data-con-cuotas="Cuenta primaria: lo jugás desde tu propio usuario. Pagás contado, por transferencia o en 3 cuotas sin interés.">Cuenta primaria: lo jugás desde tu propio usuario. Pagás en efectivo o por transferencia.</p>
     <p class="aviso-ofertas" id="aviso-ofertas" hidden></p>
     <div class="resultados">
       <p class="conteo" id="conteo" aria-live="polite">Cargando juegos…</p>
@@ -86,12 +92,42 @@
     <button class="cargar-mas" type="button" id="cargar-mas" hidden>Cargar más juegos</button>
   </main>
 
+  <!-- Preguntas frecuentes: las arma js/preguntas.js con preguntas.json (solo las "confirmada"). Sin ninguna, no se ve. -->
+  <section class="preguntas" id="preguntas" aria-labelledby="preguntas-titulo" hidden>
+    <h2 class="titulo" id="preguntas-titulo">Preguntas frecuentes</h2>
+    <div class="preguntas-lista" id="preguntas-lista"></div>
+  </section>
+
   <footer class="pie">
     <img src="LOGO_MPL_sin_fondo.png" width="763" height="404" alt="MPL Juegos Digitales" loading="lazy">
-    <p>Pedidos por WhatsApp con <a href="https://wa.me/5493482664743">Mateo</a> o <a href="https://wa.me/5493482209654">Luca</a>.</p>
+    <!-- Horarios, entrega y atención presencial salen de config.json de mpl-precios (llegan en catalog.json):
+         js/preguntas.js. Un dato que no llegó no se muestra. -->
+    <dl class="pie-datos">
+      <div hidden><dt>Horarios de atención</dt><dd id="pie-horarios"></dd></div>
+      <div hidden><dt>Tiempo de entrega</dt><dd id="pie-entrega"></dd></div>
+      <div hidden><dt>Atención presencial</dt><dd id="pie-presencial"></dd></div>
+    </dl>
+    <button class="boton-consultar pie-consultar" type="button" data-consultar>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3Z"/></svg>
+      Consultar
+    </button>
     <p>Instagram: <a href="https://www.instagram.com/mpljuegosdigitales/" target="_blank" rel="noopener">@mpljuegosdigitales</a></p>
     <p class="actualizado" id="actualizado"></p>
   </footer>
+
+  <!-- Menú: secciones de la tienda. Las nuevas se suman acá, no a la barra fija. Lo maneja js/menu.js. -->
+  <dialog class="hoja" id="menu" aria-labelledby="menu-titulo">
+    <form method="dialog" class="hoja-cuerpo">
+      <h2 id="menu-titulo">Menú</h2>
+      <div class="menu-lista">
+        <button type="button" data-ir="psplus"><strong>PS Plus</strong><span>Planes para PS4 y PS5</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+        <button type="button" data-ir="preguntas"><strong>Preguntas frecuentes</strong><span>Garantía, instalación, entrega y más</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+        <button type="button" data-ir="pie"><strong>Horarios y atención</strong><span id="menu-horarios">Horarios, entrega y atención presencial</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+        <button type="button" data-ir="consultar"><strong>Consultar por WhatsApp</strong><span>Con Mateo o Luca</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+      </div>
+      <button class="boton-secundario" value="cerrar">Cerrar</button>
+    </form>
+  </dialog>
 
   <dialog class="hoja hoja-contacto" id="hoja" aria-labelledby="hoja-titulo" aria-describedby="hoja-sub hoja-juego">
     <!-- Mateo y Luca asoman por arriba del menú. Las imágenes se bajan cuando terminó de cargar la página (js/tienda.js). -->
@@ -120,6 +156,8 @@
   </dialog>
 
   <script src="js/buscar.js"></script>
+  <script src="js/preguntas.js"></script>
+  <script src="js/menu.js"></script>
   <script src="js/tienda.js"></script>
 </body>
 </html>

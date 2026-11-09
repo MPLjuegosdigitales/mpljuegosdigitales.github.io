@@ -342,7 +342,7 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
   .encabezado, .barra { padding-left: max(var(--margen), calc((100vw - 1240px) / 2 + var(--margen)));
                         padding-right: max(var(--margen), calc((100vw - 1240px) / 2 + var(--margen))); }
   .barra { display: flex; gap: 12px; align-items: center; padding-top: 0; }
-  .buscador { flex: 1; }
+  .buscador, .barra-fila { flex: 1; }
   .consolas { margin-top: 0; width: 400px; }
   .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 20px; }
   .marca img { height: 64px; }
@@ -580,4 +580,61 @@ main.en-psplus > :not(.psplus) { display: none !important; }
   .psplus-planes { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
   .plan-precio { margin-top: auto; }
   .plan-incluye { margin-bottom: 16px; }
+}
+
+/* ---------- Preguntas frecuentes (final de la portada) ---------- */
+.preguntas { max-width: 1240px; margin: 0 auto; padding: 8px var(--margen) 32px; }
+.preguntas-lista { margin-top: 14px; display: grid; gap: 8px; max-width: 760px; }
+.pregunta { border-radius: var(--radio); background: var(--superficie); }
+.pregunta summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 56px; padding: 12px 14px; cursor: pointer; list-style: none;
+  font-size: 16px; font-weight: 700; line-height: 1.3; color: var(--texto);
+}
+.pregunta summary::-webkit-details-marker { display: none; }
+.pregunta summary::after {
+  content: ""; flex: 0 0 auto; width: 10px; height: 10px; margin-right: 4px;
+  border: solid var(--lila); border-width: 0 2.5px 2.5px 0; transform: translateY(-3px) rotate(45deg);
+  transition: transform .2s var(--salida);
+}
+.pregunta[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+.pregunta summary:focus-visible { outline-offset: -3px; border-radius: var(--radio); }
+.respuesta { padding: 0 14px 14px; color: var(--texto-suave); font-size: 15px; line-height: 1.5; }
+.respuesta p { margin: 0; }
+.respuesta > * + * { margin-top: 8px; }
+.respuesta ul, .respuesta ol { margin-bottom: 0; padding-left: 22px; display: grid; gap: 6px; }
+.respuesta li::marker { color: var(--lila); font-weight: 700; }
+.respuesta ol li { padding-left: 2px; color: var(--texto); }
+
+/* ---------- Menú ☰: al lado del buscador (la barra fija no crece), abre una lista desde abajo ---------- */
+.barra-fila { display: flex; gap: 8px; align-items: stretch; }
+.barra-fila .buscador { flex: 1 1 auto; min-width: 0; }
+.boton-menu {
+  flex: 0 0 48px; width: 48px; height: 48px; display: grid; place-items: center;
+  border: 2px solid var(--violeta); border-radius: var(--radio);
+  background: var(--superficie); cursor: pointer;
+}
+.boton-menu svg { width: 24px; height: 24px; fill: var(--lila); }
+.boton-menu:active { background: var(--violeta-oscuro); }
+.boton-menu:focus-visible { outline: 2px solid var(--lila); outline-offset: 2px; }
+.menu-lista { display: grid; gap: 8px; margin-top: 16px; }
+.menu-lista button {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px;
+  min-height: 60px; padding: 10px 14px; text-align: left; cursor: pointer;
+  border: 0; border-radius: var(--radio); background: var(--violeta); color: var(--blanco);
+}
+.menu-lista button:active { background: var(--violeta-oscuro); }
+.menu-lista strong { font: 800 20px/1.05 var(--cartel); text-transform: uppercase; letter-spacing: .02em; }
+.menu-lista span { grid-column: 1; font-size: 14px; color: var(--lila); }
+.menu-lista svg { grid-row: 1 / span 2; grid-column: 2; width: 22px; height: 22px; fill: var(--lila); }
+/* Lo que se abre desde el menú no queda tapado por la barra fija */
+#preguntas, .pie { scroll-margin-top: 128px; }
+
+/* ---------- Pie: horarios, entrega, Consultar e Instagram ---------- */
+.pie-datos { display: grid; gap: 10px; max-width: 360px; margin: 0 auto 16px; }
+.pie-datos dt { font-size: 13px; font-weight: 700; color: var(--lila); }
+.pie-datos dd { margin: 2px 0 0; font-size: 15px; color: var(--texto); }
+.pie-consultar { margin: 0 auto 14px; }
+@media (min-width: 600px) {
+  .pie-datos { grid-template-columns: repeat(3, 1fr); max-width: 760px; gap: 16px; }
 }

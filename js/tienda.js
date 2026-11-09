@@ -682,8 +682,11 @@
       'Te escribimos para preguntar por “' + texto + '”.');
   });
 
-  document.querySelector('[data-consultar]').addEventListener('click', function () {
-    abrirHoja('Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
+  // "Consultar" del encabezado y del pie.
+  document.querySelectorAll('[data-consultar]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      abrirHoja('Quería hacer una consulta sobre los juegos.', 'Elegí con quién seguir por WhatsApp.');
+    });
   });
 
   // Tocar fuera de la hoja la cierra. Al elegir un contacto se ilumina su figura y ~400 ms después se abre
@@ -754,6 +757,7 @@
     sinonimos = datos[1]; sagas = datos[2];
     conCuotas = datos[0].mostrar_cuotas === true;
     if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
+    avisarCatalogo(datos[0]);
     refrescarOfertas();
     // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.
     if (!juegos.some(function (j) { return j.popular; })) {
@@ -785,5 +789,14 @@
     grilla.innerHTML = '';
     conteo.textContent = '';
     errorCaja.hidden = false;
+    avisarCatalogo({});
   });
+
+  // Preguntas frecuentes y pie (js/preguntas.js) esperan el catálogo para los horarios y la demora de entrega.
+  var catalogoAvisado = false;
+  function avisarCatalogo(catalogo) {
+    if (catalogoAvisado) return;
+    catalogoAvisado = true;
+    document.dispatchEvent(new CustomEvent('mpl:catalogo', { detail: catalogo }));
+  }
 })();

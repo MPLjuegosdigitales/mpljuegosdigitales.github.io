@@ -39,6 +39,20 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   el botón de la sección y su aviso. No usarlo para nada más.
 - Logo `LOGO_MPL_sin_fondo.png`: nunca modificarlo, recortarlo ni cambiarle colores.
 - Nada de decoraciones ni motivos que no se hayan pedido. Todo lo tocable de al menos 44 px de alto.
+- Preguntas frecuentes: al final de la portada (después de la lista o de PS Plus), desplegables, en el orden de
+  `preguntas.json`; en la web se ven solo las de estado "confirmada" (las "a confirmar" son borradores, con PENDIENTE
+  o PROPUESTA). {demora}, {horarios} y {presencial} salen de config.json de mpl-precios (llegan en catalog.json),
+  igual que los del pie: si cambian ahí, cambian solos en los dos lugares. Nunca inventar condiciones (garantía,
+  devoluciones, cambio de consola, pedidos fuera de horario): quedan "a confirmar" hasta que las definan los socios.
+- Pie: horarios de atención, tiempo de entrega, atención presencial, botón Consultar (el mismo menú de Mateo y Luca)
+  e Instagram.
+- No prometer "con o sin internet": depende del juego (lo explica la pregunta frecuente).
+- Las respuestas pueden tener párrafos, listas (`{"lista": [...]}`) y pasos numerados (`{"pasos": [...]}`). Los nombres
+  de los menús de la consola van exactos y entre comillas. Los pasos publicados (usuario descargador, candado) son de
+  PS5 y lo dicen; los de PS4 no se publican hasta que los pasen los socios.
+- Navegación: menú ☰ al lado del buscador, en la misma fila (la barra fija no crece; en pantallas de menos de 390 px
+  el buscador dice solo "Buscá tu juego"). Abre una lista desde abajo con PS Plus, Preguntas frecuentes, Horarios y
+  atención y Consultar (`js/menu.js`). **Toda sección nueva se suma a ese menú, nunca a la barra fija.**
 - PS Plus: botón "PS Plus" al final de la fila de filtros; elegido, la sección de planes reemplaza a la lista
   (buscando, vuelve la lista). También se abre con un link a `#ps-plus`. Los textos (para quién es, qué incluye)
   se cambian en `psplus.json`; los precios los pone el bot en catalog.json (`ps_plus`). Si falta un precio, no se
