@@ -1,7 +1,7 @@
 {
   "_comentario": "Géneros del filtro. 'lista': los géneros que se muestran, en este orden. 'equivalencias': palabras o frases que usa la tienda en el género de cada juego (sin importar mayúsculas, tildes ni signos) y a qué género nuestro corresponden; un juego puede quedar con varios. Lo que no figura acá se ignora (por ejemplo 'mundo abierto'). Si un juego no trae género de la tienda, se usa el de descripciones.json. Se pueden agregar líneas sin tocar código.",
 
-  "lista": ["Acción", "Aventura", "Shooter", "Deportes", "Carreras", "Lucha", "Terror", "Rol (RPG)", "Estrategia", "Simulación", "Plataformas", "Familiar"],
+  "lista": ["Acción", "Aventura", "Shooter", "Deportes", "Carreras", "Lucha", "Terror", "Rol (RPG)", "Estrategia", "Simulación", "Plataformas", "Metroidvania", "Familiar"],
 
   "equivalencias": {
     "accion": "Acción",
@@ -58,6 +58,29 @@
     "familia": "Familiar",
     "party": "Familiar",
     "musical": "Familiar",
-    "musica": "Familiar"
+    "musica": "Familiar",
+    "metroidvania": "Metroidvania"
+  },
+
+  "_por_juego": "Géneros que la tienda casi nunca escribe (Metroidvania). Un juego queda con ese género si su nombre (sin mayúsculas, tildes ni signos) contiene alguna de estas frases. Se suma a los que ya tiene.",
+  "por_juego": {
+    "Metroidvania": ["hollow knight", "blasphemous", "dead cells", "bloodstained", "ender lilies", "ender magnolia", "prince of persia the lost crown", "castlevania requiem", "castlevania dominus collection", "castlevania advance collection", "nine sols", "the last faith", "ori and the blind forest", "ori and the will of the wisps", "axiom verge", "guacamelee", "salt and sanctuary", "afterimage"]
+  },
+
+  "_buscar": "Palabras que entiende el buscador de la web como género: buscando \"terror\" aparecen, después de los juegos que se llaman así, todos los de Terror. El nombre de cada género ya cuenta solo.",
+  "buscar": {
+    "Acción": ["accion", "action"],
+    "Aventura": ["aventura", "aventuras", "adventure"],
+    "Shooter": ["shooter", "shooters", "disparos", "fps", "tiros"],
+    "Deportes": ["deportes", "deporte", "deportivos"],
+    "Carreras": ["carreras", "carrera", "autos", "racing"],
+    "Lucha": ["lucha", "pelea", "peleas", "fighting"],
+    "Terror": ["terror", "horror", "miedo"],
+    "Rol (RPG)": ["rol", "rpg", "rpgs", "jrpg"],
+    "Estrategia": ["estrategia", "strategy"],
+    "Simulación": ["simulacion", "simulador", "simuladores"],
+    "Plataformas": ["plataformas", "plataforma", "platformer"],
+    "Metroidvania": ["metroidvania", "metroidvanias"],
+    "Familiar": ["familiar", "familiares", "infantil", "infantiles", "para chicos", "para ninos"]
   }
 }

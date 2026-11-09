@@ -135,13 +135,46 @@ input { caret-color: var(--lila); }
   transition: background-color .18s var(--salida), color .18s var(--salida);
 }
 .consolas button[aria-pressed="true"] { background: var(--lila); color: var(--violeta-oscuro); }
-/* Conteo y orden, justo arriba de la grilla */
+/* Conteo, género y orden, justo arriba de la grilla. En el celular el conteo va arriba y Género y Orden
+   comparten la fila de abajo, mitad y mitad; desde 600 px, todo en una fila. */
 .resultados {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px;
   margin: 12px 0 10px;
 }
+.resultados .conteo { flex: 1 1 100%; }
+.resultados-controles { flex: 1 1 100%; display: flex; gap: 8px; }
+.resultados-controles > * { flex: 1 1 0; min-width: 0; }
+.boton-genero {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px;
+  border: 0; border-radius: var(--radio); background: var(--superficie); cursor: pointer;
+  color: var(--texto); font-weight: 600; font-size: 15px; text-align: left;
+}
+.boton-genero span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.boton-genero svg { flex: 0 0 auto; width: 18px; height: 18px; fill: var(--lila); }
+.boton-genero[aria-pressed="true"] { background: var(--lila); color: var(--violeta-oscuro); }
+.boton-genero[aria-pressed="true"] svg { fill: var(--violeta-oscuro); }
+.boton-genero:focus-visible { outline: 2px solid var(--lila); outline-offset: 2px; }
+@media (min-width: 600px) {
+  .resultados { flex-wrap: nowrap; }
+  .resultados .conteo { flex: 1 1 auto; }
+  .resultados-controles { flex: 0 0 auto; }
+  .resultados-controles > * { flex: 0 0 auto; }
+}
+/* Hoja de géneros: dos columnas de botones con el nombre y cuántos juegos hay */
+.generos-nota { margin: 4px 0 0; font-size: 14px; color: var(--texto-suave); }
+.generos-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.generos-lista button {
+  display: flex; flex-direction: column; justify-content: center; gap: 2px; min-height: 56px; padding: 8px 12px;
+  text-align: left; cursor: pointer; border: 0; border-radius: var(--radio); background: var(--violeta); color: var(--blanco);
+}
+.generos-lista button:first-child { grid-column: 1 / -1; }
+.generos-lista strong { font-size: 16px; font-weight: 700; line-height: 1.15; }
+.generos-lista span { font-size: 13px; color: var(--lila); font-variant-numeric: tabular-nums; }
+.generos-lista button[aria-pressed="true"] { background: var(--lila); color: var(--violeta-oscuro); }
+.generos-lista button[aria-pressed="true"] span { color: var(--violeta-oscuro); }
+.generos-lista button:active { background: var(--violeta-oscuro); }
 #orden {
-  flex: 0 0 auto; min-height: 44px;
+  min-height: 44px;
   padding: 0 34px 0 12px;
   border: 0; border-radius: var(--radio);
   background: var(--superficie) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23E5AFFB' d='M7 9.5 12 15l5-5.5z'/%3E%3C/svg%3E") no-repeat right 8px center / 22px;

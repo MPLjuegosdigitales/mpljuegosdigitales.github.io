@@ -66,13 +66,19 @@
     <p class="aviso-ofertas" id="aviso-ofertas" hidden></p>
     <div class="resultados">
       <p class="conteo" id="conteo" aria-live="polite">Cargando juegos…</p>
-      <label class="oculto" for="orden">Ordenar</label>
-      <select id="orden">
-        <option value="auto" selected>Más populares</option>
-        <option value="nombre">A a Z</option>
-        <option value="menor">Menor precio</option>
-        <option value="mayor">Mayor precio</option>
-      </select>
+      <div class="resultados-controles">
+        <!-- Género: abre la hoja con los géneros y cuántos juegos hay de cada uno. Sin géneros no se muestra. -->
+        <button class="boton-genero" type="button" id="boton-genero" aria-haspopup="dialog" aria-controls="hoja-generos" aria-pressed="false" hidden>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 5h18v2l-7 7v5l-4 2v-7L3 7z"/></svg><span id="genero-elegido">Género</span>
+        </button>
+        <label class="oculto" for="orden">Ordenar</label>
+        <select id="orden">
+          <option value="auto" selected>Más populares</option>
+          <option value="nombre">A a Z</option>
+          <option value="menor">Menor precio</option>
+          <option value="mayor">Mayor precio</option>
+        </select>
+      </div>
     </div>
 
     <ul class="grilla" id="grilla"></ul>
@@ -125,6 +131,16 @@
         <button type="button" data-ir="pie"><strong>Horarios y atención</strong><span id="menu-horarios">Horarios, entrega y atención presencial</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
         <button type="button" data-ir="consultar"><strong>Consultar por WhatsApp</strong><span>Con Mateo o Luca</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
       </div>
+      <button class="boton-secundario" value="cerrar">Cerrar</button>
+    </form>
+  </dialog>
+
+  <!-- Géneros: la arma js/tienda.js con generos.json y el catálogo (solo los que tienen juegos). -->
+  <dialog class="hoja" id="hoja-generos" aria-labelledby="generos-titulo">
+    <form method="dialog" class="hoja-cuerpo">
+      <h2 id="generos-titulo">Género</h2>
+      <p class="generos-nota" id="generos-nota"></p>
+      <div class="generos-lista" id="generos-lista"></div>
       <button class="boton-secundario" value="cerrar">Cerrar</button>
     </form>
   </dialog>
