@@ -59,6 +59,12 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   `generos.json` y cuántos juegos hay de cada uno. Se combina con Todos, PS4, PS5, Ofertas y la búsqueda; elegir un
   género en Populares pasa a Todos. El buscador entiende los géneros ("terror", "rpg", "metroid": palabras de
   `"buscar"` en generos.json y sinonimos.json). Los juegos sin género siguen en Todos y en la búsqueda.
+- Fotos de la ficha (capturas.json, lo escribe el bot): tira con la carátula primero y después las fotos, un punto
+  por cada una (nada de "1 / 6"); tocar una la abre a pantalla completa; una foto que no carga se saca sin dejar
+  hueco. Populares hasta 5 fotos, el resto hasta 3; sin fotos, solo la carátula. Salen de Steam o la PS Store; las
+  de Argentina Play solo llenan huecos, revisadas una por una (sin logos, marcas de agua ni textos de tienda), y se
+  guardan en `img/f/` con nombre neutro (las sube el bot; no tocarlas a mano). Se bajan solo al abrir la ficha.
+  El repo no puede pasar de 600 MB.
 - Peso en la ficha: el de la ficha o el de `pesos.json`; el estimado se ve "~X GB (aproximado)". Cada entrada de
   pesos.json lleva su fuente (PS Store, editorial, PlayStation Blog o, si es estimado, la página en que se basa);
   nunca links del proveedor.
