@@ -1,6 +1,6 @@
-/* Preguntas frecuentes (final de la portada) y datos del pie: horarios de atención y tiempo de entrega.
- * Las preguntas salen de preguntas.json; solo se muestran las "confirmada". Horarios y demora llegan en catalog.json
- * (config.json de mpl-precios): js/tienda.js avisa con el evento "mpl:catalogo" cuando lo cargó.
+/* Preguntas frecuentes (final de la portada) y datos del pie: horarios de atención, tiempo de entrega y atención
+ * presencial. Las preguntas salen de preguntas.json; solo se muestran las "confirmada". Horarios, demora y lugares
+ * llegan en catalog.json (config.json de mpl-precios): js/tienda.js avisa con el evento "mpl:catalogo" cuando lo cargó.
  */
 (function () {
   'use strict';
@@ -14,7 +14,7 @@
     });
   }
 
-  // "{demora}" y "{horarios}" por su valor; si alguno falta, null (esa pregunta o línea no se muestra).
+  // "{demora}", "{horarios}" y "{presencial}" por su valor; si alguno falta, null (esa pregunta o línea no se muestra).
   function reemplazar(texto, datos) {
     var falta = false;
     var listo = String(texto).replace(/\{(\w+)\}/g, function (todo, clave) {
@@ -25,7 +25,8 @@
   }
 
   function pintarPie(datos) {
-    [['pie-horarios', '{horarios}'], ['pie-entrega', 'En general, de {demora}, según la demanda.']].forEach(function (d) {
+    [['pie-horarios', '{horarios}'], ['pie-entrega', 'En general, {demora}, según la demanda.'],
+     ['pie-presencial', '{presencial}']].forEach(function (d) {
       var dd = document.getElementById(d[0]), texto = reemplazar(d[1], datos);
       if (!dd) return;
       dd.parentNode.hidden = !texto;
@@ -55,7 +56,7 @@
 
   document.addEventListener('mpl:catalogo', function (e) {
     var c = e.detail || {};
-    var datos = { demora: c.demora_entrega, horarios: c.horarios_atencion };
+    var datos = { demora: c.demora_entrega, horarios: c.horarios_atencion, presencial: c.atencion_presencial };
     pintarPie(datos);
     preguntas.then(function (contenido) { pintarPreguntas(contenido, datos); });
   });

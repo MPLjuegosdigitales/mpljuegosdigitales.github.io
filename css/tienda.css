@@ -609,5 +609,5 @@ main.en-psplus > :not(.psplus) { display: none !important; }
 .pie-datos dd { margin: 2px 0 0; font-size: 15px; color: var(--texto); }
 .pie-consultar { margin: 0 auto 14px; }
 @media (min-width: 600px) {
-  .pie-datos { grid-template-columns: 1fr 1fr; max-width: 560px; gap: 16px; }
+  .pie-datos { grid-template-columns: repeat(3, 1fr); max-width: 760px; gap: 16px; }
 }
