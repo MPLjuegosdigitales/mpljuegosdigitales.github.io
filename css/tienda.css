@@ -524,16 +524,21 @@ main:not(.en-psplus) > .psplus,
 main.en-psplus > :not(.psplus) { display: none !important; }
 
 .psplus .aclaracion { margin-bottom: 14px; }
-/* Selector de duración: el mismo control que la fila de filtros */
-.psplus-duracion {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+/* Selectores de consola y duración, uno al lado del otro: el mismo control que la fila de filtros */
+.psplus-selectores { display: flex; gap: 8px; }
+.psplus-consola, .psplus-duracion {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
   background: var(--superficie); border-radius: var(--radio); padding: 2px;
 }
-.psplus-duracion button {
-  min-height: 48px; border: 0; border-radius: 10px;
-  background: transparent; color: var(--texto); font-weight: 700; font-size: 16px;
+.psplus-consola { flex: 0 0 auto; }
+.psplus-duracion { flex: 1 1 auto; }
+.psplus-consola button, .psplus-duracion button {
+  min-height: 48px; padding: 0 8px; border: 0; border-radius: 10px; white-space: nowrap;
+  background: transparent; color: var(--texto); font-weight: 700; font-size: 15px;
   transition: background-color .18s var(--salida), color .18s var(--salida);
 }
+.psplus-consola button { padding: 0 10px; font: 800 17px/1 var(--cartel); letter-spacing: .03em; }
+.psplus-consola button[aria-pressed="true"],
 .psplus-duracion button[aria-pressed="true"] { background: var(--lila); color: var(--violeta-oscuro); }
 
 /* Un plan por tarjeta, cada uno con un color de la paleta: Essential lila, Extra violeta, Deluxe violeta oscuro */
@@ -571,7 +576,7 @@ main.en-psplus > :not(.psplus) { display: none !important; }
 .plan .boton-pedir:hover, .plan .boton-pedir:active { background: var(--plan-boton); filter: brightness(1.12); }
 
 @media (min-width: 760px) {
-  .psplus-duracion { max-width: 420px; }
+  .psplus-selectores { max-width: 560px; }
   .psplus-planes { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
   .plan-precio { margin-top: auto; }
   .plan-incluye { margin-bottom: 16px; }

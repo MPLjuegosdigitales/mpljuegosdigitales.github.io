@@ -287,6 +287,8 @@
   botonesConsola.forEach(function (b) {
     b.addEventListener('click', function () {
       var valor = b.getAttribute('data-consola');
+      // PS Plus arranca en la consola que estaba elegida en los filtros (PS4 o PS5); si no, en PS5.
+      if (valor === 'psplus' && estado.consola !== 'psplus') consolaInicialPs(estado.consola);
       elegirConsola(valor);
       pintar(true);
       // PS Plus es mucho más corto que la lista: si se eligió desde abajo, se sube al principio de la sección.
@@ -297,28 +299,50 @@
   });
 
   // ---------- PS Plus ----------
-  // Precios: catalog.json "ps_plus" ({plan: {meses: {contado, cuota?}}}), los pone el bot con la Ganancia PS Plus.
-  // Textos: psplus.json. Si falta algún precio (o los textos), la sección y su botón no se muestran.
+  // Precios: catalog.json "ps_plus" ({consola: {plan: {meses: {contado, cuota?}}}}), los pone el bot con la Ganancia
+  // PS Plus; cada consola con su propio precio. Textos: psplus.json. Una consola a la que le falta algún precio no
+  // aparece en el selector; sin ninguna (o sin los textos), la sección y su botón no se muestran.
   var contenido = $('contenido'), seccionPsPlus = $('ps-plus'), botonPsPlus = document.querySelector('[data-consola="psplus"]');
-  var MESES_PS = ['1', '3', '12'], psPlus = null, mesesPs = '1';
+  var MESES_PS = ['1', '3', '12'], CONSOLAS_PS = ['PS4', 'PS5'], psPlus = null, mesesPs = '1', consolaPs = 'PS5';
 
   function nombreDuracion(m) { return m === '1' ? '1 mes' : m + ' meses'; }
 
   function prepararPsPlus(precios, textos) {
     var planes = textos && textos.planes;
-    var completo = precios && planes && planes.length && planes.every(function (p) {
-      return precios[p.id] && MESES_PS.every(function (m) { return precios[p.id][m] && precios[p.id][m].contado > 0; });
+    var consolas = CONSOLAS_PS.filter(function (c) {
+      var porPlan = precios && precios[c];
+      return porPlan && planes && planes.length && planes.every(function (p) {
+        return porPlan[p.id] && MESES_PS.every(function (m) { return porPlan[p.id][m] && porPlan[p.id][m].contado > 0; });
+      });
     });
-    psPlus = completo ? { precios: precios, textos: textos } : null;
+    psPlus = consolas.length ? { precios: precios, textos: textos, consolas: consolas } : null;
     if (psPlus && MESES_PS.indexOf(String(textos.duracion_inicial)) >= 0) mesesPs = String(textos.duracion_inicial);
+    consolaInicialPs('');
     botonPsPlus.hidden = !psPlus;
     botonPsPlus.parentNode.classList.toggle('con-psplus', !!psPlus);
     if (!psPlus && estado.consola === 'psplus') elegirConsola(juegos.some(function (j) { return j.popular; }) ? 'populares' : '');
   }
 
+  // La consola elegida en los filtros si tiene precios; si no, PS5; si PS5 no tiene, la que haya.
+  function consolaInicialPs(filtro) {
+    if (!psPlus) return;
+    var c = psPlus.consolas;
+    consolaPs = c.indexOf(filtro) >= 0 ? filtro : c.indexOf('PS5') >= 0 ? 'PS5' : c[0];
+  }
+
+  function precioPs(plan, m) { return psPlus.precios[consolaPs][plan][m]; }
+
+  // Ahorro contra pagar mes a mes, con el precio mensual de la misma consola.
   function ahorroPs(plan, m) {
-    var p = psPlus.precios[plan];
-    return m === '1' ? 0 : Math.max(0, p['1'].contado * +m - p[m].contado);
+    return m === '1' ? 0 : Math.max(0, precioPs(plan, '1').contado * +m - precioPs(plan, m).contado);
+  }
+
+  function selectorPs(clase, nombre, dato, opciones, actual, texto) {
+    return '<div class="' + clase + '" role="group" aria-label="' + nombre + '">' +
+      opciones.map(function (o) {
+        return '<button type="button" data-' + dato + '="' + o + '" aria-pressed="' + (o === actual) + '">' + texto(o) + '</button>';
+      }).join('') +
+    '</div>';
   }
 
   function pintarPsPlus() {
@@ -327,20 +351,19 @@
     seccionPsPlus.innerHTML =
       '<h2 class="titulo" id="psplus-titulo">' + escapar(t.titulo || 'PS Plus') + '</h2>' +
       (t.bajada ? '<p class="aclaracion">' + escapar(t.bajada) + '</p>' : '') +
-      '<div class="psplus-duracion" role="group" aria-label="Duración">' +
-        MESES_PS.map(function (m) {
-          return '<button type="button" data-meses="' + m + '" aria-pressed="' + (m === mesesPs) + '">' + nombreDuracion(m) + '</button>';
-        }).join('') +
+      '<div class="psplus-selectores">' +
+        selectorPs('psplus-consola', 'Consola', 'consola-ps', psPlus.consolas, consolaPs, function (c) { return c; }) +
+        selectorPs('psplus-duracion', 'Duración', 'meses', MESES_PS, mesesPs, nombreDuracion) +
       '</div>' +
       '<ul class="psplus-planes">' +
         t.planes.map(function (p) {
-          var precio = psPlus.precios[p.id][mesesPs], ahorro = ahorroPs(p.id, mesesPs);
+          var precio = precioPs(p.id, mesesPs), ahorro = ahorroPs(p.id, mesesPs);
           return '<li class="plan plan-' + escapar(p.id) + '">' +
             '<h3 class="plan-nombre">' + escapar(p.nombre) + '</h3>' +
             (p.para_quien ? '<p class="plan-para">' + escapar(p.para_quien) + '</p>' : '') +
             '<ul class="plan-incluye">' + (p.incluye || []).map(function (x) { return '<li>' + escapar(x) + '</li>'; }).join('') + '</ul>' +
             '<p class="plan-precio">' +
-              '<span class="rotulo">' + rotuloPago() + ' · ' + nombreDuracion(mesesPs) + '</span>' +
+              '<span class="rotulo">' + rotuloPago() + ' · ' + nombreDuracion(mesesPs) + ' · ' + consolaPs + '</span>' +
               '<span class="contado">' + pesos(precio.contado) + '</span>' + lineaCuotas(precio) +
               (ahorro ? '<span class="ahorro">Ahorrás ' + pesos(ahorro) + ' contra pagar mes a mes</span>' : '') +
             '</p>' +
@@ -351,19 +374,22 @@
   }
 
   seccionPsPlus.addEventListener('click', function (e) {
-    var duracion = e.target.closest('[data-meses]');
-    if (duracion) {
-      mesesPs = duracion.getAttribute('data-meses');
+    var opcion = e.target.closest('[data-meses], [data-consola-ps]');
+    if (opcion) {
+      var esConsola = opcion.hasAttribute('data-consola-ps');
+      if (esConsola) consolaPs = opcion.getAttribute('data-consola-ps'); else mesesPs = opcion.getAttribute('data-meses');
       pintarPsPlus();
-      seccionPsPlus.querySelector('[data-meses="' + mesesPs + '"]').focus();
+      seccionPsPlus.querySelector(esConsola ? '[data-consola-ps="' + consolaPs + '"]' : '[data-meses="' + mesesPs + '"]').focus();
       return;
     }
     var boton = e.target.closest('[data-plan]');
     if (!boton) return;
     var plan = psPlus.textos.planes.filter(function (p) { return p.id === boton.getAttribute('data-plan'); })[0];
-    var precio = pesos(psPlus.precios[plan.id][mesesPs].contado);
-    abrirHoja('Quiero PS Plus ' + plan.nombre + ' por ' + nombreDuracion(mesesPs) + '. Efectivo o transferencia: ' + precio + '.',
-      'PS Plus ' + plan.nombre + ' · ' + nombreDuracion(mesesPs) + ' · ' + precio);
+    var precio = pesos(precioPs(plan.id, mesesPs).contado);
+    // Con el saludo de abrirHoja: "¡Hola Mateo! Quiero PS Plus Extra por 12 meses para PS5. Efectivo o transferencia: $147.999."
+    abrirHoja('Quiero PS Plus ' + plan.nombre + ' por ' + nombreDuracion(mesesPs) + ' para ' + consolaPs +
+      '. Efectivo o transferencia: ' + precio + '.',
+      'PS Plus ' + plan.nombre + ' · ' + nombreDuracion(mesesPs) + ' · ' + consolaPs + ' · ' + precio);
   });
 
   orden.addEventListener('change', function () {
@@ -743,10 +769,12 @@
     pintarDestacado(datos[3]);
     prepararPsPlus(datos[0].ps_plus, datos[4]);
     // Un link a la página con #ps-plus (por ejemplo, desde Instagram) abre directo los planes.
-    if (psPlus && location.hash === '#ps-plus') elegirConsola('psplus');
+    if (psPlus && location.hash === '#ps-plus') { consolaInicialPs(estado.consola); elegirConsola('psplus'); }
     pintar(true);
     window.addEventListener('hashchange', function () {
-      if (psPlus && location.hash === '#ps-plus') { elegirConsola('psplus'); pintar(true); }
+      if (psPlus && location.hash === '#ps-plus' && estado.consola !== 'psplus') {
+        consolaInicialPs(estado.consola); elegirConsola('psplus'); pintar(true);
+      }
     });
     // Las descripciones se bajan cuando el celular está libre, así la primera ficha abre con el texto.
     (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(cargarDescripciones);
