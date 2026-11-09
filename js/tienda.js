@@ -197,7 +197,8 @@
       u.etiquetas = sinRetro(a);
       u.ps5_es_ps4 = retro;
       u._o = { promo: a._o.promo, contado: a._o.contado, hasta: a._o.hasta,
-               anterior: Math.min(a._o.anterior || 0, b._o.anterior || 0) };
+               anterior: Math.min(a._o.anterior || 0, b._o.anterior || 0),
+               ref: [a._o.ref, b._o.ref].filter(function (r, i, l) { return r && l.indexOf(r) === i; }).join('/') };
       u._precio = u._o.contado;
       return u;
     }).filter(Boolean);
@@ -460,7 +461,14 @@
   // ---------- WhatsApp ----------
 
   function mensajeJuego(j) {
-    return 'Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j);
+    return 'Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j) + referencia(j);
+  }
+
+  // Última línea del pedido, para saber de dónde sale el precio: "Ref. O7" (oferta del Issue #7), "Ref. S" (copia de
+  // nuestro stock). Con el precio normal no va nada. Qué es cada código lo dice la pestaña Referencias de la planilla.
+  function referencia(j) {
+    var ref = j._o ? j._o.ref : j.ref;
+    return ref ? '\nRef. ' + ref : '';
   }
 
   function textoPrecio(j) {
@@ -730,7 +738,7 @@
     if (!b) return;
     var ed = edicionesDestacado[+b.getAttribute('data-destacado')], j = ed.juego;
     var nombre = ed.cfg.en_el_mensaje || j.nombre;
-    abrirHoja('Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j),
+    abrirHoja('Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j) + referencia(j),
       nombre + ' · ' + j.consola + ' · ' + pesos(j._precio));
   });
 

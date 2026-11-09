@@ -22,7 +22,12 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
 
 - Este repo es público: nunca costo, ID ni nombre o links del proveedor, ni ninguna clave.
 - La clave de Google vive solo como secret de mpl-precios, nunca acá.
-- La planilla JUEGOS DIGITALES se maneja desde mpl-precios, y solo sus pestañas Catálogo, Juegos propios y Ofertas.
+- La planilla JUEGOS DIGITALES se maneja desde mpl-precios, y solo sus pestañas Catálogo, Juegos propios, Ofertas y
+  Referencias.
+- Pedidos de juegos: el WhatsApp termina con una línea "Ref. X" que dice de dónde sale el precio: "Ref. O7" (oferta
+  del Issue #7; el código viene en cada oferta de catalog.json, `ref`), "Ref. S" (copia de nuestro stock, `ref` del
+  juego). Con el precio normal no va la línea. El código nunca nombra ni identifica al proveedor: qué es cada uno lo
+  dice la pestaña Referencias de la planilla (privada).
 - Las ofertas se cargan desde un Issue de mpl-precios (privado). Nada de ofertas se abre en este repo.
 - Precios y ofertas los calcula el bot; la web solo elige, en el momento y con la hora de Argentina, la oferta
   vigente más barata de `ofertas` y, cuando vencen todas, vuelve a `contado`. Sin cuotas mientras
