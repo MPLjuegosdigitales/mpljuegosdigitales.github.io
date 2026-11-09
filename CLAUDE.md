@@ -50,6 +50,13 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
 - Las respuestas pueden tener párrafos, listas (`{"lista": [...]}`) y pasos numerados (`{"pasos": [...]}`). Los nombres
   de los menús de la consola van exactos y entre comillas. Los pasos publicados (usuario descargador, candado) son de
   PS5 y lo dicen; los de PS4 no se publican hasta que los pasen los socios.
+- Género: botón en la línea del orden (no en la barra fija) que abre una hoja desde abajo con los géneros de
+  `generos.json` y cuántos juegos hay de cada uno. Se combina con Todos, PS4, PS5, Ofertas y la búsqueda; elegir un
+  género en Populares pasa a Todos. El buscador entiende los géneros ("terror", "rpg", "metroid": palabras de
+  `"buscar"` en generos.json y sinonimos.json). Los juegos sin género siguen en Todos y en la búsqueda.
+- Peso en la ficha: el de la ficha o el de `pesos.json`; el estimado se ve "~X GB (aproximado)". Cada entrada de
+  pesos.json lleva su fuente (PS Store, editorial, PlayStation Blog o, si es estimado, la página en que se basa);
+  nunca links del proveedor.
 - Navegación: menú ☰ al lado del buscador, en la misma fila (la barra fija no crece; en pantallas de menos de 390 px
   el buscador dice solo "Buscá tu juego"). Abre una lista desde abajo con PS Plus, Preguntas frecuentes, Horarios y
   atención y Consultar (`js/menu.js`). **Toda sección nueva se suma a ese menú, nunca a la barra fija.**

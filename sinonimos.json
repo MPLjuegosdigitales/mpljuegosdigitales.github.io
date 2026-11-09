@@ -7,5 +7,7 @@
   "mk": ["mortal kombat"],
   "re": ["resident evil"],
   "spiderman": ["spider-man"],
-  "nfs": ["need for speed"]
+  "nfs": ["need for speed"],
+  "metroid": ["metroidvania"],
+  "metroid vania": ["metroidvania"]
 }

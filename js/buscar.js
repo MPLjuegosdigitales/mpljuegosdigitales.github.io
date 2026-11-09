@@ -10,7 +10,10 @@
  *   saga de sagas.json, el más nuevo primero según esa lista (Ragnarok antes que GOW 2018); si no, la
  *   edición base antes que las variantes (Ultimate, Deluxe…) y el número más nuevo primero (FC 27, FC 26…).
  *
- * Uso: const b = crearBuscador(juegos, sinonimos, sagas); b.buscar('fifa') → [{juego, puntaje}, …]
+ * - Géneros (generos.json): b.genero('terror') → 'Terror' si lo buscado es un género o una de sus palabras
+ *   ("juegos de terror", "fps", "metroid" por sinónimo). La tienda suma esos juegos a los resultados.
+ *
+ * Uso: const b = crearBuscador(juegos, sinonimos, sagas, generos); b.buscar('fifa') → [{juego, puntaje}, …]
  */
 (function (global) {
   'use strict';
@@ -166,8 +169,22 @@
     return mejor;
   }
 
-  function crearBuscador(juegos, sinonimosCrudos, sagasCrudas) {
+  // generos.json → {palabra normalizada: género}: el nombre del género ("rol rpg", y también "rol" y "rpg") y sus
+  // palabras de "buscar".
+  function prepararGeneros(crudo) {
+    var g = {}, extra = (crudo && crudo.buscar) || {};
+    ((crudo && crudo.lista) || []).forEach(function (nombre) {
+      var n = normalizar(nombre);
+      g[n] = nombre;
+      n.split(' ').forEach(function (p) { if (p.length > 2 && !g[p]) g[p] = nombre; });
+      (extra[nombre] || []).forEach(function (p) { if (normalizar(p)) g[normalizar(p)] = nombre; });
+    });
+    return g;
+  }
+
+  function crearBuscador(juegos, sinonimosCrudos, sagasCrudas, generosCrudos) {
     var sinonimos = prepararSinonimos(sinonimosCrudos);
+    var generos = prepararGeneros(generosCrudos);
     var tramos = prepararSagas(sagasCrudas);
     juegos.forEach(function (j) {
       var n = normalizar(j.nombre);
@@ -212,7 +229,16 @@
       return resultados;
     }
 
-    return { buscar: buscar, normalizar: normalizar };
+    // El género que nombra lo buscado (o null): "terror", "juegos de terror", "rpg", "metroid".
+    function genero(texto) {
+      var consulta = normalizar(texto).replace(/^(los |las )?(juegos? |videojuegos? )?(de |del )?/, '');
+      if (!consulta) return null;
+      var alts = alternativas(consulta, sinonimos);
+      for (var i = 0; i < alts.length; i++) if (generos[alts[i]]) return generos[alts[i]];
+      return null;
+    }
+
+    return { buscar: buscar, normalizar: normalizar, genero: genero };
   }
 
   global.crearBuscador = crearBuscador;

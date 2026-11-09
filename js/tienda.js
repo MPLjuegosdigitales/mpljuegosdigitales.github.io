@@ -20,10 +20,11 @@
   var botonesConsola = document.querySelectorAll('[data-consola]');
   var hoja = $('hoja');
 
-  var todos = [], juegos = [], buscador = null, lista = [], mostrados = 0, sinonimos = {}, sagas = {};
+  var todos = [], juegos = [], buscador = null, lista = [], mostrados = 0, sinonimos = {}, sagas = {}, generos = {};
   // consola: 'populares' (al abrir), '' (todos), 'PS5' o 'PS4'. orden: 'auto' depende de lo que se mira
   // (buscando: más parecidos; en Populares: el orden de populares; si no: A a Z), o el que eligió la persona.
-  var estado = { texto: '', consola: 'populares', orden: 'auto' };
+  // genero: '' (todos) o uno de generos.json; se combina con Todos, PS4, PS5, Ofertas y la búsqueda.
+  var estado = { texto: '', consola: 'populares', orden: 'auto', genero: '' };
   var NOMBRE_AUTO = { parecido: 'Más parecidos', popular: 'Más populares', nombre: 'A a Z', descuento: 'Mayor descuento' };
 
   var formato = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
@@ -57,7 +58,7 @@
       j._precio = j._o ? j._o.contado : j.contado;
     });
     juegos = todos.filter(function (j) { return !j.solo_oferta || j._o; });
-    buscador = window.crearBuscador(juegos, sinonimos, sagas);
+    buscador = window.crearBuscador(juegos, sinonimos, sagas, generos);
     clearTimeout(relojOfertas);
     // Si la página queda abierta, a la hora de vencer se vuelve a pintar sola.
     if (proxima < Infinity && proxima - t < 864e5) {
@@ -133,20 +134,32 @@
     return estado.texto ? 'parecido' : estado.consola === 'populares' ? 'popular' : estado.consola === 'ofertas' ? 'descuento' : 'nombre';
   }
 
-  function calcularLista() {
+  function tieneGenero(j, g) { return (j.generos || []).indexOf(g) >= 0; }
+
+  // La lista sin género ni orden para lo elegido arriba (modo: 'populares', 'ofertas', '', 'PS4' o 'PS5').
+  function listaBase(modo) {
     var base;
     if (estado.texto) {
-      // Buscando se busca en todo el catálogo, aunque esté elegido Populares.
+      // Buscando se busca en todo el catálogo, aunque esté elegido Populares. Si lo buscado es un género
+      // ("terror", "rpg"), después de los que se llaman así van todos los de ese género.
       base = buscador.buscar(estado.texto).map(function (r) { return r.juego; });
-    } else if (estado.consola === 'populares') {
+      var g = buscador.genero(estado.texto);
+      if (g) base = base.concat(juegos.filter(function (j) { return tieneGenero(j, g) && base.indexOf(j) < 0; }));
+    } else if (modo === 'populares') {
       base = juegos.filter(function (j) { return j.popular; });
-    } else if (estado.consola === 'ofertas') {
+    } else if (modo === 'ofertas') {
       base = juntarConsolas(juegos.filter(function (j) { return j._o; }));
     } else {
       base = juegos.slice();
     }
-    var consola = consolaElegida();
+    var consola = /^(populares|ofertas|psplus)$/.test(modo) ? '' : modo;
     if (consola) base = base.filter(function (j) { return j.consola.indexOf(consola) >= 0; });
+    return base;
+  }
+
+  function calcularLista() {
+    var base = listaBase(estado.consola);
+    if (estado.genero) base = base.filter(function (j) { return tieneGenero(j, estado.genero); });
     var orden = estado.orden === 'auto' ? ordenAuto() : estado.orden;
     if (orden === 'menor') base.sort(function (a, b) { return a._precio - b._precio; });
     else if (orden === 'mayor') base.sort(function (a, b) { return b._precio - a._precio; });
@@ -259,8 +272,52 @@
       formato.format(lista.length) + (lista.length === 1 ? ' juego' : ' juegos') +
       (estado.texto ? ' para “' + estado.texto + '”' : estado.consola === 'populares' ? ' populares' :
         estado.consola === 'ofertas' ? ' en oferta' : '') +
-      (consolaElegida() ? ' de ' + consolaElegida() : '');
+      (estado.genero ? ' de ' + estado.genero : '') +
+      (consolaElegida() ? (estado.genero ? ' para ' : ' de ') + consolaElegida() : '');
+    pintarBotonGenero();
   }
+
+  // ---------- Género: botón en la línea del orden y hoja desde abajo con cuántos juegos hay de cada uno ----------
+  var botonGenero = $('boton-genero'), hojaGeneros = $('hoja-generos');
+
+  function listaGeneros() {
+    var orden = (generos.lista || []).slice();
+    juegos.forEach(function (j) { (j.generos || []).forEach(function (g) { if (orden.indexOf(g) < 0) orden.push(g); }); });
+    return orden;
+  }
+  function pintarBotonGenero() {
+    botonGenero.hidden = !juegos.some(function (j) { return j.generos && j.generos.length; });
+    botonGenero.setAttribute('aria-pressed', String(!!estado.genero));
+    $('genero-elegido').textContent = estado.genero || 'Género';
+  }
+  function abrirGeneros() {
+    // Se cuenta sobre lo que se va a ver: Populares pasa a Todos al elegir un género.
+    var modo = /^(populares|psplus)$/.test(estado.consola) ? '' : estado.consola;
+    var base = listaBase(modo), cuenta = {};
+    base.forEach(function (j) { (j.generos || []).forEach(function (g) { cuenta[g] = (cuenta[g] || 0) + 1; }); });
+    var consola = /^(PS4|PS5)$/.test(modo) ? modo : '';
+    $('generos-nota').textContent = 'Cuántos juegos hay de cada uno' + (estado.texto ? ' para “' + estado.texto + '”' :
+      modo === 'ofertas' ? ' en oferta' : '') + (consola ? ' de ' + consola : '') + '.';
+    var opcion = function (valor, nombre, n) {
+      return '<button type="button" data-genero="' + escapar(valor) + '" aria-pressed="' + (estado.genero === valor) + '">' +
+        '<strong>' + escapar(nombre) + '</strong><span>' + formato.format(n) + '</span></button>';
+    };
+    $('generos-lista').innerHTML = opcion('', 'Todos los géneros', base.length) +
+      listaGeneros().filter(function (g) { return cuenta[g] || estado.genero === g; })
+        .map(function (g) { return opcion(g, g, cuenta[g] || 0); }).join('');
+    if (typeof hojaGeneros.showModal === 'function') hojaGeneros.showModal(); else hojaGeneros.setAttribute('open', '');
+  }
+  function cerrarGeneros() { if (hojaGeneros.open) { if (hojaGeneros.close) hojaGeneros.close(); else hojaGeneros.removeAttribute('open'); } }
+  botonGenero.addEventListener('click', abrirGeneros);
+  hojaGeneros.addEventListener('click', function (e) {
+    if (e.target === hojaGeneros) return cerrarGeneros();       // tocar fuera de la lista la cierra
+    var b = e.target.closest('[data-genero]');
+    if (!b) return;
+    estado.genero = b.getAttribute('data-genero');
+    if (estado.genero && /^(populares|psplus)$/.test(estado.consola)) elegirConsola('');
+    cerrarGeneros();
+    pintar(true);
+  });
 
   // ---------- Controles ----------
 
@@ -282,6 +339,7 @@
 
   function elegirConsola(valor) {
     estado.consola = valor;
+    if (/^(populares|psplus)$/.test(valor)) estado.genero = '';      // Populares y PS Plus van sin género
     botonesConsola.forEach(function (o) { o.setAttribute('aria-pressed', String(o.getAttribute('data-consola') === valor)); });
   }
   botonesConsola.forEach(function (b) {
@@ -751,10 +809,11 @@
     fetch('sinonimos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('sagas.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('destacado.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch('psplus.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch('psplus.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch('generos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
   ]).then(function (datos) {
     todos = datos[0].juegos || [];
-    sinonimos = datos[1]; sagas = datos[2];
+    sinonimos = datos[1]; sagas = datos[2]; generos = datos[5] || {};
     conCuotas = datos[0].mostrar_cuotas === true;
     if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
     avisarCatalogo(datos[0]);

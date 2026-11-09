@@ -1,0 +1,1637 @@
+{
+  "_comentario": "Peso de los juegos cuya ficha no dice cuánto pesan, por juego y consola. \"oficial\": el peso tal como lo publica la PS Store, la editorial o el PlayStation Blog (con \"fuente\": su link); se puede poner solo el texto (\"45 GB\"). \"estimado\": a partir del espacio que pide la versión de PC en Steam (±10 GB, redondeado para arriba); la web lo muestra como \"~45 GB (aproximado)\". Nunca copiar el peso de una consola a la otra. Sin dato, la ficha no muestra el peso.",
+  "juegos": {
+    "1348 Ex Voto": {
+      "PS5": {
+        "peso": "35 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1895900"
+      }
+    },
+    "AEW Fight Forever": {
+      "PS4": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1913210"
+      },
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1913210"
+      }
+    },
+    "AGE OF EMPIRES IV Anniversary Edition": {
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1466860"
+      }
+    },
+    "ARCADE GAME SERIES PAC-MAN": {
+      "PS4": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/394160"
+      },
+      "PS5": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/394160"
+      }
+    },
+    "ARMORED CORE VI FIRES OF RUBICON": {
+      "PS4": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1888160"
+      },
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1888160"
+      }
+    },
+    "ASSETTO CORSA": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/244210"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/244210"
+      }
+    },
+    "ASTERIX & OBELIX MISSION BABYLON": {
+      "PS5": {
+        "peso": "5 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3489240"
+      }
+    },
+    "Atelier Ryza 2: Lost Legends & the Secret Fairy DX": {
+      "PS4": {
+        "peso": "35 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3365040"
+      },
+      "PS5": {
+        "peso": "35 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3365040"
+      }
+    },
+    "Atelier Ryza 3: Alchemist of the End & the Secret Key DX": {
+      "PS4": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3365050"
+      },
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3365050"
+      }
+    },
+    "Atelier Ryza: Ever Darkness & the Secret Hideout DX": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3365030"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3365030"
+      }
+    },
+    "BACK 4 BLOOD ULTIMATE EDITION": {
+      "PS4": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/924970"
+      },
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/924970"
+      }
+    },
+    "BALL X PIT": {
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2062430"
+      }
+    },
+    "BATMAN ARKHAM KNIGHT": {
+      "PS4": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/208650"
+      },
+      "PS5": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/208650"
+      }
+    },
+    "BATTLEFIELD 1": {
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1238840"
+      }
+    },
+    "BATTLEFIELD 6": {
+      "PS5": {
+        "peso": "55 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2807960"
+      }
+    },
+    "BATTLEFIELD HARDLINE": {
+      "PS4": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1238880"
+      },
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1238880"
+      }
+    },
+    "BATTLEFIELD V Definitive Edition": {
+      "PS4": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1238810"
+      },
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1238810"
+      }
+    },
+    "BENDY AND THE DARK REVIVAL": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1063660"
+      }
+    },
+    "BERSERK: AND THE BAND OF THE HAWK": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/502280"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/502280"
+      }
+    },
+    "Blasphemous": {
+      "PS4": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/774361"
+      },
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/774361"
+      }
+    },
+    "Blood: Refreshed Supply": {
+      "PS4": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3884520"
+      },
+      "PS5": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3884520"
+      }
+    },
+    "BLUEY: El Videojuego": {
+      "PS4": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2078350"
+      },
+      "PS5": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2078350"
+      }
+    },
+    "BRATZ: Ritmo y Estilo": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3212580"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3212580"
+      }
+    },
+    "CALIGO": {
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/629840"
+      }
+    },
+    "CALL OF DUTY ADVANCED WARFARE": {
+      "PS4": {
+        "peso": "55 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/209650"
+      },
+      "PS5": {
+        "peso": "55 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/209650"
+      }
+    },
+    "CAPCOM FIGHTING COLLECTION 2": {
+      "PS4": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2400430"
+      },
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2400430"
+      }
+    },
+    "CAPTAIN TSUBASA: Rise of New Champions Ultimate Edition": {
+      "PS4": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1163550"
+      },
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1163550"
+      }
+    },
+    "CARX STREET": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1114150"
+      }
+    },
+    "Castlevania Dominus Collection": {
+      "PS5": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2369900"
+      }
+    },
+    "CLAIR OBSCUR: EXPEDITION 33": {
+      "PS5": {
+        "peso": "55 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1903340"
+      }
+    },
+    "CRASH BANDICOOT: N Sane Trilogy": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/731490"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/731490"
+      }
+    },
+    "Crime SImulator": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2737070"
+      }
+    },
+    "Crisol: Theater of Idols": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1790930"
+      }
+    },
+    "CRONOS: The New Dawn": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2101960"
+      }
+    },
+    "Cthulhu The Cosmic Abyss": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2760560"
+      }
+    },
+    "CULT OF THE LAMB": {
+      "PS4": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1313140"
+      },
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1313140"
+      }
+    },
+    "Dark Hours": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2208570"
+      }
+    },
+    "DARK SOULS 3": {
+      "PS4": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/374320"
+      },
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/374320"
+      }
+    },
+    "DARK SOULS REMASTERED": {
+      "PS4": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/570940"
+      },
+      "PS5": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/570940"
+      }
+    },
+    "Darwin's Paradox!": {
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2989180"
+      }
+    },
+    "DIGIMON STORY TIME STRANGER": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1984270"
+      }
+    },
+    "DISPATCH": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2592160"
+      }
+    },
+    "Divinity: Original Sin 2 Definitive Edition": {
+      "PS4": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/435150"
+      },
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/435150"
+      }
+    },
+    "DOCKED": {
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2487300"
+      }
+    },
+    "DOUBLE DRAGON REVIVE": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3012220"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3012220"
+      }
+    },
+    "DRAGON BALL XENOVERSE": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/323470"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/323470"
+      }
+    },
+    "DRAGON BALL Z: Kakarot": {
+      "PS4": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/851850"
+      },
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/851850"
+      }
+    },
+    "DRAGON QUEST I & II HD-2D Remake": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2893570"
+      }
+    },
+    "DRAGON QUEST VII Reimagined": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2499860"
+      }
+    },
+    "DRAGONKIN: The Banished": {
+      "PS5": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1863430"
+      }
+    },
+    "DRUNKN BAR FIGHT": {
+      "PS4": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/528550"
+      },
+      "PS5": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/528550"
+      }
+    },
+    "EARTH DEFENSE FORCE 6": {
+      "PS4": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2291060"
+      },
+      "PS5": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2291060"
+      }
+    },
+    "ELDEN RING": {
+      "PS4": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1245620"
+      },
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1245620"
+      }
+    },
+    "ELDEN RING NIGHTREIGN": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2622380"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2622380"
+      }
+    },
+    "Ereban: Shadow Legacy": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1671360"
+      }
+    },
+    "ERIKSHOLM The Stolen Dream": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2377280"
+      }
+    },
+    "FAR CRY 4": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/298110"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/298110"
+      }
+    },
+    "FAR CRY 5 GOLD EDITION": {
+      "PS4": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/552520"
+      },
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/552520"
+      }
+    },
+    "FAR CRY PRIMAL": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/371660"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/371660"
+      }
+    },
+    "FARMING SIMULATOR 17": {
+      "PS4": {
+        "peso": "6 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/447020"
+      },
+      "PS5": {
+        "peso": "6 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/447020"
+      }
+    },
+    "Farming Simulator 22": {
+      "PS5": {
+        "peso": "35 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1248130"
+      }
+    },
+    "FATAL FRAME II: Crimson Butterfly REMAKE": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3920610"
+      }
+    },
+    "FATAL FURY City of the Wolves SPECIAL EDITION": {
+      "PS4": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2492040"
+      },
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2492040"
+      }
+    },
+    "FIREFIGHTING SIMULATOR: IGNITE": {
+      "PS5": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1669480"
+      }
+    },
+    "FROSTPUNK 2": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1601580"
+      }
+    },
+    "GREEDFALL: The Dying World": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1997660"
+      }
+    },
+    "GREEN HELL": {
+      "PS4": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/815370"
+      },
+      "PS5": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/815370"
+      }
+    },
+    "Ground Zero": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2340130"
+      }
+    },
+    "Hades 2": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1145350"
+      }
+    },
+    "HELL IS US": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1620730"
+      }
+    },
+    "HELLBLADE Senua's Sacrifice": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/414340"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/414340"
+      }
+    },
+    "HOLLOW KNIGHT SILKSONG": {
+      "PS4": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1030300"
+      },
+      "PS5": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1030300"
+      }
+    },
+    "INSIDE": {
+      "PS4": {
+        "peso": "3 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/304430"
+      },
+      "PS5": {
+        "peso": "3 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/304430"
+      }
+    },
+    "Internet Cafe Simulator 2025": {
+      "PS4": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3326290"
+      },
+      "PS5": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3326290"
+      }
+    },
+    "Jay and Silent Bob Chronic Blunt Punch": {
+      "PS5": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1346290"
+      }
+    },
+    "JDM: Japanese Drift Master": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1153410"
+      }
+    },
+    "JOHN CARPENTER'S Toxic Commando": {
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2157830"
+      }
+    },
+    "JUMP KING": {
+      "PS4": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1061090"
+      },
+      "PS5": {
+        "peso": "2 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1061090"
+      }
+    },
+    "JURASSIC WORLD EVOLUTION 2": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1244460"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1244460"
+      }
+    },
+    "JURASSIC WORLD EVOLUTION 3": {
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2958130"
+      }
+    },
+    "JUST SHAPES & BEATS": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/531510"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/531510"
+      }
+    },
+    "KILLING FLOOR 3": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1430190"
+      }
+    },
+    "Legacy of Kain: Defiance Remastered": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3747730"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3747730"
+      }
+    },
+    "LEGO HARRY POTTER: Coleccion": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2950340"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2950340"
+      }
+    },
+    "LEGO JURASSIC WORLD": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/352400"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/352400"
+      }
+    },
+    "LEGO MARVEL SUPER HEROES": {
+      "PS4": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/249130"
+      },
+      "PS5": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/249130"
+      }
+    },
+    "LEGO PARTY": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1969370"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1969370"
+      }
+    },
+    "LEGO WORLDS": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/332310"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/332310"
+      }
+    },
+    "LIES OF P": {
+      "PS4": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1627720"
+      },
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1627720"
+      }
+    },
+    "LIFE IS STRANGE Reunion": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2624870"
+      }
+    },
+    "Little Nightmares VR: Altered Echoes": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2482940"
+      }
+    },
+    "Lonely Mountains Riders Snow": {
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2545360"
+      }
+    },
+    "LOS SIMS 4": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1222670"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1222670"
+      }
+    },
+    "LUMINES ARISE": {
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2370000"
+      }
+    },
+    "MAD MAX": {
+      "PS4": {
+        "peso": "35 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/234140"
+      },
+      "PS5": {
+        "peso": "35 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/234140"
+      }
+    },
+    "MARVEL Cosmic Invasion": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2753970"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2753970"
+      }
+    },
+    "MARVEL MaXimum Collection": {
+      "PS5": {
+        "peso": "3 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3931060"
+      }
+    },
+    "MEGA MAN X LEGACY COLLECTION": {
+      "PS4": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/743890"
+      },
+      "PS5": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/743890"
+      }
+    },
+    "MEGA MAN X LEGACY COLLECTION 2": {
+      "PS4": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/743900"
+      },
+      "PS5": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/743900"
+      }
+    },
+    "METRO: 2033 Redux": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/286690"
+      }
+    },
+    "METRO: Last Light Redux": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/287390"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/287390"
+      }
+    },
+    "MIDDLE EARTH: Shadow Of Mordor": {
+      "PS4": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/241930"
+      },
+      "PS5": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/241930"
+      }
+    },
+    "MIO: Memories in Orbit": {
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1672810"
+      }
+    },
+    "Monster Hunter Stories 3: Twisted Reflection": {
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2852190"
+      }
+    },
+    "MORTAL KOMBAT LEGACY KOLLECTION": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3454980"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3454980"
+      }
+    },
+    "MOUSE: P.I. For Hire": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2416450"
+      }
+    },
+    "MOVING OUT": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/996770"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/996770"
+      }
+    },
+    "Murdered: Soul Suspect": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/233290"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/233290"
+      }
+    },
+    "MXGP - The Official Motocross Videogame": {
+      "PS4": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/256370"
+      },
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/256370"
+      }
+    },
+    "NEED FOR SPEED: Payback": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1262580"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1262580"
+      }
+    },
+    "Never Grave: The Witch and The Curse": {
+      "PS4": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2395770"
+      },
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2395770"
+      }
+    },
+    "New Super Lucky's Tale": {
+      "PS5": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1038300"
+      }
+    },
+    "No Man's Sky": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/275850"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/275850"
+      }
+    },
+    "NORTHGARD": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/466560"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/466560"
+      }
+    },
+    "ONE PIECE: Pirate Warriors 3": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/331600"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/331600"
+      }
+    },
+    "ONE PIECE: PIRATE WARRIORS 4 ULTIMATE EDITION": {
+      "PS4": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1089090"
+      },
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1089090"
+      }
+    },
+    "People of Note": {
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1626170"
+      }
+    },
+    "PERSONA 5 STRIKERS Deluxe": {
+      "PS4": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1382330"
+      },
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1382330"
+      }
+    },
+    "Planet of Lana 2": {
+      "PS4": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2997230"
+      },
+      "PS5": {
+        "peso": "45 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2997230"
+      }
+    },
+    "POST TRAUMA": {
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1750030"
+      }
+    },
+    "Pragmata": {
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3357650"
+      }
+    },
+    "Pragmata Deluxe Edition": {
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3357650"
+      }
+    },
+    "PUBG: BATTLEGROUNDS": {
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/578080"
+      }
+    },
+    "Raft": {
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/648800"
+      }
+    },
+    "READY OR NOT": {
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1144200"
+      }
+    },
+    "REANIMAL": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2129530"
+      }
+    },
+    "RIDE 6": {
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2815070"
+      }
+    },
+    "ROADCRAFT": {
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2104890"
+      }
+    },
+    "ROMEO IS A DEAD MAN": {
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3050900"
+      }
+    },
+    "Rune Factory: Guardians of Azuma": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2864560"
+      }
+    },
+    "SAINTS ROW 4: Re-elected": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/206420"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/206420"
+      }
+    },
+    "SCOTT PILGRIM EX": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2640950"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2640950"
+      }
+    },
+    "SENGOKU DYNASTY": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1702010"
+      }
+    },
+    "SHERLOCK HOLMES THE AWAKENED": {
+      "PS4": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1949030"
+      },
+      "PS5": {
+        "peso": "30 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1949030"
+      }
+    },
+    "SHINOBI ART OF VENGEANCE": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2361770"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2361770"
+      }
+    },
+    "SIFU": {
+      "PS4": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2138710"
+      },
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2138710"
+      }
+    },
+    "SILENT HILL F": {
+      "PS5": {
+        "peso": "50 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2947440"
+      }
+    },
+    "SKULLGIRLS 2ND ENCORE": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/245170"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/245170"
+      }
+    },
+    "Sleep Awake": {
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2446540"
+      }
+    },
+    "SLEEPING DOGS: Definitive Edition": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/307690"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/307690"
+      }
+    },
+    "SNIPER ELITE V2 REMASTERED": {
+      "PS4": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/728740"
+      },
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/728740"
+      }
+    },
+    "SNIPER GHOST WARRIOR CONTRACTS 2": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1338770"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1338770"
+      }
+    },
+    "SONIC: Forces": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/637100"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/637100"
+      }
+    },
+    "SONIC: Mania": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/584400"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/584400"
+      }
+    },
+    "SPACE ADVENTURE COBRA The Awakening": {
+      "PS5": {
+        "peso": "3 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2878220"
+      }
+    },
+    "SPELUNKY 2": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/418530"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/418530"
+      }
+    },
+    "Spike Volleyball": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/738550"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/738550"
+      }
+    },
+    "STAR OVERDRIVE": {
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2055590"
+      }
+    },
+    "Star Trek: Voyager - Across the Unknown": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2643390"
+      }
+    },
+    "STAR WARS DARK FORCES Remaster": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2292260"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2292260"
+      }
+    },
+    "STAR WARS: Battlefront": {
+      "PS4": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1237980"
+      },
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1237980"
+      }
+    },
+    "STAR WARS: Battlefront 2": {
+      "PS4": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1237950"
+      },
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1237950"
+      }
+    },
+    "STICK FIGHT THE GAME": {
+      "PS4": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/674940"
+      },
+      "PS5": {
+        "peso": "1 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/674940"
+      }
+    },
+    "STRAY": {
+      "PS4": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1332010"
+      },
+      "PS5": {
+        "peso": "10 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1332010"
+      }
+    },
+    "STREETS OF RAGE 4": {
+      "PS4": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/985890"
+      },
+      "PS5": {
+        "peso": "8 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/985890"
+      }
+    },
+    "Styx Blades of Greed": {
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3290690"
+      }
+    },
+    "Sudden Strike 5": {
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2808550"
+      }
+    },
+    "SUPER MONKEY BALL BANANA MANIA DELUXE": {
+      "PS4": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1316910"
+      },
+      "PS5": {
+        "peso": "4 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1316910"
+      }
+    },
+    "SWORD ART ONLINE Last Recollection": {
+      "PS4": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1566880"
+      },
+      "PS5": {
+        "peso": "20 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/1566880"
+      }
+    },
+    "SWORD OF THE SEA": {
+      "PS5": {
+        "peso": "15 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2453160"
+      }
+    },
+    "SYBERIA REMASTERED": {
+      "PS5": {
+        "peso": "25 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3660220"
+      }
+    },
+    "THE BEARER & THE LAST FLAME": {
+      "PS5": {
+        "peso": "60 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2566510"
+      }
+    },
+    "THE EVIL WITHIN 2": {
+      "PS4": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/601430"
+      },
+      "PS5": {
+        "peso": "40 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/601430"
+      }
+    },
+    "THE FOREST": {
+      "PS4": {
+        "peso": "5 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/242760"
+      },
+      "PS5": {
+        "peso": "5 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/242760"
+      }
+    },
+    "THE HOUSE OF THE DEAD 2 REMAKE": {
+      "PS4": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3376690"
+      },
+      "PS5": {
+        "peso": "7 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/3376690"
+      }
+    },
+    "THE ROGUE PRINCE OF PERSIA": {
+      "PS5": {
+        "peso": "5 GB",
+        "tipo": "estimado",
+        "fuente": "https://store.steampowered.com/app/2717880"
+      }
+    }
+  }
+}
