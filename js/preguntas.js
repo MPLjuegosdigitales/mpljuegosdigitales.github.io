@@ -34,14 +34,28 @@
     });
   }
 
+  // Una parte de la respuesta: un párrafo (texto), una lista con viñetas ({lista: [...]}) o pasos numerados
+  // ({pasos: [...]}). null si usa un dato que no llegó.
+  function parte(r, datos) {
+    if (typeof r === 'string') {
+      var t = reemplazar(r, datos);
+      return t === null ? null : '<p>' + escapar(t) + '</p>';
+    }
+    var items = r && (r.lista || r.pasos), etiqueta = r && r.pasos ? 'ol' : 'ul';
+    if (!Array.isArray(items) || !items.length) return '';
+    var lis = items.map(function (x) { return reemplazar(x, datos); });
+    if (lis.some(function (x) { return x === null; })) return null;
+    return '<' + etiqueta + '>' + lis.map(function (x) { return '<li>' + escapar(x) + '</li>'; }).join('') + '</' + etiqueta + '>';
+  }
+
   function pintarPreguntas(contenido, datos) {
     var html = ((contenido && contenido.preguntas) || []).filter(function (p) {
       return p.estado === 'confirmada' && p.pregunta && p.respuesta;
     }).map(function (p) {
-      var parrafos = (Array.isArray(p.respuesta) ? p.respuesta : [p.respuesta]).map(function (r) { return reemplazar(r, datos); });
-      if (parrafos.some(function (r) { return r === null; })) return '';
+      var partes = (Array.isArray(p.respuesta) ? p.respuesta : [p.respuesta]).map(function (r) { return parte(r, datos); });
+      if (partes.some(function (r) { return r === null; })) return '';
       return '<details class="pregunta"><summary>' + escapar(p.pregunta) + '</summary>' +
-        '<div class="respuesta">' + parrafos.map(function (r) { return '<p>' + escapar(r) + '</p>'; }).join('') + '</div>' +
+        '<div class="respuesta">' + partes.join('') + '</div>' +
       '</details>';
     }).join('');
     if (!html) { seccion.hidden = true; return; }

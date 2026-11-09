@@ -30,15 +30,21 @@
   <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
 
   <div class="barra" id="barra">
-    <form class="buscador" role="search" onsubmit="return false">
-      <label class="oculto" for="busqueda">Buscar un juego</label>
-      <svg class="lupa" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.8 4.8-1.4 1.4-4.8-4.8A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
-      <input id="busqueda" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
-             placeholder="Buscá tu juego (ej: fifa, gta)">
-      <button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden>
-        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>
+    <!-- Menú ☰ al lado del buscador: la barra fija no crece. Lo maneja js/menu.js. -->
+    <div class="barra-fila">
+      <form class="buscador" role="search" onsubmit="return false">
+        <label class="oculto" for="busqueda">Buscar un juego</label>
+        <svg class="lupa" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.8 4.8-1.4 1.4-4.8-4.8A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+        <input id="busqueda" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
+               placeholder="Buscá tu juego (ej: fifa, gta)" data-corto="Buscá tu juego">
+        <button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>
+        </button>
+      </form>
+      <button class="boton-menu" type="button" id="boton-menu" aria-label="Menú" aria-haspopup="dialog" aria-controls="menu">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
       </button>
-    </form>
+    </div>
     <div class="consolas" role="group" aria-label="Mostrar">
       <!-- Ofertas: el texto lo pone js/tienda.js con el nombre de la promoción; sin ofertas vigentes no se ve. -->
       <button class="boton-ofertas" type="button" data-consola="ofertas" aria-pressed="false" hidden></button>
@@ -109,6 +115,20 @@
     <p class="actualizado" id="actualizado"></p>
   </footer>
 
+  <!-- Menú: secciones de la tienda. Las nuevas se suman acá, no a la barra fija. Lo maneja js/menu.js. -->
+  <dialog class="hoja" id="menu" aria-labelledby="menu-titulo">
+    <form method="dialog" class="hoja-cuerpo">
+      <h2 id="menu-titulo">Menú</h2>
+      <div class="menu-lista">
+        <button type="button" data-ir="psplus"><strong>PS Plus</strong><span>Planes para PS4 y PS5</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+        <button type="button" data-ir="preguntas"><strong>Preguntas frecuentes</strong><span>Garantía, instalación, entrega y más</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+        <button type="button" data-ir="pie"><strong>Horarios y atención</strong><span id="menu-horarios">Horarios, entrega y atención presencial</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+        <button type="button" data-ir="consultar"><strong>Consultar por WhatsApp</strong><span>Con Mateo o Luca</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z"/></svg></button>
+      </div>
+      <button class="boton-secundario" value="cerrar">Cerrar</button>
+    </form>
+  </dialog>
+
   <dialog class="hoja hoja-contacto" id="hoja" aria-labelledby="hoja-titulo" aria-describedby="hoja-sub hoja-juego">
     <!-- Mateo y Luca asoman por arriba del menú. Las imágenes se bajan cuando terminó de cargar la página (js/tienda.js). -->
     <div class="figuras" id="figuras" aria-hidden="true">
@@ -137,6 +157,7 @@
 
   <script src="js/buscar.js"></script>
   <script src="js/preguntas.js"></script>
+  <script src="js/menu.js"></script>
   <script src="js/tienda.js"></script>
 </body>
 </html>

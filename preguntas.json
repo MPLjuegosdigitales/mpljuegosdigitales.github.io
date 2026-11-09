@@ -2,12 +2,14 @@
   "_como_editar": [
     "Preguntas frecuentes del final de la portada. Se pueden cambiar acá sin tocar el código.",
     "estado: \"confirmada\" se ve en la web; \"a confirmar\" NO se ve (es un borrador hasta que Mateo y Luca lo aprueben).",
-    "respuesta: un texto o una lista de párrafos. Las preguntas se ven en este mismo orden.",
+    "respuesta: un texto, o una lista de partes en orden. Cada parte es un párrafo (texto), una lista con viñetas",
+    "({\"lista\": [...]}) o pasos numerados ({\"pasos\": [...]}). Las preguntas se ven en este mismo orden.",
+    "Los nombres de los menús de la consola van exactos, entre comillas (“Configuración”).",
     "Reemplazos: {demora} = demora_entrega, {horarios} = horarios_atencion y {presencial} = atencion_presencial, los tres",
     "de config.json de mpl-precios (llegan en catalog.json). Si cambian ahí, cambian solos acá y en el pie. Una pregunta",
     "que usa un dato que no llegó no se muestra.",
-    "PENDIENTE marca lo que falta definir y PROPUESTA lo que hay que aprobar. Nunca pasar a \"confirmada\" una respuesta",
-    "que diga PENDIENTE o PROPUESTA: primero se reemplaza por el texto aprobado."
+    "PENDIENTE marca lo que falta definir. Nunca pasar a \"confirmada\" una respuesta que diga PENDIENTE: primero se",
+    "reemplaza por el texto aprobado."
   ],
   "titulo": "Preguntas frecuentes",
   "preguntas": [
@@ -30,6 +32,15 @@
       ]
     },
     {
+      "pregunta": "¿Por qué tengo que crear otro usuario en la consola?",
+      "estado": "confirmada",
+      "respuesta": [
+        "Porque es una cuenta primaria: el usuario nuevo sirve solo para descargar el juego y activar la licencia. Vos seguís jugando siempre con tu usuario de siempre.",
+        "A ese usuario lo llamamos usuario descargador: no se usa para nada más y no se borra nunca.",
+        "En PS5, cuando lo crees, elegí “Agregar usuario a esta consola”. No elijas “Usar como invitado” ni “Uso de única vez”: se pierde el código de verificación, y conseguir uno nuevo tiene costo y demora; consultanos."
+      ]
+    },
+    {
       "pregunta": "¿Qué necesito para recibir el juego?",
       "estado": "confirmada",
       "respuesta": "Tu PS4 o PS5 con conexión a internet para descargarlo y espacio libre para el juego. Nosotros te pasamos la cuenta y el video con los pasos para instalarlo."
@@ -45,6 +56,11 @@
       "respuesta": "En efectivo o por transferencia."
     },
     {
+      "pregunta": "¿Puedo descargar varios juegos a la vez?",
+      "estado": "confirmada",
+      "respuesta": "Sí. Podés tener varias descargas en curso al mismo tiempo, y siguen solas aunque vuelvas a tu usuario de siempre. Para jugar, usá siempre tu usuario, nunca el usuario descargador."
+    },
+    {
       "pregunta": "¿Puedo jugar sin internet?",
       "estado": "confirmada",
       "respuesta": [
@@ -53,39 +69,59 @@
       ]
     },
     {
-      "pregunta": "¿Qué quiere decir \"Versión PS4\" en un juego de PS5?",
-      "estado": "a confirmar",
-      "respuesta": "Que es la edición de PS4 del juego, que también se puede jugar en una PS5. La instalás en tu PS5 y la jugás como cualquier otro juego."
+      "pregunta": "¿Podemos jugar de a dos?",
+      "estado": "confirmada",
+      "respuesta": "Sí, con tu usuario o con el de otra persona de la consola. Lo único: el segundo jugador nunca puede ser el usuario descargador."
+    },
+    {
+      "pregunta": "¿Me aparece un candado o dice “Ver producto”?",
+      "estado": "confirmada",
+      "respuesta": [
+        "Tiene solución. Entrá al usuario descargador y hacé estos dos pasos, en este orden (son los menús de PS5):",
+        {
+          "pasos": [
+            "“Configuración” → “Usuarios y cuentas” → “Otros” → “Uso compartido de consola y juego offline” → “Activar”.",
+            "“Configuración” → “Usuarios y cuentas” → “Otros” → “Restaurar licencias” → “Restaurar”."
+          ]
+        },
+        "Cuando termine, volvé a tu usuario de siempre. Si sigue igual, escribinos."
+      ]
     },
     {
       "pregunta": "¿Los juegos tienen garantía?",
       "estado": "confirmada",
-      "respuesta": "Sí, todos nuestros juegos tienen garantía. Si tenés algún problema con un juego, escribinos."
+      "respuesta": "Sí. La garantía cubre que puedas jugar siempre con tu usuario personal. Si en algún momento no te deja jugar, por el motivo que sea, escribinos y lo resolvemos. Mientras tanto, no uses el usuario descargador para jugar."
     },
     {
-      "pregunta": "¿Qué cubre la garantía?",
-      "estado": "a confirmar",
-      "respuesta": "PROPUESTA: Cubre que puedas jugar el juego que compraste: si la cuenta deja de funcionar, la revisamos y, si no se puede arreglar, te damos otra sin costo. PENDIENTE: si tiene un plazo y qué casos no cubre."
+      "pregunta": "¿Qué hace que pierda la garantía?",
+      "estado": "confirmada",
+      "respuesta": [
+        "La garantía se pierde si:",
+        {
+          "lista": [
+            "Usás la cuenta en otra consola o intentás compartirla. Además, la cuenta se bloquea en las dos consolas.",
+            "Cambiás cualquier dato de la cuenta.",
+            "Iniciás sesión con esa cuenta en la web de PlayStation o en la PS App.",
+            "Jugás con el usuario descargador, aunque sea como segundo jugador.",
+            "Eliminás el usuario descargador: es la licencia de tu juego."
+          ]
+        }
+      ]
     },
     {
-      "pregunta": "¿Qué pasa si cambio o formateo la consola?",
-      "estado": "a confirmar",
-      "respuesta": "PENDIENTE: si se puede volver a dejar la cuenta como principal en la consola nueva o formateada, cuántas veces, si tiene algún costo y cómo se pide."
+      "pregunta": "¿Hay riesgo de que se bloquee la cuenta?",
+      "estado": "confirmada",
+      "respuesta": "Si cuidás lo que dice “¿Qué hace que pierda la garantía?”, la cuenta funciona normalmente, y ante cualquier problema tenés la garantía. La cuenta se bloquea si se comparte o si se usa en otra consola."
     },
     {
-      "pregunta": "¿Los juegos se actualizan?",
-      "estado": "a confirmar",
-      "respuesta": "PENDIENTE: si las actualizaciones y los parches se descargan normalmente."
+      "pregunta": "¿Puedo cambiar de consola?",
+      "estado": "confirmada",
+      "respuesta": "No. La cuenta queda activada en tu consola, y si se usa en otra, se bloquea en las dos."
     },
     {
-      "pregunta": "¿Hay riesgo de perder el juego o de que se bloquee la cuenta?",
-      "estado": "a confirmar",
-      "respuesta": "PENDIENTE: qué respondemos sobre ese riesgo y qué hacemos si pasa (ver también qué cubre la garantía)."
-    },
-    {
-      "pregunta": "¿Hacen devoluciones?",
-      "estado": "a confirmar",
-      "respuesta": "PENDIENTE: en qué casos se devuelve el dinero y en cuáles no (por ejemplo, antes o después de entregar la cuenta)."
+      "pregunta": "¿Puedo formatear la consola?",
+      "estado": "confirmada",
+      "respuesta": "Avisanos antes de formatear, así te ayudamos a no perder la licencia."
     },
     {
       "pregunta": "¿Tienen atención presencial?",
@@ -98,14 +134,29 @@
       "respuesta": "{horarios}"
     },
     {
+      "pregunta": "¿PS Plus cuesta lo mismo para PS4 y para PS5?",
+      "estado": "confirmada",
+      "respuesta": "El precio depende de la consola en la que lo vas a usar. En la sección PS Plus elegí PS4 o PS5 y vas a ver el precio de cada plan para tu consola."
+    },
+    {
+      "pregunta": "¿Qué quiere decir \"Versión PS4\" en un juego de PS5?",
+      "estado": "a confirmar",
+      "respuesta": "Que es la edición de PS4 del juego, que también se puede jugar en una PS5. La instalás en tu PS5 y la jugás como cualquier otro juego."
+    },
+    {
+      "pregunta": "¿Los juegos se actualizan?",
+      "estado": "a confirmar",
+      "respuesta": "PENDIENTE: si las actualizaciones y los parches se descargan normalmente."
+    },
+    {
+      "pregunta": "¿Hacen devoluciones?",
+      "estado": "a confirmar",
+      "respuesta": "PENDIENTE: en qué casos se devuelve el dinero y en cuáles no (por ejemplo, antes o después de entregar la cuenta)."
+    },
+    {
       "pregunta": "¿Qué pasa si pido fuera del horario?",
       "estado": "a confirmar",
       "respuesta": "PENDIENTE: si se puede escribir igual, cuándo respondemos y cuándo se entrega el pedido."
-    },
-    {
-      "pregunta": "¿Por qué PS Plus cuesta distinto para PS4 y para PS5?",
-      "estado": "confirmada",
-      "respuesta": "Porque la suscripción no siempre cuesta lo mismo para las dos consolas, y te cobramos la de la consola en la que la vas a usar. En la sección PS Plus elegí PS4 o PS5 y vas a ver el precio de cada plan para tu consola."
     },
     {
       "pregunta": "¿Cómo se activa PS Plus?",
