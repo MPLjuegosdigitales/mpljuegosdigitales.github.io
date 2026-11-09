@@ -386,7 +386,9 @@
     if (!boton) return;
     var plan = psPlus.textos.planes.filter(function (p) { return p.id === boton.getAttribute('data-plan'); })[0];
     var precio = pesos(precioPs(plan.id, mesesPs).contado);
-    abrirHoja('Quiero PS Plus ' + plan.nombre + ' por ' + nombreDuracion(mesesPs) + ' para ' + consolaPs + '. ' + precio + '.',
+    // Con el saludo de abrirHoja: "¡Hola Mateo! Quiero PS Plus Extra por 12 meses para PS5. Efectivo o transferencia: $147.999."
+    abrirHoja('Quiero PS Plus ' + plan.nombre + ' por ' + nombreDuracion(mesesPs) + ' para ' + consolaPs +
+      '. Efectivo o transferencia: ' + precio + '.',
       'PS Plus ' + plan.nombre + ' · ' + nombreDuracion(mesesPs) + ' · ' + consolaPs + ' · ' + precio);
   });
 
