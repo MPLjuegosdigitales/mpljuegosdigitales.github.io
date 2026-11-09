@@ -530,8 +530,10 @@
   }
 
   // Fotos del juego: capturas.json lo escribe el bot (mpl-precios, capturas.py). Dice de dónde salen las fotos
-  // de cada juego (Steam o la PS Store) y se muestran directo desde ahí. Se baja una sola vez.
+  // de cada juego (Steam, la PS Store o, para llenar huecos, archivos propios de img/f/) y se bajan recién al abrir
+  // la ficha. capturas.json se baja una sola vez.
   var capturas = null;
+  var FOTOS_POPULAR = 5, FOTOS = 3;           // además de la carátula
 
   function cargarCapturas() {
     if (!capturas) {
@@ -542,54 +544,108 @@
   }
 
   function fotosDe(datos, j) {
-    var c = (datos.juegos || {})[buscador.normalizar(j.nombre)];
-    if (!c) return [];
-    if (c.s && c.f) return c.f.map(function (f) { return datos.steam + c.s + '/' + f; });
-    if (c.p) return c.p.map(function (p) { return datos.ps + p + '?w=640'; });
-    return [];
+    var c = (datos.juegos || {})[buscador.normalizar(j.nombre)], fotos = [];
+    if (!c) return fotos;
+    if (c.s && c.f) fotos = c.f.map(function (f) { return datos.steam + c.s + '/' + f; });
+    else if (c.p) fotos = c.p.map(function (p) { return datos.ps + p + '?w=640'; });
+    else if (c.a) fotos = c.a.slice();          // archivos propios: img/f/…webp
+    return fotos.slice(0, j.popular ? FOTOS_POPULAR : FOTOS);
   }
 
-  function pintarFotos(fotos, nombre) {
-    var caja = $('ficha-fotos');
+  // La tira: la carátula primero y después las fotos; abajo, un punto por cada una. Tocar una la agranda (visor).
+  // Sin fotos no hay tira: la ficha muestra solo la carátula, arriba al lado del nombre.
+  function pintarFotos(fotos, j) {
+    var caja = $('ficha-fotos'), cabeza = fichaCuerpo.querySelector('.ficha-cabeza');
     if (!fotos.length) { caja.hidden = true; return; }
+    var tapa = j.imagen_grande || j.imagen;
+    var lista = (tapa ? [{ url: tapa, tapa: true }] : []).concat(fotos.map(function (u) { return { url: u }; }));
     caja.innerHTML =
-      '<div class="fotos-tira" tabindex="0" aria-label="Fotos de ' + escapar(nombre) + '">' +
-        fotos.map(function (url, i) {
-          return '<img src="' + escapar(url) + '" alt="Foto ' + (i + 1) + ' de ' + fotos.length + ' de ' + escapar(nombre) + '"' +
-            ' width="600" height="338" decoding="async"' + (i ? ' loading="lazy"' : '') + '>';
+      '<div class="fotos-tira" tabindex="0" aria-label="Fotos de ' + escapar(j.nombre) + '. Tocá una para verla grande.">' +
+        lista.map(function (f, i) {
+          return '<img class="' + (f.tapa ? 'foto-tapa' : 'foto') + '" src="' + escapar(f.url) + '"' +
+            ' alt="' + (f.tapa ? 'Carátula de ' : 'Foto de ') + escapar(j.nombre) + '"' +
+            (f.tapa ? ' width="480" height="605"' : ' width="640" height="360"') +
+            ' decoding="async"' + (i > 1 ? ' loading="lazy"' : '') + '>';
         }).join('') +
       '</div>' +
       '<button class="fotos-flecha anterior" type="button" aria-label="Foto anterior">' + ICONO_FLECHA + '</button>' +
       '<button class="fotos-flecha siguiente" type="button" aria-label="Foto siguiente">' + ICONO_FLECHA + '</button>' +
-      '<span class="fotos-cuenta" aria-hidden="true"></span>';
+      '<div class="fotos-puntos" aria-hidden="true"></div>';
     caja.hidden = false;
+    if (cabeza && tapa) cabeza.classList.add('con-fotos');     // la carátula ya está en la tira
     var tira = caja.querySelector('.fotos-tira');
-    // Una foto que ya no existe en Steam o la PS Store se saca; sin ninguna, no hay galería.
+    // Una foto que no carga se saca, sin dejar hueco. Si queda solo la carátula, no hay tira.
     tira.querySelectorAll('img').forEach(function (img) {
       img.addEventListener('error', function () {
         img.remove();
-        if (!tira.children.length) caja.hidden = true; else contarFotos();
+        if (!tira.querySelector('.foto')) {
+          caja.hidden = true;
+          if (cabeza) cabeza.classList.remove('con-fotos');
+        } else {
+          pintarPuntos(caja);
+        }
       });
     });
-    tira.addEventListener('scroll', contarFotos, { passive: true });
-    contarFotos();
+    tira.addEventListener('scroll', function () { marcarPunto(caja); }, { passive: true });
+    pintarPuntos(caja);
   }
 
-  // Lo que se corre la tira de una foto a la siguiente (ancho de la foto + el hueco entre fotos).
-  function pasoFotos(tira) {
-    var a = tira.children[0], b = tira.children[1];
-    return (b ? b.offsetLeft - a.offsetLeft : a.offsetWidth) || 1;
+  // La foto que se ve: la que está más cerca del borde izquierdo de la tira.
+  function fotoActual(tira) {
+    var base = tira.children[0].offsetLeft, mejor = 0, distancia = Infinity;
+    for (var i = 0; i < tira.children.length; i++) {
+      var d = Math.abs(tira.children[i].offsetLeft - base - tira.scrollLeft);
+      if (d < distancia) { distancia = d; mejor = i; }
+    }
+    // Al final de la tira, la última (aunque no llegue al borde).
+    if (tira.scrollLeft + tira.clientWidth >= tira.scrollWidth - 4) mejor = tira.children.length - 1;
+    return mejor;
   }
-
-  function contarFotos() {
-    var caja = $('ficha-fotos'), tira = caja && caja.querySelector('.fotos-tira');
+  function irAFoto(tira, i, suave) {
+    var hijo = tira.children[Math.max(0, Math.min(i, tira.children.length - 1))];
+    if (!hijo) return;
+    var izquierda = hijo.offsetLeft - tira.children[0].offsetLeft;
+    if (tira.scrollTo) tira.scrollTo({ left: izquierda, behavior: suave ? 'smooth' : 'auto' }); else tira.scrollLeft = izquierda;
+  }
+  function pintarPuntos(caja) {
+    var tira = caja.querySelector('.fotos-tira, .visor-tira'), puntos = caja.querySelector('.fotos-puntos');
+    puntos.innerHTML = new Array(tira.children.length + 1).join('<span></span>');
+    marcarPunto(caja);
+  }
+  function marcarPunto(caja) {
+    var tira = caja.querySelector('.fotos-tira, .visor-tira');
     if (!tira || !tira.children.length) return;
-    var paso = pasoFotos(tira), total = tira.children.length;
-    var actual = Math.min(total - 1, Math.round(tira.scrollLeft / paso));
-    caja.querySelector('.fotos-cuenta').textContent = (actual + 1) + ' / ' + total;
-    caja.querySelector('.anterior').disabled = actual === 0;
-    caja.querySelector('.siguiente').disabled = actual === total - 1;
+    var actual = fotoActual(tira), puntos = caja.querySelectorAll('.fotos-puntos span');
+    for (var i = 0; i < puntos.length; i++) puntos[i].classList.toggle('activo', i === actual);
+    var ant = caja.querySelector('.anterior'), sig = caja.querySelector('.siguiente');
+    if (ant) ant.disabled = actual === 0;
+    if (sig) sig.disabled = actual === tira.children.length - 1;
   }
+
+  // ---------- Visor: una foto a pantalla completa (se pasa con el dedo; la X, Esc o tocar afuera lo cierran) ----------
+  var visor = $('visor'), visorTira = visor.querySelector('.visor-tira');
+  function abrirVisor(desde) {
+    var imgs = $('ficha-fotos').querySelectorAll('.fotos-tira img');
+    visorTira.innerHTML = Array.prototype.map.call(imgs, function (img) {
+      return '<div class="visor-foto"><img src="' + escapar(img.getAttribute('src')) + '" alt="' + escapar(img.alt) + '" decoding="async"></div>';
+    }).join('');
+    if (typeof visor.showModal === 'function') visor.showModal(); else visor.setAttribute('open', '');
+    pintarPuntos(visor);
+    irAFoto(visorTira, desde, false);
+    marcarPunto(visor);
+  }
+  function cerrarVisor() {
+    if (!visor.open) return;
+    if (visor.close) visor.close(); else visor.removeAttribute('open');
+    // La tira de la ficha queda en la misma foto que se estaba viendo.
+    var tira = $('ficha-fotos').querySelector('.fotos-tira');
+    if (tira) irAFoto(tira, fotoActual(visorTira), false);
+  }
+  visorTira.addEventListener('scroll', function () { marcarPunto(visor); }, { passive: true });
+  visor.addEventListener('click', function (e) {
+    if (e.target.closest('.visor-cerrar') || !e.target.closest('img')) cerrarVisor();
+  });
+  visor.addEventListener('cancel', function (e) { e.preventDefault(); cerrarVisor(); });
 
   function textoFicha(d) {
     if (!d) return '';
@@ -628,7 +684,7 @@
       if (fichaJuego === j) $('ficha-texto').innerHTML = textoFicha(mapa[buscador.normalizar(j.nombre)]);
     });
     cargarCapturas().then(function (datos) {
-      if (fichaJuego === j) pintarFotos(fotosDe(datos, j), j.nombre);
+      if (fichaJuego === j) pintarFotos(fotosDe(datos, j), j);
     });
   }
 
@@ -642,10 +698,11 @@
     if (e.target.closest('[data-pedir-ficha]')) { var j = fichaJuego; cerrarFicha(); pedir(j); }
     var flecha = e.target.closest('.fotos-flecha');
     if (flecha) {
-      var tira = $('ficha-fotos').querySelector('.fotos-tira'), paso = pasoFotos(tira);
-      var suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      tira.scrollBy({ left: flecha.classList.contains('anterior') ? -paso : paso, behavior: suave ? 'smooth' : 'auto' });
+      var tira = $('ficha-fotos').querySelector('.fotos-tira');
+      irAFoto(tira, fotoActual(tira) + (flecha.classList.contains('anterior') ? -1 : 1), !reducirMovimiento.matches);
     }
+    var foto = e.target.closest('.fotos-tira img');
+    if (foto) abrirVisor(Array.prototype.indexOf.call(foto.parentNode.children, foto));
   });
 
   // Deslizar hacia abajo la cierra (solo con el contenido arriba de todo, para no pelear con el scroll).
