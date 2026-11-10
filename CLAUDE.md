@@ -68,6 +68,14 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
 - Peso en la ficha: el de la ficha o el de `pesos.json`; el estimado se ve "~X GB (aproximado)". Cada entrada de
   pesos.json lleva su fuente (PS Store, editorial, PlayStation Blog o, si es estimado, la página en que se basa);
   nunca links del proveedor.
+- Orden de la portada: encabezado → banners → buscador y filtros (fijos al bajar) → destacado (GTA 6) → lista.
+- Banners: imágenes hechas por los socios (en `img/banner/`), **nunca modificadas ni recortadas**; solo se pasan a
+  webp livianas, en dos tamaños cada una. `<picture>`: menos de 900 px de ancho, la de celular (1080×900); desde
+  900 px, la de compu (1920×409). En un iPhone de 390×844 el banner (con los puntitos) no pasa del 45 % del alto,
+  así el buscador se ve en la primera pantalla. Carrusel (`js/banner.js`): pasa solo cada 6 s, se desliza con el
+  dedo, puntitos debajo de la imagen, se pausa al tocarlo; con "reducir movimiento" no pasa solo; con uno solo
+  visible, sin carrusel ni puntitos. Imágenes, texto alternativo, destino al tocarlo y hasta cuándo se ve cada uno
+  (`mostrar_hasta`, hora de Argentina) se cambian en `banner.json`, no en el código.
 - Navegación: menú ☰ al lado del buscador, en la misma fila (la barra fija no crece; en pantallas de menos de 390 px
   el buscador dice solo "Buscá tu juego"). Abre una lista desde abajo con PS Plus, Preguntas frecuentes, Horarios y
   atención y Consultar (`js/menu.js`). **Toda sección nueva se suma a ese menú, nunca a la barra fija.**

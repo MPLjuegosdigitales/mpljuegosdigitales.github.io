@@ -26,8 +26,12 @@
     </div>
   </header>
 
-  <!-- Destacado: lo arma js/tienda.js con destacado.json y catalog.json. Se reserva el lugar mientras carga. -->
-  <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
+  <!-- Banners: carrusel de imágenes que arma js/banner.js con banner.json (imágenes, texto alternativo, destino y
+       hasta cuándo se ve cada uno). Se reserva el alto mientras carga. -->
+  <section class="banner" id="banner" aria-label="Banners de MPL">
+    <div class="banner-pista" id="banner-pista"></div>
+    <div class="banner-puntos" id="banner-puntos" hidden></div>
+  </section>
 
   <div class="barra" id="barra">
     <!-- Menú ☰ al lado del buscador: la barra fija no crece. Lo maneja js/menu.js. -->
@@ -56,6 +60,9 @@
       <button type="button" data-consola="psplus" aria-pressed="false" hidden>PS Plus</button>
     </div>
   </div>
+
+  <!-- Destacado: lo arma js/tienda.js con destacado.json y catalog.json. Se reserva el lugar mientras carga. -->
+  <section class="destacado cargando" id="destacado" aria-labelledby="destacado-titulo"></section>
 
   <main id="contenido">
     <!-- PS Plus: la arma js/tienda.js con psplus.json (textos) y los precios de catalog.json. Se ve solo con el
@@ -180,6 +187,7 @@
     </button>
   </dialog>
 
+  <script src="js/banner.js"></script>
   <script src="js/buscar.js"></script>
   <script src="js/preguntas.js"></script>
   <script src="js/menu.js"></script>

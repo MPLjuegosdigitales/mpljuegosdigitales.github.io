@@ -1,0 +1,28 @@
+{
+  "_como_editar": [
+    "Banners de la portada (las imágenes van en img/banner/). Se cambian acá, sin tocar el código.",
+    "mostrar_hasta: último minuto en que se ve el banner, en hora de Argentina, con el formato \"dd/mm/aaaa hh:mm\".",
+    "Pasado ese minuto se oculta solo (también con la página abierta). Sin mostrar_hasta, se ve siempre.",
+    "destino: a dónde baja al tocarlo: \"#destacado\" (el destacado de GTA 6, con precios y Reservar) o",
+    "\"#contenido\" (la lista de juegos). Si el destacado no se ve, baja a la lista.",
+    "Las imágenes no se recortan: celular = 1080×900 (pantallas de menos de 900 px de ancho), compu = 1920×409.",
+    "Cada una va en dos tamaños (-720/-1080 y -1280/-1920) y el navegador elige el que le alcanza.",
+    "Con un solo banner visible no hay carrusel ni puntitos."
+  ],
+  "segundos_por_banner": 6,
+  "banners": [
+    {
+      "id": "gta6-preventa",
+      "imagen": "gta6-preventa",
+      "texto_alternativo": "Preventa de Grand Theft Auto VI para PS5, Standard Edition: sale el 19 de noviembre de 2026. Reservalo ya en MPL.",
+      "destino": "#destacado",
+      "mostrar_hasta": "18/11/2026 23:59"
+    },
+    {
+      "id": "principal",
+      "imagen": "principal",
+      "texto_alternativo": "MPL Juegos Digitales, tu tienda de juegos digitales de confianza: PS3, PS4, PS5, PC y PS Plus.",
+      "destino": "#contenido"
+    }
+  ]
+}

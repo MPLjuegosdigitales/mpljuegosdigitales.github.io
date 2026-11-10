@@ -799,6 +799,20 @@
       nombre + ' · ' + j.consola + ' · ' + pesos(j._precio));
   });
 
+  // ---------- Banners de la portada (js/banner.js) ----------
+  // Al tocar uno, baja hasta su destino justo debajo de la barra fija: "#destacado" (GTA 6, con precios y Reservar)
+  // o "#contenido" (la lista). Si el destacado no se ve, va a la lista; si estaba abierto PS Plus, vuelve la lista.
+  document.addEventListener('mpl-banner', function (e) {
+    var destino = e.detail === '#destacado' && !destacado.hidden ? destacado : contenido;
+    if (destino === contenido && estado.consola === 'psplus') {
+      elegirConsola(juegos.some(function (j) { return j.popular; }) ? 'populares' : '');
+      pintar(true);
+    }
+    var y = destino.getBoundingClientRect().top + window.pageYOffset - $('barra').offsetHeight;
+    window.scrollTo({ top: Math.max(0, y), behavior: reducirMovimiento.matches ? 'auto' : 'smooth' });
+    e.preventDefault();
+  });
+
   $('consultar-busqueda').addEventListener('click', function () {
     var texto = estado.texto;
     abrirHoja('Estoy buscando ' + (texto || 'un juego') + (consolaElegida() ? ' para ' + consolaElegida() : '') + '. ¿Lo tienen?',

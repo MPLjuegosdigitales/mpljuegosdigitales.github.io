@@ -559,10 +559,6 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 .titulo-juego { margin: 0; font: inherit; }
 .precio .edicion-nombre { display: block; margin-bottom: 2px; font-size: 13px; font-weight: 800; line-height: 1.2; }
 
-/* En el celular el destacado ocupa ~57 % de la pantalla y el buscador sigue a la vista */
-@media (max-width: 899px) {
-  .destacado { display: flex; flex-direction: column; justify-content: center; min-height: 57vh; min-height: 57svh; }
-}
 .ficha-nota {
   margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--lila); border-radius: 0 8px 8px 0;
   background: var(--violeta-oscuro); color: var(--texto); font-size: 14px; line-height: 1.4;
@@ -697,3 +693,38 @@ main.en-psplus > :not(.psplus) { display: none !important; }
 @media (min-width: 600px) {
   .pie-datos { grid-template-columns: repeat(3, 1fr); max-width: 760px; gap: 16px; }
 }
+
+/* ---------- Banners de la portada (js/banner.js): imágenes tal cual, sin recortar ---------- */
+/* Celular (menos de 900 px): 1080×900; compu: 1920×409. Nunca más del 45 % del alto de la pantalla (en un
+   iPhone de 390×844 el buscador queda en la primera pantalla): si no entra, se achica entera (contain). */
+.banner { background: var(--franja); }
+.banner-pista {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.banner-pista::-webkit-scrollbar { display: none; }
+.banner:not(.carrusel) .banner-pista { overflow: hidden; }
+.banner-diapo, .banner-pista:empty::before {
+  flex: 0 0 100%; width: 100%; aspect-ratio: 1080 / 900; max-height: 45vh;
+}
+.banner-pista:empty::before { content: ""; }   /* reserva el alto mientras carga banner.json */
+.banner-diapo { scroll-snap-align: start; scroll-snap-stop: always; }
+.banner-link { display: block; height: 100%; }
+.banner-link picture, .banner-link img { display: block; width: 100%; height: 100%; }
+.banner-link img { object-fit: contain; }
+.banner-link:focus-visible { outline-offset: -3px; }
+@media (min-width: 900px) {
+  .banner-diapo, .banner-pista:empty::before { aspect-ratio: 1920 / 409; }
+}
+/* Puntitos: debajo de la imagen (nunca encima de un texto), 44 px de alto para tocarlos */
+.banner-puntos { display: flex; justify-content: center; gap: 2px; }
+.punto {
+  display: grid; place-items: center; width: 44px; height: var(--toque);
+  border: 0; padding: 0; background: none;
+}
+.punto span {
+  display: block; width: 8px; height: 8px; border-radius: 999px; background: var(--texto-suave);
+  transition: width .25s var(--salida), background-color .25s var(--salida);
+}
+.punto[aria-current="true"] span { width: 24px; background: var(--lila); }
+.punto:focus-visible { outline-offset: -6px; border-radius: 999px; }
