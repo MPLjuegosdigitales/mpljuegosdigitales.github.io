@@ -21,9 +21,9 @@
   var hoja = $('hoja');
 
   var todos = [], juegos = [], buscador = null, lista = [], mostrados = 0, sinonimos = {}, sagas = {}, generos = {};
-  // consola: 'populares' (al abrir), '' (todos), 'PS5' o 'PS4'. orden: 'auto' depende de lo que se mira
+  // consola: 'populares' (al abrir), '' (todos), 'PS5', 'PS4' o 'PS3'. orden: 'auto' depende de lo que se mira
   // (buscando: más parecidos; en Populares: el orden de populares; si no: A a Z), o el que eligió la persona.
-  // genero: '' (todos) o uno de generos.json; se combina con Todos, PS4, PS5, Ofertas y la búsqueda.
+  // genero: '' (todos) o uno de generos.json; se combina con Todos, PS4, PS5, PS3, Ofertas y la búsqueda.
   var estado = { texto: '', consola: 'populares', orden: 'auto', genero: '' };
   var NOMBRE_AUTO = { parecido: 'Más parecidos', popular: 'Más populares', nombre: 'A a Z', descuento: 'Mayor descuento' };
 
@@ -125,6 +125,46 @@
     return dias.length === 1 ? 'Ofertas válidas hasta el <b>' + dias[0] + '</b>.' : 'Cada oferta indica hasta cuándo es válida.';
   }
 
+  // ---------- Consolas ----------
+  // "Cuenta primaria" se dice solo de PS4 y PS5 (MPLPedido.CON_CUENTA_PRIMARIA, js/pedido.js); en PS3 no, hasta que
+  // los socios lo confirmen. La tarjeta "PS4/PS5" de las ofertas cuenta como las dos.
+  function conCuentaPrimaria(consola) {
+    return String(consola || '').split('/').every(function (c) { return window.MPLPedido.CON_CUENTA_PRIMARIA.indexOf(c) >= 0; });
+  }
+  function esPs3(j) { return j.consola === 'PS3'; }
+  function hayPs3() { return juegos.some(esPs3); }
+
+  // El botón PS3, el título y la aclaración de arriba de la lista dependen de si el catálogo trae juegos de PS3
+  // (el bot los publica recién con "publicar_ps3": true). Sin juegos de PS3, la página queda como antes.
+  var botonPs3 = document.querySelector('[data-consola="PS3"]');
+  function pintarConsolas() {
+    var ps3 = hayPs3();
+    botonPs3.hidden = !ps3;
+    botonPs3.parentNode.classList.toggle('con-ps3', ps3);
+    if (!ps3 && estado.consola === 'PS3') elegirConsola('');
+    var consolas = ps3 ? 'PS3, PS4 y PS5' : 'PS4 y PS5';
+    $('titulo-juegos').textContent = 'Juegos digitales de ' + consolas;
+    document.title = 'MPL Juegos Digitales · Juegos de ' + consolas;
+    pintarAclaracion();
+  }
+  // Arriba de la lista: cuenta primaria (solo PS4 y PS5) y cómo se paga.
+  function pintarAclaracion() {
+    var pagas = conCuotas ? 'Pagás contado, por transferencia o en 3 cuotas sin interés.' : 'Pagás en efectivo o por transferencia.';
+    var cuenta = estado.consola === 'PS3' ? '' :
+      hayPs3() && !/^PS[45]$/.test(estado.consola) ? 'En PS4 y PS5, cuenta primaria: lo jugás desde tu propio usuario. ' :
+      'Cuenta primaria: lo jugás desde tu propio usuario. ';
+    $('aclaracion').textContent = cuenta + pagas;
+  }
+
+  // "gta ps3", "ps4 fifa": la consola escrita en la búsqueda filtra por consola y no se busca como palabra del nombre.
+  var CONSOLA_EN_TEXTO = /(^|\s)ps\s?([345])(?=\s|$)/i;
+  function separarConsola(texto) {
+    var m = CONSOLA_EN_TEXTO.exec(texto || '');
+    if (!m) return { texto: texto, consola: '' };
+    return { texto: (texto.slice(0, m.index) + ' ' + texto.slice(m.index + m[0].length)).replace(/\s+/g, ' ').trim(),
+             consola: 'PS' + m[2] };
+  }
+
   function escapar(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -133,22 +173,30 @@
 
   // ---------- Lista visible ----------
 
-  function consolaElegida() { return /^(populares|ofertas|psplus)$/.test(estado.consola) ? '' : estado.consola; }
+  // La consola de la pestaña, salvo que la búsqueda nombre una ("gta ps4": esa ya está en el texto).
+  function consolaElegida() {
+    if (estado.texto && separarConsola(estado.texto).consola) return '';
+    return /^(populares|ofertas|psplus)$/.test(estado.consola) ? '' : estado.consola;
+  }
   function ordenAuto() {
     return estado.texto ? 'parecido' : estado.consola === 'populares' ? 'popular' : estado.consola === 'ofertas' ? 'descuento' : 'nombre';
   }
 
   function tieneGenero(j, g) { return (j.generos || []).indexOf(g) >= 0; }
 
-  // La lista sin género ni orden para lo elegido arriba (modo: 'populares', 'ofertas', '', 'PS4' o 'PS5').
+  // La lista sin género ni orden para lo elegido arriba (modo: 'populares', 'ofertas', '', 'PS4', 'PS5' o 'PS3').
   function listaBase(modo) {
-    var base;
+    var base, escrito = separarConsola(estado.texto);
     if (estado.texto) {
       // Buscando se busca en todo el catálogo, aunque esté elegido Populares. Si lo buscado es un género
-      // ("terror", "rpg"), después de los que se llaman así van todos los de ese género.
-      base = buscador.buscar(estado.texto).map(function (r) { return r.juego; });
-      var g = buscador.genero(estado.texto);
-      if (g) base = base.concat(juegos.filter(function (j) { return tieneGenero(j, g) && base.indexOf(j) < 0; }));
+      // ("terror", "rpg"), después de los que se llaman así van todos los de ese género. Solo "ps3": todos los de PS3.
+      if (!escrito.texto) base = juegos.slice();
+      else {
+        base = buscador.buscar(escrito.texto).map(function (r) { return r.juego; });
+        var g = buscador.genero(escrito.texto);
+        if (g) base = base.concat(juegos.filter(function (j) { return tieneGenero(j, g) && base.indexOf(j) < 0; }));
+      }
+      if (escrito.consola) base = base.filter(function (j) { return j.consola.indexOf(escrito.consola) >= 0; });
     } else if (modo === 'populares') {
       base = juegos.filter(function (j) { return j.popular; });
     } else if (modo === 'ofertas') {
@@ -156,7 +204,8 @@
     } else {
       base = juegos.slice();
     }
-    var consola = /^(populares|ofertas|psplus)$/.test(modo) ? '' : modo;
+    // La consola escrita en la búsqueda ("gta ps4") manda sobre la pestaña elegida.
+    var consola = /^(populares|ofertas|psplus)$/.test(modo) || (estado.texto && escrito.consola) ? '' : modo;
     if (consola) base = base.filter(function (j) { return j.consola.indexOf(consola) >= 0; });
     return base;
   }
@@ -302,7 +351,7 @@
     var modo = /^(populares|psplus)$/.test(estado.consola) ? '' : estado.consola;
     var base = listaBase(modo), cuenta = {};
     base.forEach(function (j) { (j.generos || []).forEach(function (g) { cuenta[g] = (cuenta[g] || 0) + 1; }); });
-    var consola = /^(PS4|PS5)$/.test(modo) ? modo : '';
+    var consola = /^PS[345]$/.test(modo) && !(estado.texto && separarConsola(estado.texto).consola) ? modo : '';
     $('generos-nota').textContent = 'Cuántos juegos hay de cada uno' + (estado.texto ? ' para “' + estado.texto + '”' :
       modo === 'ofertas' ? ' en oferta' : '') + (consola ? ' de ' + consola : '') + '.';
     var opcion = function (valor, nombre, n) {
@@ -348,6 +397,7 @@
     estado.consola = valor;
     if (/^(populares|psplus)$/.test(valor)) estado.genero = '';      // Populares y PS Plus van sin género
     botonesConsola.forEach(function (o) { o.setAttribute('aria-pressed', String(o.getAttribute('data-consola') === valor)); });
+    pintarAclaracion();
   }
   botonesConsola.forEach(function (b) {
     b.addEventListener('click', function () {
@@ -469,8 +519,10 @@
   // ---------- WhatsApp ----------
 
   function mensajeJuego(j) {
-    return 'Quiero pedir ' + j.nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j) + referencia(j);
+    return 'Quiero pedir ' + j.nombre + ' para ' + j.consola + cuentaPrimaria(j) + textoPrecio(j) + referencia(j);
   }
+  // ", cuenta primaria. " en PS4 y PS5; en PS3, solo el punto.
+  function cuentaPrimaria(j) { return conCuentaPrimaria(j.consola) ? ', cuenta primaria. ' : '. '; }
 
   // Última línea del pedido, para saber de dónde sale el precio: "Ref. O7" (oferta del Issue #7), "Ref. S" (copia de
   // nuestro stock). Con el precio normal no va nada. Qué es cada código lo dice la pestaña Referencias de la planilla.
@@ -520,13 +572,16 @@
       descripciones = fetch('descripciones.json').then(function (r) { return r.ok ? r.json() : {}; })
         .catch(function () { return {}; })
         .then(function (crudo) {
+          // Una entrada con "consola": "PS3" vale solo para PS3; las demás, solo para PS4 y PS5 (PS3 no hereda la
+          // sinopsis del juego del mismo nombre: suele ser otra versión). Lo mismo hace el bot (completar.py).
           var porEdicion = {};
           Object.keys(crudo.juegos || {}).forEach(function (titulo) {
             var d = crudo.juegos[titulo] || {}, ediciones = d.ediciones || {};
+            var ps3 = String(d.consola || '').toUpperCase() === 'PS3';
             Object.keys(ediciones).forEach(function (nombre) {
               // Cada edición es una lista ("incluye") o {"incluye": [...], "nota": "aclaración"}.
               var e = ediciones[nombre] || [];
-              porEdicion[buscador.normalizar(nombre)] = {
+              porEdicion[claveFicha(nombre, ps3)] = {
                 sinopsis: d.sinopsis || '',
                 incluye: Array.isArray(e) ? e : (e.incluye || []),
                 nota: Array.isArray(e) ? '' : (e.nota || '')
@@ -538,6 +593,7 @@
     }
     return descripciones;
   }
+  function claveFicha(nombre, ps3) { return buscador.normalizar(nombre) + (ps3 ? '|ps3' : ''); }
 
   // Fotos del juego: capturas.json lo escribe el bot (mpl-precios, capturas.py). Dice de dónde salen las fotos
   // de cada juego (Steam, la PS Store o, para llenar huecos, archivos propios de img/f/) y se bajan recién al abrir
@@ -553,8 +609,9 @@
     return capturas;
   }
 
+  // PS3 tiene su propia clave ("gta 5 ps3"): sus fotos no son las de la versión de PS4/PS5 (capturas.py, clave_fotos).
   function fotosDe(datos, j) {
-    var c = (datos.juegos || {})[buscador.normalizar(j.nombre)], fotos = [];
+    var c = (datos.juegos || {})[buscador.normalizar(j.nombre) + (esPs3(j) ? ' ps3' : '')], fotos = [];
     if (!c) return fotos;
     if (c.s && c.f) fotos = c.f.map(function (f) { return datos.steam + c.s + '/' + f; });
     else if (c.p) fotos = c.p.map(function (p) { return datos.ps + p + '?w=640'; });
@@ -692,7 +749,7 @@
     fichaHoja.style.transform = '';
     if (typeof fichaHoja.showModal === 'function') fichaHoja.showModal(); else fichaHoja.setAttribute('open', '');
     cargarDescripciones().then(function (mapa) {
-      if (fichaJuego === j) $('ficha-texto').innerHTML = textoFicha(mapa[buscador.normalizar(j.nombre)]);
+      if (fichaJuego === j) $('ficha-texto').innerHTML = textoFicha(mapa[claveFicha(j.nombre, esPs3(j))]);
     });
     cargarCapturas().then(function (datos) {
       if (fichaJuego === j) pintarFotos(fotosDe(datos, j), j);
@@ -807,7 +864,7 @@
     if (!b) return;
     var ed = edicionesDestacado[+b.getAttribute('data-destacado')], j = ed.juego;
     var nombre = ed.cfg.en_el_mensaje || j.nombre;
-    abrirHoja('Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + ', cuenta primaria. ' + textoPrecio(j) + referencia(j),
+    abrirHoja('Quiero ' + (ed.preventa ? 'reservar ' : 'pedir ') + nombre + ' para ' + j.consola + cuentaPrimaria(j) + textoPrecio(j) + referencia(j),
       nombre + ' · ' + j.consola + ' · ' + pesos(j._precio));
   });
 
@@ -1197,6 +1254,7 @@
     catalogoActualizado = datos.actualizado || null;
     conCuotas = datos.mostrar_cuotas === true;
     refrescarOfertas();
+    pintarConsolas();
     if (datos.actualizado) {
       var f = new Date(datos.actualizado);
       $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
@@ -1232,7 +1290,6 @@
   ]).then(function (datos) {
     sinonimos = datos[1]; sagas = datos[2]; generos = datos[5] || {};
     aplicarCatalogo(datos[0]);
-    if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
     avisarCatalogo(datos[0]);
     // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.
     if (!juegos.some(function (j) { return j.popular; })) {

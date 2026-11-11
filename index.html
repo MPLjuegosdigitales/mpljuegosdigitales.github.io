@@ -56,6 +56,8 @@
       <button type="button" data-consola="" aria-pressed="false">Todos</button>
       <button type="button" data-consola="PS5" aria-pressed="false">PS5</button>
       <button type="button" data-consola="PS4" aria-pressed="false">PS4</button>
+      <!-- PS3: se ve solo si catalog.json trae juegos de PS3 (el bot los publica con "publicar_ps3": true). -->
+      <button type="button" data-consola="PS3" aria-pressed="false" hidden>PS3</button>
       <!-- PS Plus: abre la sección de planes (js/tienda.js). Sin los precios en catalog.json no se ve. -->
       <button type="button" data-consola="psplus" aria-pressed="false" hidden>PS Plus</button>
     </div>
@@ -68,8 +70,9 @@
     <!-- PS Plus: la arma js/tienda.js con psplus.json (textos) y los precios de catalog.json. Se ve solo con el
          botón PS Plus elegido (o entrando con #ps-plus); mientras tanto la lista de juegos queda oculta. -->
     <section class="psplus" id="ps-plus" aria-labelledby="psplus-titulo"></section>
-    <h1 class="titulo">Juegos digitales de PS4 y PS5</h1>
-    <p class="aclaracion" id="aclaracion" data-con-cuotas="Cuenta primaria: lo jugás desde tu propio usuario. Pagás contado, por transferencia o en 3 cuotas sin interés.">Cuenta primaria: lo jugás desde tu propio usuario. Pagás en efectivo o por transferencia.</p>
+    <h1 class="titulo" id="titulo-juegos">Juegos digitales de PS4 y PS5</h1>
+    <!-- El texto lo arma js/tienda.js (pintarAclaracion): cuenta primaria solo en PS4 y PS5, y cómo se paga. -->
+    <p class="aclaracion" id="aclaracion">Cuenta primaria: lo jugás desde tu propio usuario. Pagás en efectivo o por transferencia.</p>
     <p class="aviso-ofertas" id="aviso-ofertas" hidden></p>
     <div class="resultados">
       <p class="conteo" id="conteo" aria-live="polite">Cargando juegos…</p>

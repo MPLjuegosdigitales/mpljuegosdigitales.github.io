@@ -167,6 +167,26 @@
       "pregunta": "¿PS Plus se renueva solo?",
       "estado": "a confirmar",
       "respuesta": "PENDIENTE: si al terminar el tiempo elegido (1, 3 o 12 meses) se corta solo o hay que darlo de baja, y cómo se renueva."
+    },
+    {
+      "pregunta": "¿Los juegos de PS3 se juegan en PS4 o PS5?",
+      "estado": "a confirmar",
+      "respuesta": "PROPUESTA (revisar con Luca): No. Los juegos de PS3 se juegan solo en una PS3. PS4 y PS5 no los pueden instalar."
+    },
+    {
+      "pregunta": "¿Cómo recibo un juego de PS3?",
+      "estado": "a confirmar",
+      "respuesta": "PENDIENTE: si en PS3 es cuenta primaria o no, qué necesitás para recibirlo y cómo se descarga (los pasos en la PS3)."
+    },
+    {
+      "pregunta": "¿Los juegos de PS3 tienen garantía?",
+      "estado": "a confirmar",
+      "respuesta": "PENDIENTE: si la garantía es la misma que la de PS4 y PS5, y qué la hace perder en PS3."
+    },
+    {
+      "pregunta": "¿Qué pasa cuando cierre la tienda de PS3?",
+      "estado": "a confirmar",
+      "respuesta": "PENDIENTE: Sony anunció que la PlayStation Store de PS3 cierra por etapas (el resto del mundo en julio de 2027; Argentina todavía no está nombrada). Falta decidir qué se promete: si el juego ya descargado se sigue jugando y si se puede volver a descargar después del cierre."
     }
   ]
 }
