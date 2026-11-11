@@ -37,7 +37,8 @@
     if (!item) return;
     var ir = item.getAttribute('data-ir');
     cerrar();
-    if (ir === 'psplus') document.querySelector('[data-consola="psplus"]').click();
+    if (ir === 'pedido') document.dispatchEvent(new CustomEvent('mpl:pedido'));      // la lista la abre js/tienda.js
+    else if (ir === 'psplus') document.querySelector('[data-consola="psplus"]').click();
     else if (ir === 'preguntas') document.getElementById('preguntas').scrollIntoView({ block: 'start' });
     else if (ir === 'pie') document.querySelector('.pie').scrollIntoView({ block: 'start' });
     else if (ir === 'consultar') document.querySelector('.encabezado [data-consultar]').click();
