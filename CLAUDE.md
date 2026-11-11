@@ -62,8 +62,8 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
 - Logo `LOGO_MPL_sin_fondo.png`: nunca modificarlo, recortarlo ni cambiarle colores.
 - Ícono de la web (el que muestran Google y la pestaña): `favicon.ico` en la raíz (16, 32 y 48 px),
   `img/favicon-192.png` y `img/apple-touch-icon.png` (180 px), sobre #2A0E36, el fondo de `img/vista-previa.png`.
-  En 32, 48, 180 y 192 px son las letras "MPL" del logo, sin "JUEGOS DIGITALES" (en ese tamaño no se lee); en
-  16 px, solo la "M" con forma de joystick. **Esta excepción es solo para el favicon:** en cualquier otro uso el
+  En 48, 180 y 192 px son las letras "MPL" del logo, sin "JUEGOS DIGITALES" (en ese tamaño no se lee); en
+  16 y 32 px (la pestaña del navegador), solo la "M" con forma de joystick. **Esta excepción es solo para el favicon:** en cualquier otro uso el
   logo sigue yendo entero, sin recortar ni modificar, y `LOGO_MPL_sin_fondo.png` no se toca. Google pide que el
   ícono sea cuadrado, de un múltiplo de 48 px y que `robots.txt` no lo bloquee. El bot no los toca (solo sube
   catalog.json, capturas.json, `img/j` e `img/f`).
