@@ -1,6 +1,7 @@
 # mpljuegosdigitales.github.io — reglas del proyecto
 
-Tienda pública de MPL Juegos Digitales en GitHub Pages (https://mpljuegosdigitales.github.io).
+Tienda pública de MPL Juegos Digitales en GitHub Pages (https://mpljuegosdigitales.com; el dominio lo define el
+archivo `CNAME` de la raíz: no borrarlo, moverlo ni editarlo).
 Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlonso0.
 
 **Para retomar:** el estado y lo que sigue están en `PENDIENTES.md` del repo privado **mpl-precios** (nunca acá).

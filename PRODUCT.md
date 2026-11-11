@@ -9,7 +9,7 @@ web
 ## Stack
 
 Static HTML, CSS and JavaScript, no build step, served by GitHub Pages from `main`
-(https://mpljuegosdigitales.github.io). The catalogue arrives as `catalog.json`, published daily at
+(https://mpljuegosdigitales.com, custom domain set by the `CNAME` file). The catalogue arrives as `catalog.json`, published daily at
 9:00 (Argentina) by the private repo mpl-precios; covers in `img/j/`. Search is `js/buscar.js` with
 `sinonimos.json` and `sagas.json` (newest-first order of the most searched series), no external libraries; anything third-party must be vendored into the repo.
 
