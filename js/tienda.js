@@ -59,6 +59,9 @@
     });
     juegos = todos.filter(function (j) { return !j.solo_oferta || j._o; });
     buscador = window.crearBuscador(juegos, sinonimos, sagas, generos);
+    // Para el pedido de varios juegos: cada juego por su identificador (nombre, consola y si es la Versión PS4).
+    porId = {};
+    juegos.forEach(function (j) { var k = idJuego(j); if (!porId[k]) porId[k] = j; });
     clearTimeout(relojOfertas);
     // Si la página queda abierta, a la hora de vencer se vuelve a pintar sola.
     if (proxima < Infinity && proxima - t < 864e5) {
@@ -67,6 +70,7 @@
         if (estado.consola === 'ofertas' && !hayOfertas()) elegirConsola(juegos.some(function (j) { return j.popular; }) ? 'populares' : '');
         pintar(true);
         if (destacadoCfg !== undefined) pintarDestacado(destacadoCfg);
+        sincronizarPedido(false);          // el total de "Tu pedido" y el aviso de que terminó la oferta
       }, proxima - t + 1000);
     }
     pintarBotonOfertas();
@@ -196,6 +200,7 @@
       u.consola = 'PS4/PS5';
       u.etiquetas = sinRetro(a);
       u.ps5_es_ps4 = retro;
+      u._ps4 = a; u._ps5 = b;          // para el pedido: se agrega el de la consola que se elija
       u._o = { promo: a._o.promo, contado: a._o.contado, hasta: a._o.hasta,
                anterior: Math.min(a._o.anterior || 0, b._o.anterior || 0),
                ref: [a._o.ref, b._o.ref].filter(function (r, i, l) { return r && l.indexOf(r) === i; }).join('/') };
@@ -242,6 +247,7 @@
         '</button></h3>' +
         '<p class="precio' + (j._o ? ' en-oferta' : '') + '">' + cartelPrecio(j) + '</p>' +
         '<button class="boton-pedir" type="button" data-pedir="' + indice + '">' + ICONO_WA + 'Pedir</button>' +
+        botonAgregarJuego(j) +
       '</div>' +
     '</li>';
   }
@@ -427,6 +433,8 @@
               (ahorro ? '<span class="ahorro">Ahorrás ' + pesos(ahorro) + ' contra pagar mes a mes</span>' : '') +
             '</p>' +
             '<button class="boton-pedir" type="button" data-plan="' + escapar(p.id) + '">' + ICONO_WA + 'Pedir</button>' +
+            botonAgregar('p|' + p.id + '|' + mesesPs + '|' + consolaPs,
+              'PS Plus ' + p.nombre + ' por ' + nombreDuracion(mesesPs) + ' para ' + consolaPs) +
           '</li>';
         }).join('') +
       '</ul>';
@@ -476,8 +484,10 @@
   }
 
   // El mensaje llega con el saludo a quien se eligió: "¡Hola Mateo! ..." o "¡Hola Luca! ...".
-  function abrirHoja(mensaje, detalle) {
+  var alElegirContacto = null;
+  function abrirHoja(mensaje, detalle, alElegir) {
     soltarEleccion();
+    alElegirContacto = alElegir || null;
     $('hoja-juego').textContent = detalle;
     Object.keys(CONTACTOS).forEach(function (clave) {
       var texto = '¡Hola ' + CONTACTOS[clave].nombre + '! ' + mensaje;
@@ -676,7 +686,8 @@
         return '<dt>' + d[0] + '</dt><dd>' + escapar(d[1]) + '</dd>';
       }).join('') + '</dl>' : '') +
       '<p class="precio' + (j._o ? ' en-oferta' : '') + '">' + cartelPrecio(j) + '</p>' +
-      '<button class="boton-pedir" type="button" data-pedir-ficha>' + ICONO_WA + 'Pedir</button>';
+      '<button class="boton-pedir" type="button" data-pedir-ficha>' + ICONO_WA + 'Pedir</button>' +
+      botonAgregarJuego(j);
     fichaCuerpo.scrollTop = 0;
     fichaHoja.style.transform = '';
     if (typeof fichaHoja.showModal === 'function') fichaHoja.showModal(); else fichaHoja.setAttribute('open', '');
@@ -785,6 +796,7 @@
               (e.juego._o ? '<span class="vence">' + escapar(e.juego._o.promo) + ', hasta el ' + diaMes(e.juego._o.hasta) + '</span>' : '') +
             '</p>' +
             '<button class="boton-pedir" type="button" data-destacado="' + i + '">' + ICONO_WA + (e.preventa ? 'Reservar' : 'Pedir') + '</button>' +
+            botonAgregarJuego(e.juego) +
           '</div>';
         }).join('') +
       '</div>';
@@ -848,6 +860,7 @@
     var irAWhatsApp = function () {
       var ventana = window.open(destino, '_blank');
       if (ventana) ventana.opener = null; else location.href = destino;
+      if (alElegirContacto) alElegirContacto();
       hoja.close();
     };
     if (reducirMovimiento.matches) return irAWhatsApp();
@@ -863,6 +876,332 @@
   }
   if (document.readyState === 'complete') precargarFiguras();
   else window.addEventListener('load', precargarFiguras);
+
+  // ---------- Pedido de varios juegos ----------
+  // Qué se guarda, cómo queda el mensaje y qué se avisa: js/pedido.js. Acá, lo que se ve: el botón "Agregar al
+  // pedido" de cada tarjeta, de la ficha, de los planes de PS Plus y del destacado; la barra "Tu pedido (3) · $X"
+  // y la lista para revisar, sacar y enviar todo en un solo WhatsApp.
+  var P = window.MPLPedido;
+  var almacen = (function () { try { return window.localStorage; } catch (e) { return null; } })() ||
+    { getItem: function () { return null; }, setItem: function () {}, removeItem: function () {} };
+  var pedido = P.leer(almacen);        // lo guardado: qué juego y qué consola (nunca el precio)
+  var porId = {};                      // identificador → juego de catalog.json (lo arma refrescarOfertas)
+  var idsPedido = {};                  // identificadores que están en el pedido
+  var vistoPedido = null;              // lo último que se mostró de cada cosa: {id: {nombre, consola, precio, enOferta}}
+  var avisosPedido = [];               // cambios de precio o de disponibilidad que todavía no se leyeron
+  var pedidoListo = false;             // recién con el catálogo cargado se sabe qué hay en el pedido
+  var pedidoEnviado = false;           // ya se abrió WhatsApp con este pedido
+  var avisoTope = false, avisoLargo = false, errorRelectura = false;
+  var ICONO_TILDE = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9.5 16.2-4-4L4 13.6l5.5 5.5L20 8.6l-1.4-1.4z"/></svg>';
+  var ICONO_X = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></svg>';
+  var barraPedido = $('pedido-barra'), hojaPedido = $('pedido'), hojaConsola = $('hoja-consola');
+  var botonEnviar = $('pedido-enviar'), cuerpoPedido = hojaPedido.querySelector('.hoja-cuerpo');
+
+  function esRetro(j) { return (j.etiquetas || []).indexOf(RETRO) >= 0; }
+  function idJuego(j) { return P.id({ n: j.nombre, c: j.consola, v4: esRetro(j) }, buscador.normalizar); }
+  function refrescarIds() {
+    idsPedido = {};
+    pedido.forEach(function (i) { idsPedido[P.id(i, buscador.normalizar)] = true; });
+  }
+  function plural(n) { return n + (n === 1 ? ' producto' : ' productos'); }
+  function mostrar(dialogo) { if (typeof dialogo.showModal === 'function') dialogo.showModal(); else dialogo.setAttribute('open', ''); }
+  function ocultar(dialogo) { if (dialogo.open) { if (dialogo.close) dialogo.close(); else dialogo.removeAttribute('open'); } }
+
+  // Lo que va entre paréntesis en la línea del mensaje: "Versión PS4", "reserva, sale el 19/11/2026", "Solo DLC".
+  function notasDe(j) {
+    var notas = [], pre = preventaDe(j);
+    if (esRetro(j)) notas.push(RETRO);
+    if (pre) notas.push('reserva' + (pre.fecha ? ', sale el ' + pre.fecha : ''));
+    if ((j.etiquetas || []).indexOf('Solo DLC') >= 0) notas.push('Solo DLC');
+    return notas;
+  }
+
+  // Lo guardado → lo que vale hoy según catalog.json (precio, oferta y Ref.). null si ya no está disponible.
+  function resolver(item) {
+    var clave = P.id(item, buscador.normalizar);
+    if (typeof item.p === 'string') {
+      var plan = psPlus && psPlus.consolas.indexOf(item.c) >= 0 &&
+        psPlus.textos.planes.filter(function (p) { return p.id === item.p; })[0];
+      var precio = plan && (psPlus.precios[item.c][item.p] || {})[item.m];
+      if (!precio || !(precio.contado > 0)) return null;
+      return { id: clave, tipo: 'psplus', nombre: 'PS Plus ' + plan.nombre + ' por ' + nombreDuracion(item.m),
+               consola: item.c, notas: [], precio: precio.contado, oferta: null, ref: '' };
+    }
+    var j = porId[clave];
+    if (!j) return null;
+    return { id: clave, tipo: 'juego', nombre: j.nombre, consola: j.consola, notas: notasDe(j), precio: j._precio,
+             oferta: j._o ? { hasta: diaMes(j._o.hasta) } : null, ref: (j._o ? j._o.ref : j.ref) || '', juego: j };
+  }
+
+  function estadoPedido() {
+    var resueltos = [], faltan = [];
+    pedido.forEach(function (item) {
+      var r = pedidoListo ? resolver(item) : null;
+      if (r) resueltos.push(r);
+      else faltan.push({ item: item, consola: item.c,
+                         nombre: typeof item.p === 'string' ? 'PS Plus ' + item.p.charAt(0).toUpperCase() + item.p.slice(1) + ' por ' + nombreDuracion(item.m) : item.n });
+    });
+    return { resueltos: resueltos, faltan: faltan };
+  }
+
+  // Compara lo que hay hoy con lo último que se mostró y junta los avisos. Con purgar (al abrir la lista y al
+  // enviar, con el catálogo recién leído) lo que ya no está disponible se saca del pedido y se avisa.
+  // Devuelve cuántos avisos nuevos hay.
+  function sincronizarPedido(purgar) {
+    if (!pedidoListo) return 0;
+    var e = estadoPedido(), ahora = {};
+    e.resueltos.forEach(function (r) {
+      ahora[r.id] = { nombre: r.nombre, consola: r.consola, precio: r.precio, enOferta: !!r.oferta };
+    });
+    var nuevos = P.cambios(vistoPedido, ahora, purgar ? e.faltan : [], pesos);
+    if (purgar && e.faltan.length) {
+      pedido = pedido.filter(function (i) { return e.faltan.every(function (f) { return f.item !== i; }); });
+      P.guardar(almacen, pedido);
+      refrescarIds();
+    }
+    nuevos.forEach(function (a) { if (avisosPedido.indexOf(a) < 0) avisosPedido.push(a); });
+    vistoPedido = ahora;
+    pintarPedido();
+    return nuevos.length;
+  }
+
+  // ----- El botón "Agregar al pedido" -----
+  // data-agregar dice qué agrega. En la tarjeta "PS4/PS5" de las ofertas lleva los dos juegos (data-agregar el de PS4
+  // y data-agregar-ps5 el de PS5) y al tocarlo pregunta para qué consola. Agregado, lo dice y deja quitarlo.
+  // prefijo y nota: solo en la hoja "¿Para qué consola?" ("PS5 · $34.000" y, debajo, "Versión PS4").
+  function estadoBoton(clave, clavePs5, nombre, prefijo, nota) {
+    var antes = prefijo ? '<span class="opcion"><strong>' + escapar(prefijo) + '</strong>' +
+      (nota ? '<small>' + escapar(nota) + '</small>' : '') + '</span>' : '';
+    var hecho = '<span class="hecho">' + ICONO_TILDE + 'Agregado</span>';
+    if (clavePs5) {
+      var cuales = [idsPedido[clave] && 'PS4', idsPedido[clavePs5] && 'PS5'].filter(Boolean);
+      return cuales.length
+        ? { marcado: true, html: hecho + '<span>para ' + cuales.join(' y ') + '</span>',
+            rotulo: nombre + ': agregado al pedido para ' + cuales.join(' y ') + '. Cambiar.' }
+        : { marcado: false, html: '<span>Agregar al pedido</span>', rotulo: 'Agregar ' + nombre + ' al pedido' };
+    }
+    return idsPedido[clave]
+      ? { marcado: true, html: antes + hecho + '<span class="quitar">Quitar</span>',
+          rotulo: 'Quitar ' + nombre + ' del pedido' }
+      : { marcado: false, html: antes + '<span>' + (prefijo ? 'Agregar' : 'Agregar al pedido') + '</span>',
+          rotulo: 'Agregar ' + nombre + ' al pedido' };
+  }
+  function botonAgregar(clave, nombre, clavePs5, prefijo, nota) {
+    var e = estadoBoton(clave, clavePs5, nombre, prefijo, nota);
+    return '<button class="boton-agregar" type="button" data-agregar="' + escapar(clave) + '"' +
+      (clavePs5 ? ' data-agregar-ps5="' + escapar(clavePs5) + '"' : '') +
+      (prefijo ? ' data-prefijo="' + escapar(prefijo) + '"' : '') +
+      (nota ? ' data-nota="' + escapar(nota) + '"' : '') +
+      ' data-nombre="' + escapar(nombre) + '" aria-pressed="' + e.marcado + '" aria-label="' + escapar(e.rotulo) + '">' +
+      e.html + '</button>';
+  }
+  function botonAgregarJuego(j) {
+    if (j._ps4 && j._ps5) return botonAgregar(idJuego(j._ps4), j.nombre, idJuego(j._ps5));
+    return botonAgregar(idJuego(j), j.nombre + ' para ' + j.consola);
+  }
+  function pintarBotonesPedido() {
+    var botones = document.querySelectorAll('[data-agregar]');
+    for (var i = 0; i < botones.length; i++) {
+      var b = botones[i];
+      var e = estadoBoton(b.getAttribute('data-agregar'), b.getAttribute('data-agregar-ps5'),
+        b.getAttribute('data-nombre'), b.getAttribute('data-prefijo'), b.getAttribute('data-nota'));
+      if (b.getAttribute('aria-pressed') === String(e.marcado) && b.getAttribute('aria-label') === e.rotulo) continue;
+      b.setAttribute('aria-pressed', String(e.marcado));
+      b.setAttribute('aria-label', e.rotulo);
+      b.innerHTML = e.html;
+    }
+  }
+
+  // Lo que se guarda de cada cosa: el juego y la consola (y si es la Versión PS4), o el plan, los meses y la consola.
+  function itemDe(clave) {
+    if (clave.indexOf('p|') === 0) {
+      var partes = clave.split('|');
+      return { p: partes[1], m: partes[2], c: partes[3] };
+    }
+    var j = porId[clave];
+    return j ? (esRetro(j) ? { n: j.nombre, c: j.consola, v4: true } : { n: j.nombre, c: j.consola }) : null;
+  }
+
+  function alternarPedido(clave) {
+    if (!pedidoListo) return;
+    var esta = -1;
+    pedido.forEach(function (i, n) { if (P.id(i, buscador.normalizar) === clave) esta = n; });
+    if (esta >= 0) {
+      pedido.splice(esta, 1);
+    } else {
+      var item = itemDe(clave);
+      if (!item || !resolver(item)) return;
+      // Tope por pedido (P.TOPE): el link de WhatsApp tiene que entrar con margen. El resto, en otro mensaje.
+      if (estadoPedido().resueltos.length >= P.TOPE) return abrirPedido(true);
+      pedido.push(item);
+      pedidoEnviado = false;
+    }
+    P.guardar(almacen, pedido);
+    refrescarIds();
+    sincronizarPedido(false);
+  }
+
+  // Tarjeta "PS4/PS5": para qué consola. Cada opción dice su precio y si ya está agregada.
+  function elegirConsolaPedido(clavePs4, clavePs5, nombre) {
+    $('consola-juego').textContent = nombre;
+    $('consola-opciones').innerHTML = [clavePs4, clavePs5].map(function (clave) {
+      var j = porId[clave];
+      if (!j) return '';
+      return botonAgregar(clave, nombre + ' para ' + j.consola, null,
+        j.consola + ' · ' + pesos(j._precio), esRetro(j) ? RETRO : '');
+    }).join('');
+    mostrar(hojaConsola);
+  }
+  hojaConsola.addEventListener('click', function (e) { if (e.target === hojaConsola) ocultar(hojaConsola); });
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-agregar]');
+    if (!b) return;
+    var clave = b.getAttribute('data-agregar'), ps5 = b.getAttribute('data-agregar-ps5');
+    if (ps5) return elegirConsolaPedido(clave, ps5, b.getAttribute('data-nombre'));
+    var desdeLaHoja = hojaConsola.contains(b);
+    alternarPedido(clave);
+    if (desdeLaHoja) ocultar(hojaConsola);
+  });
+
+  // ----- La barra y la lista -----
+  function pintarPedido() {
+    var e = estadoPedido(), n = e.resueltos.length, total = pesos(P.total(e.resueltos));
+    barraPedido.hidden = !n;
+    document.body.classList.toggle('con-pedido', n > 0);
+    if (n) {
+      $('pedido-barra-cuenta').textContent = 'Tu pedido (' + n + ')';
+      $('pedido-barra-total').textContent = total;
+      $('pedido-abrir').setAttribute('aria-label', 'Ver tu pedido: ' + plural(n) + ', total ' + total);
+    }
+    $('menu-pedido').textContent = n ? plural(n) + ' · ' + total : 'Varios juegos en un solo WhatsApp';
+    pintarBotonesPedido();
+    if (hojaPedido.open) pintarListaPedido(e);
+  }
+
+  function pintarListaPedido(e) {
+    var n = e.resueltos.length;
+    var avisos = avisosPedido.slice();
+    if (errorRelectura) avisos.unshift('No pudimos revisar los precios. Revisá tu conexión y probá de nuevo.');
+    if (avisoLargo) avisos.unshift('Tu pedido es demasiado largo para un solo mensaje de WhatsApp. Sacá uno y pedilo en otro mensaje.');
+    if (avisoTope) avisos.unshift('No lo agregamos: tu pedido ya tiene ' + P.TOPE + ', el máximo por mensaje. Enviá este pedido y pedí el resto en otro mensaje.');
+    else if (n >= P.TOPE && !avisoLargo) avisos.push('Llegaste al máximo de ' + P.TOPE + ' por pedido. Si querés más, enviá este y pedí el resto en otro mensaje.');
+    if (pedidoEnviado && n) avisos.push('¿Ya lo enviaste? Vaciá el pedido para armar otro.');
+    $('pedido-avisos').innerHTML = avisos.map(function (a) { return '<p class="pedido-aviso">' + escapar(a) + '</p>'; }).join('');
+    $('pedido-lista').innerHTML = e.resueltos.map(function (r) {
+      var detalle = r.notas.map(function (x) { return '<span>' + escapar(x.charAt(0).toUpperCase() + x.slice(1)) + '</span>'; }).join('');
+      if (r.oferta) detalle += etiquetaOferta(r.juego._o) + '<span>hasta el ' + r.oferta.hasta + '</span>';
+      return '<li class="pedido-item">' +
+        '<div class="pedido-item-texto"><strong>' + escapar(r.nombre) + '</strong>' +
+          '<span class="pedido-item-detalle"><span class="etiqueta consola">' + escapar(r.consola) + '</span>' + detalle + '</span></div>' +
+        '<span class="pedido-item-precio">' + pesos(r.precio) + '</span>' +
+        '<button class="pedido-quitar" type="button" data-quitar="' + escapar(r.id) + '" aria-label="Quitar ' +
+          escapar(r.nombre + ' para ' + r.consola) + ' del pedido">' + ICONO_X + '</button>' +
+      '</li>';
+    }).join('');
+    $('pedido-vacio').hidden = n > 0;
+    $('pedido-con-juegos').hidden = !n;
+    $('pedido-vaciar').hidden = !n;
+    $('pedido-total').textContent = pesos(P.total(e.resueltos));
+    $('pedido-cuenta').textContent = plural(n);
+  }
+
+  // Al abrir la lista se vuelve a leer catalog.json: precios, ofertas y Ref. al día. Lo que cambió se avisa ahí.
+  function abrirPedido(porTope) {
+    cerrarFicha();
+    ocultar(hojaConsola);
+    avisoTope = porTope === true;
+    errorRelectura = false;
+    pintarListaPedido(estadoPedido());
+    if (!hojaPedido.open) mostrar(hojaPedido);
+    cuerpoPedido.scrollTop = 0;
+    releerPedido();
+  }
+  function releerPedido() {
+    return recargarCatalogo().then(function () {
+      errorRelectura = false;
+      return sincronizarPedido(true);
+    }, function () {
+      errorRelectura = true;
+      pintarPedido();
+      return -1;
+    });
+  }
+  hojaPedido.addEventListener('close', function () { avisosPedido = []; avisoTope = avisoLargo = errorRelectura = false; });
+  hojaPedido.addEventListener('click', function (e) {
+    if (e.target === hojaPedido || e.target.closest('[data-cerrar-pedido]')) return ocultar(hojaPedido);
+    var quitar = e.target.closest('[data-quitar]');
+    if (quitar) { avisoTope = avisoLargo = false; return alternarPedido(quitar.getAttribute('data-quitar')); }
+    if (e.target.closest('#pedido-vaciar')) {
+      pedido = []; pedidoEnviado = false; avisoTope = avisoLargo = false; avisosPedido = [];
+      P.guardar(almacen, pedido);
+      refrescarIds();
+      sincronizarPedido(false);
+    }
+  });
+  $('pedido-abrir').addEventListener('click', function () { abrirPedido(false); });
+  document.addEventListener('mpl:pedido', function () { abrirPedido(false); });      // desde el menú ☰
+
+  // "Enviar pedido": se lee catalog.json otra vez. Si algo cambió o ya no está, queda la lista con el aviso y hay
+  // que tocar de nuevo; si está todo igual, se elige con quién hablar y sale un solo WhatsApp.
+  botonEnviar.addEventListener('click', function () {
+    if (botonEnviar.disabled) return;
+    botonEnviar.disabled = true;
+    avisoLargo = false;
+    $('pedido-enviar-texto').textContent = 'Revisando precios…';
+    releerPedido().then(function (nuevos) {
+      botonEnviar.disabled = false;
+      $('pedido-enviar-texto').textContent = 'Enviar pedido';
+      if (!hojaPedido.open) return;                                       // cerraron la lista mientras se revisaba
+      var e = estadoPedido(), n = e.resueltos.length;
+      if (nuevos !== 0 || !n) { cuerpoPedido.scrollTop = 0; return; }      // los avisos están arriba de todo
+      var texto = P.mensaje(e.resueltos, pesos);
+      // Red de seguridad: con el tope de P.TOPE el link siempre entra (lo controla pruebas/test_pedido.js de
+      // mpl-precios), pero si alguna vez no entrara se avisa en vez de mandar un mensaje cortado.
+      var largo = Math.max.apply(null, Object.keys(CONTACTOS).map(function (c) {
+        return P.largoLink(CONTACTOS[c].numero, '¡Hola ' + CONTACTOS[c].nombre + '! ' + texto);
+      }));
+      if (largo > P.LARGO_MAXIMO_LINK) { avisoLargo = true; pintarListaPedido(e); cuerpoPedido.scrollTop = 0; return; }
+      ocultar(hojaPedido);
+      abrirHoja(texto, 'Tu pedido: ' + plural(n) + ' · ' + pesos(P.total(e.resueltos)), function () { pedidoEnviado = true; });
+    });
+  });
+
+  // Vuelve a leer catalog.json. Si es el mismo de antes, solo se revisa qué ofertas siguen vigentes; si cambió,
+  // se repinta todo con los precios nuevos (sin perder cuántos juegos se estaban viendo).
+  var catalogoActualizado = null, recarga = null, psPlusTextos = null;
+  function recargarCatalogo() {
+    if (recarga) return recarga;
+    var soltar = function () { recarga = null; };
+    recarga = fetch('catalog.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw r; return r.json(); })
+      .then(function (datos) {
+        if (!datos || !Array.isArray(datos.juegos) || !datos.juegos.length) throw new Error('catálogo vacío');
+        if ((datos.actualizado || null) === catalogoActualizado) { refrescarOfertas(); return; }
+        aplicarCatalogo(datos);
+        var meses = mesesPs, consola = consolaPs;
+        prepararPsPlus(datos.ps_plus, psPlusTextos);
+        if (psPlus) { mesesPs = meses; if (psPlus.consolas.indexOf(consola) >= 0) consolaPs = consola; }
+        pintarDestacado(destacadoCfg);
+        var veia = mostrados;
+        pintar(true);
+        while (mostrados < veia && mostrados < lista.length) pintar(false);
+      });
+    recarga.then(soltar, soltar);
+    return recarga;
+  }
+
+  // Lo que se toma de catalog.json, la primera vez y cada vez que se vuelve a leer.
+  function aplicarCatalogo(datos) {
+    todos = datos.juegos || [];
+    catalogoActualizado = datos.actualizado || null;
+    conCuotas = datos.mostrar_cuotas === true;
+    refrescarOfertas();
+    if (datos.actualizado) {
+      var f = new Date(datos.actualizado);
+      $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
+    }
+  }
 
   // ---------- Barra fija: sombra solo cuando ya quedó pegada arriba ----------
   var barra = $('barra');
@@ -891,12 +1230,10 @@
     fetch('psplus.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('generos.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
   ]).then(function (datos) {
-    todos = datos[0].juegos || [];
     sinonimos = datos[1]; sagas = datos[2]; generos = datos[5] || {};
-    conCuotas = datos[0].mostrar_cuotas === true;
+    aplicarCatalogo(datos[0]);
     if (conCuotas) $('aclaracion').textContent = $('aclaracion').getAttribute('data-con-cuotas');
     avisarCatalogo(datos[0]);
-    refrescarOfertas();
     // Sin populares en el catálogo (el bot todavía no los armó) el botón no se muestra y se abre en Todos.
     if (!juegos.some(function (j) { return j.popular; })) {
       document.querySelector('[data-consola="populares"]').hidden = true;
@@ -904,12 +1241,13 @@
       estado.consola = '';
       botonesConsola.forEach(function (o) { o.setAttribute('aria-pressed', String(o.getAttribute('data-consola') === '')); });
     }
-    if (datos[0].actualizado) {
-      var f = new Date(datos[0].actualizado);
-      $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
-    }
     pintarDestacado(datos[3]);
+    psPlusTextos = datos[4];
     prepararPsPlus(datos[0].ps_plus, datos[4]);
+    // El pedido guardado (qué juego y qué consola) se arma con los precios de hoy.
+    pedidoListo = true;
+    refrescarIds();
+    sincronizarPedido(false);
     // Un link a la página con #ps-plus (por ejemplo, desde Instagram) abre directo los planes.
     if (psPlus && location.hash === '#ps-plus') { consolaInicialPs(estado.consola); elegirConsola('psplus'); }
     pintar(true);

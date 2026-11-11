@@ -680,7 +680,7 @@ main.en-psplus > :not(.psplus) { display: none !important; }
 }
 .menu-lista button:active { background: var(--violeta-oscuro); }
 .menu-lista strong { font: 800 20px/1.05 var(--cartel); text-transform: uppercase; letter-spacing: .02em; }
-.menu-lista span { grid-column: 1; font-size: 14px; color: var(--lila); }
+.menu-lista span { grid-column: 1; font-size: 14px; color: var(--blanco); }
 .menu-lista svg { grid-row: 1 / span 2; grid-column: 2; width: 22px; height: 22px; fill: var(--lila); }
 /* Lo que se abre desde el menú no queda tapado por la barra fija */
 #preguntas, .pie { scroll-margin-top: 128px; }
@@ -728,3 +728,114 @@ main.en-psplus > :not(.psplus) { display: none !important; }
 }
 .punto[aria-current="true"] span { width: 24px; background: var(--lila); }
 .punto:focus-visible { outline-offset: -6px; border-radius: 999px; }
+
+/* ---------- Pedido de varios juegos (js/pedido.js y js/tienda.js) ---------- */
+/* "Agregar al pedido": debajo de "Pedir", con borde (el relleno queda para el botón principal). Agregado, lo dice
+   con un tilde y deja quitarlo. */
+.boton-agregar {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 2px 8px;
+  width: 100%; min-height: var(--toque); margin-top: 8px; padding: 4px 6px;
+  border: 2px solid var(--violeta); border-radius: 10px;
+  background: transparent; color: var(--texto);
+  font-weight: 700; font-size: 14px; line-height: 1.15; text-align: center;
+  transition: background-color .15s var(--salida), border-color .15s var(--salida);
+}
+.boton-agregar .hecho { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.boton-agregar svg { flex: 0 0 auto; width: 16px; height: 16px; fill: currentColor; }
+.boton-agregar .quitar { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.boton-agregar[aria-pressed="true"] { border-color: var(--lila); background: var(--violeta-oscuro); color: var(--lila); }
+.boton-agregar:active { background: var(--violeta-oscuro); }
+.ficha .boton-agregar, .edicion .boton-agregar { min-height: 48px; font-size: 15px; }
+/* En los planes de PS Plus toma el color del texto de cada tarjeta */
+.plan .boton-agregar { min-height: 48px; font-size: 15px; border-color: currentColor; color: var(--plan-texto); }
+.plan .boton-agregar[aria-pressed="true"] { background: var(--plan-boton); border-color: var(--plan-boton); color: var(--plan-boton-texto); }
+.plan .boton-agregar:active { background: transparent; filter: brightness(1.12); }
+
+/* Hoja "¿Para qué consola?" (tarjeta PS4/PS5 de las ofertas): una opción por consola, con su precio */
+.consola-opciones { display: grid; gap: 10px; margin-top: 16px; }
+.consola-opciones .boton-agregar {
+  justify-content: space-between; flex-wrap: nowrap; min-height: 56px; margin-top: 0; padding: 8px 14px;
+  border: 0; background: var(--violeta); color: var(--blanco); font-size: 15px;
+}
+.consola-opciones .boton-agregar .opcion { display: grid; gap: 3px; margin-right: auto; text-align: left; }
+.consola-opciones .boton-agregar .opcion strong { font: 800 22px/1 var(--cartel); letter-spacing: .02em; white-space: nowrap; }
+.consola-opciones .boton-agregar .opcion small { font-size: 13px; font-weight: 600; }
+.consola-opciones .boton-agregar[aria-pressed="true"] { background: var(--violeta-oscuro); color: var(--lila); box-shadow: inset 0 0 0 2px var(--lila); }
+
+/* La barra: fija abajo, de lado a lado. La página deja libre su alto para que no tape el final (pie incluido).
+   El menú ☰, la ficha y las demás hojas se abren por encima. */
+.pedido-barra {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 9;
+  padding: 8px var(--margen) calc(8px + env(safe-area-inset-bottom));
+  background: var(--fondo); border-top: 1px solid var(--violeta-oscuro);
+  box-shadow: 0 -10px 18px -12px rgba(0, 0, 0, .8);
+}
+.pedido-barra button {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; max-width: 480px; min-height: 52px; margin: 0 auto; padding: 0 12px 0 16px;
+  border: 0; border-radius: var(--radio);
+  background: var(--lila); color: var(--violeta-oscuro);
+  font-size: 16px; font-weight: 700;
+  transition: transform .15s var(--salida);
+}
+.pedido-barra button:active { transform: scale(.98); }
+.pedido-barra-texto { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 8px; min-width: 0; }
+.pedido-barra-texto strong { font-weight: 800; }
+.pedido-barra-texto strong::after { content: " ·"; }
+.pedido-barra-texto span { font: 800 24px/1 var(--cartel); font-variant-numeric: tabular-nums; }
+.pedido-barra-ver { display: inline-flex; align-items: center; flex: 0 0 auto; font-weight: 700; }
+.pedido-barra-ver svg { width: 20px; height: 20px; fill: currentColor; }
+body.con-pedido { padding-bottom: calc(69px + env(safe-area-inset-bottom)); }
+
+/* La lista: hoja desde abajo. Con muchos juegos se desliza por dentro. */
+.pedido { max-height: 92svh; overflow: hidden; display: none; flex-direction: column; }
+.pedido[open] { display: flex; }
+.pedido .hoja-cuerpo { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: 0; }
+.pedido .hoja-cuerpo::after { content: ""; display: block; height: calc(14px + env(safe-area-inset-bottom)); }
+.pedido h2:focus { outline: none; }
+.pedido-aviso {
+  margin: 12px 0 0; padding: 10px 12px; border-left: 4px solid var(--lila); border-radius: 0 8px 8px 0;
+  background: var(--violeta-oscuro); color: var(--texto); font-size: 14px; line-height: 1.4;
+}
+.pedido-vacio { margin: 12px 0 0; font-size: 15px; color: var(--texto-suave); }
+.pedido-lista { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.pedido-item {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto var(--toque); align-items: center; gap: 0 8px;
+  padding: 8px 2px 8px 12px; border-radius: var(--radio); background: var(--violeta-oscuro);
+}
+.pedido-item-texto strong { display: block; font-size: 15px; font-weight: 600; line-height: 1.25; color: var(--texto); }
+.pedido-item-detalle {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: 5px;
+  font-size: 13px; color: var(--texto-suave);
+}
+.pedido-item .etiqueta.consola { background: var(--superficie); }
+.pedido-item-precio { font: 800 22px/1 var(--cartel); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--texto); }
+.pedido-quitar {
+  width: var(--toque); height: var(--toque); display: grid; place-items: center;
+  border: 0; border-radius: 999px; background: none;
+}
+.pedido-quitar svg { width: 18px; height: 18px; fill: var(--lila); }
+.pedido-quitar:active { background: var(--superficie); }
+/* El total y "Enviar pedido" se quedan pegados abajo mientras la lista se desliza */
+.pedido-pie {
+  position: sticky; bottom: 0; z-index: 1;
+  margin: 10px calc(-1 * var(--margen)) 0; padding: 10px var(--margen) calc(8px + env(safe-area-inset-bottom));
+  background: var(--superficie); box-shadow: 0 -10px 14px -12px rgba(0, 0, 0, .7);
+}
+.pedido-suma {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  margin: 0; padding: 10px 12px; border-radius: 8px;
+  background: var(--lila); color: var(--violeta-oscuro);
+}
+.pedido-suma span { font-size: 15px; font-weight: 700; }
+.pedido-suma small { font-size: 13px; font-weight: 600; }
+.pedido-suma strong { font: 800 32px/.95 var(--cartel); font-variant-numeric: tabular-nums; }
+.pedido-nota { margin: 10px 0 0; font-size: 14px; color: var(--texto-suave); }
+.pedido .boton-pedir { min-height: 52px; margin-top: 8px; font-size: 17px; }
+.pedido .boton-secundario { margin-top: 6px; }
+.pedido .boton-pedir:disabled { opacity: .75; }
+.pedido-vaciar {
+  display: block; min-height: var(--toque); margin: 6px auto 0; padding: 0 14px;
+  border: 0; border-radius: 10px; background: none; color: var(--lila);
+  font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px;
+}

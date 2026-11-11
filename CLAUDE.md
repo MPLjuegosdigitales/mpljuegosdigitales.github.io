@@ -28,6 +28,22 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   del Issue #7; el código viene en cada oferta de catalog.json, `ref`), "Ref. S" (copia de nuestro stock, `ref` del
   juego). Con el precio normal no va la línea. El código nunca nombra ni identifica al proveedor: qué es cada uno lo
   dice la pestaña Referencias de la planilla (privada).
+- Pedido de varios juegos (`js/pedido.js` y la sección "Pedido" de `js/tienda.js`): botón "Agregar al pedido" en cada
+  tarjeta, ficha, edición del destacado y plan de PS Plus; con algo agregado aparece abajo la barra "Tu pedido (3) ·
+  $X", que abre la lista (quitar, total, "Enviar pedido", "Vaciar pedido"). Sale **un solo WhatsApp**:
+  "¡Hola Mateo! Quiero pedir:" + una línea numerada por cosa ("ASTRO BOT para PS5: $51.500 (precio de oferta válido
+  hasta el 18/11). Ref. O8"; reserva: "(reserva, sale el 19/11/2026)"; "(Versión PS4)" cuando corresponde) + "Total:
+  $X" + "Juegos en cuenta primaria. Efectivo o transferencia.".
+  - **En el navegador se guarda solo qué juego y qué consola (o plan, meses y consola), nunca el precio.** Precio,
+    oferta y Ref. se leen de catalog.json al abrir la lista y otra vez al enviar; si algo cambió o ya no está, se
+    avisa en la lista y no se envía hasta el toque siguiente. Sin conexión, tampoco se envía.
+  - Tope de 8 por pedido (juegos y PS Plus cuentan igual); al llegar, se avisa que el resto va en otro mensaje. Es
+    para que el link de WhatsApp no pase de 2.000 caracteres.
+  - "Cuenta primaria" se dice solo de juegos de PS4 y PS5 (`CON_CUENTA_PRIMARIA`): con solo PS Plus no va, y con
+    juegos de otra consola la frase nombra a cuáles se refiere.
+  - La tarjeta "PS4/PS5" de las ofertas pregunta para qué consola antes de agregar.
+  - Si cambia el mensaje, el tope o lo que se guarda: `node pruebas/test_pedido.js ../mpljuegosdigitales.github.io`
+    desde mpl-precios (controla también que el link entre con los nombres más largos del catálogo).
 - Las ofertas se cargan desde un Issue de mpl-precios (privado). Nada de ofertas se abre en este repo.
 - Precios y ofertas los calcula el bot; la web solo elige, en el momento y con la hora de Argentina, la oferta
   vigente más barata de `ofertas` y, cuando vencen todas, vuelve a `contado`. Sin cuotas mientras
@@ -77,8 +93,10 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   visible, sin carrusel ni puntitos. Imágenes, texto alternativo, destino al tocarlo y hasta cuándo se ve cada uno
   (`mostrar_hasta`, hora de Argentina) se cambian en `banner.json`, no en el código.
 - Navegación: menú ☰ al lado del buscador, en la misma fila (la barra fija no crece; en pantallas de menos de 390 px
-  el buscador dice solo "Buscá tu juego"). Abre una lista desde abajo con PS Plus, Preguntas frecuentes, Horarios y
-  atención y Consultar (`js/menu.js`). **Toda sección nueva se suma a ese menú, nunca a la barra fija.**
+  el buscador dice solo "Buscá tu juego"). Abre una lista desde abajo con Tu pedido, PS Plus, Preguntas frecuentes,
+  Horarios y atención y Consultar (`js/menu.js`). **Toda sección nueva se suma a ese menú, nunca a la barra fija.**
+  La barra "Tu pedido" es lo único fijo abajo: se ve solo con algo agregado, la página le deja el lugar libre
+  (`body.con-pedido`) y el menú, la ficha y las hojas se abren por encima.
 - PS Plus: botón "PS Plus" al final de la fila de filtros; elegido, la sección de planes reemplaza a la lista
   (buscando, vuelve la lista). También se abre con un link a `#ps-plus`. Los textos (para quién es, qué incluye)
   se cambian en `psplus.json`; los precios los pone el bot en catalog.json (`ps_plus`). Si falta un precio, no se
