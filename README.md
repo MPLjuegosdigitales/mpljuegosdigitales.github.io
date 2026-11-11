@@ -1,6 +1,7 @@
 # mpljuegosdigitales.github.io
 
-Tienda de MPL Juegos Digitales: https://mpljuegosdigitales.github.io (GitHub Pages, rama main).
+Tienda de MPL Juegos Digitales: https://mpljuegosdigitales.com (GitHub Pages, rama main; la dirección vieja
+https://mpljuegosdigitales.github.io redirige sola al dominio).
 El catálogo (`catalog.json` e `img/j/`) lo publica todos los días a las 9:00 el repo privado
 [mpl-precios](https://github.com/MPLjuegosdigitales/mpl-precios).
 
