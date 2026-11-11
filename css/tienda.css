@@ -565,14 +565,14 @@ main { padding: 16px var(--margen) 32px; max-width: 1240px; margin: 0 auto; }
 }
 
 /* ---------- PS Plus ---------- */
-/* Con el botón PS Plus la fila de filtros tampoco crece: se desliza de costado si no entra */
-.consolas.con-psplus {
+/* Con el botón PS Plus (o el de PS3) la fila de filtros tampoco crece: se desliza de costado si no entra */
+.consolas.con-psplus, .consolas.con-ps3 {
   display: flex; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
   overscroll-behavior-x: contain;
 }
-.consolas.con-psplus::-webkit-scrollbar { display: none; }
-.consolas.con-psplus button { flex: 1 0 auto; padding: 0 12px; scroll-snap-align: start; }
-@media (min-width: 900px) { .consolas.con-psplus { width: auto; } }
+.consolas.con-psplus::-webkit-scrollbar, .consolas.con-ps3::-webkit-scrollbar { display: none; }
+.consolas.con-psplus button, .consolas.con-ps3 button { flex: 1 0 auto; padding: 0 12px; scroll-snap-align: start; }
+@media (min-width: 900px) { .consolas.con-psplus, .consolas.con-ps3 { width: auto; } }
 
 /* La sección reemplaza a la lista mientras está elegida (buscando, vuelve la lista) */
 main:not(.en-psplus) > .psplus,
