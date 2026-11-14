@@ -2,6 +2,7 @@
  * - Cada pantalla recibe su versión con <picture>: menos de 900 px de ancho, la de celular (1080×900); desde
  *   900 px, la de compu (1920×409). No se recortan nunca (object-fit: contain si hay que achicarlas).
  * - "mostrar_hasta" (hora de Argentina): pasado ese minuto el banner se oculta solo, también con la página abierta.
+ *   "mostrar_desde": recién desde ese minuto aparece (por ejemplo, el de lanzamiento releva al de preventa).
  * - Pasa solo cada N segundos; se desliza con el dedo (scroll-snap nativo); puntitos para ir a cada uno.
  * - Se pausa al tocarlo, con el teclado adentro o con el mouse encima; fuera de pantalla no avanza.
  * - Con "reducir movimiento" no pasa solo. Con un solo banner visible no hay carrusel ni puntitos.
@@ -28,19 +29,34 @@
     });
   }
 
-  // "18/11/2026 23:59" (hora de Argentina) → el último milisegundo de ese minuto. Mal escrita: NaN (se ve igual).
-  function finDe(texto) {
+  // "18/11/2026 23:59" (hora de Argentina) → ese minuto: su último milisegundo (alFinal) o el primero.
+  // Sin hora: 23:59 para el final y 00:00 para el comienzo. Mal escrita: NaN.
+  function momento(texto, alFinal) {
     var m = /^\s*(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?\s*$/.exec(texto || '');
     if (!m) return NaN;
     function dos(n) { return ('0' + n).slice(-2); }
-    return Date.parse(m[3] + '-' + dos(m[2]) + '-' + dos(m[1]) + 'T' + dos(m[4] || 23) + ':' + (m[5] || '59') +
-      ':59.999-03:00');
+    var hora = m[4] ? dos(m[4]) + ':' + m[5] : (alFinal ? '23:59' : '00:00');
+    return Date.parse(m[3] + '-' + dos(m[2]) + '-' + dos(m[1]) + 'T' + hora + (alFinal ? ':59.999' : ':00.000') + '-03:00');
   }
+  function finDe(texto) { return momento(texto, true); }
+  function comienzoDe(texto) { return momento(texto, false); }
 
+  // Se ve desde el primer instante de "mostrar_desde" hasta el último de "mostrar_hasta". Todos se miran con el
+  // mismo "ahora": uno que termina el 18/11 23:59 y otro que empieza el 19/11 00:00 se relevan sin que se vean
+  // los dos ni ninguno.
   function visibles() {
     var ahora = Date.now();
     return (config.banners || []).filter(function (b) {
       if (!b.imagen) return false;
+      if (b.mostrar_desde) {
+        var comienzo = comienzoDe(b.mostrar_desde);
+        if (isNaN(comienzo)) {
+          // Mal escrita, no se muestra: es preferible a anunciar algo antes de tiempo.
+          if (window.console) console.warn('banner.json: mostrar_desde mal escrito en "' + b.id + '" (va dd/mm/aaaa hh:mm)');
+          return false;
+        }
+        if (ahora < comienzo) return false;
+      }
       if (!b.mostrar_hasta) return true;
       var fin = finDe(b.mostrar_hasta);
       if (isNaN(fin)) {
@@ -51,22 +67,23 @@
     });
   }
 
-  // Si la página queda abierta, al vencer un banner se vuelve a armar el carrusel sin él.
+  // Si la página queda abierta, cuando a un banner le toca irse o aparecer se vuelve a armar el carrusel.
   function programarVencimiento() {
     clearTimeout(relojVence);
     var ahora = Date.now(), proximo = Infinity;
     (config.banners || []).forEach(function (b) {
-      var fin = finDe(b.mostrar_hasta);
-      if (fin >= ahora) proximo = Math.min(proximo, fin);
+      var fin = finDe(b.mostrar_hasta), comienzo = comienzoDe(b.mostrar_desde);
+      if (fin >= ahora) proximo = Math.min(proximo, fin + 1);
+      if (comienzo > ahora) proximo = Math.min(proximo, comienzo);
     });
-    if (proximo - ahora < 864e5) relojVence = setTimeout(pintar, proximo - ahora + 1000);
+    if (proximo - ahora < 864e5) relojVence = setTimeout(pintar, proximo - ahora + 50);
   }
 
   function diapositiva(b, i, total) {
     var base = CARPETA + escapar(b.imagen);
     var carrusel = total > 1;
     var destino = /^#[\w-]+$/.test(b.destino || '') ? b.destino : '#contenido';
-    var aDonde = destino === '#destacado' ? 'ver precios y reservar' : 'ver la lista de juegos';
+    var aDonde = destino === '#destacado' ? 'ver los precios' : 'ver la lista de juegos';
     return '<div class="banner-diapo"' +
       (carrusel ? ' role="group" aria-roledescription="banner" aria-label="' + (i + 1) + ' de ' + total + '"' : '') + '>' +
       '<a class="banner-link" href="' + destino + '" data-destino="' + destino + '">' +
