@@ -3,7 +3,10 @@
     "Banners de la portada (las imágenes van en img/banner/). Se cambian acá, sin tocar el código.",
     "mostrar_hasta: último minuto en que se ve el banner, en hora de Argentina, con el formato \"dd/mm/aaaa hh:mm\".",
     "Pasado ese minuto se oculta solo (también con la página abierta). Sin mostrar_hasta, se ve siempre.",
-    "destino: a dónde baja al tocarlo: \"#destacado\" (el destacado de GTA 6, con precios y Reservar) o",
+    "mostrar_desde: primer minuto en que se ve, mismo formato y hora de Argentina. Para que un banner releve a otro",
+    "sin que se vean los dos ni ninguno: el viejo con mostrar_hasta \"18/11/2026 23:59\" y el nuevo con",
+    "mostrar_desde \"19/11/2026 00:00\". El orden de esta lista es el orden del carrusel.",
+    "destino: a dónde baja al tocarlo: \"#destacado\" (el destacado de GTA 6, con precios y el botón de pedir) o",
     "\"#contenido\" (la lista de juegos). Si el destacado no se ve, baja a la lista.",
     "Las imágenes no se recortan: celular = 1080×900 (pantallas de menos de 900 px de ancho), compu = 1920×409.",
     "Cada una va en dos tamaños (-720/-1080 y -1280/-1920) y el navegador elige el que le alcanza.",
@@ -17,6 +20,19 @@
       "texto_alternativo": "Preventa de Grand Theft Auto VI para PS5, Standard Edition: sale el 19 de noviembre de 2026. Reservalo ya en MPL.",
       "destino": "#destacado",
       "mostrar_hasta": "18/11/2026 23:59"
+    },
+    {
+      "id": "gta6-lanzamiento",
+      "imagen": "gta6-lanzamiento",
+      "texto_alternativo": "Grand Theft Auto VI ya disponible para PS5, Standard Edition. Bienvenidos a Vice City: conseguilo ya en MPL.",
+      "destino": "#destacado",
+      "mostrar_desde": "19/11/2026 00:00"
+    },
+    {
+      "id": "fc27",
+      "imagen": "fc27",
+      "texto_alternativo": "EA Sports FC 27 ya disponible para PS4 y PS5. Conseguilo en MPL Juegos Digitales.",
+      "destino": "#contenido"
     },
     {
       "id": "principal",

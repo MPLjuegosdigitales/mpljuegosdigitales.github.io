@@ -55,6 +55,9 @@
         if (!j._o || o.contado < j._o.contado || (o.contado === j._o.contado && fin > Date.parse(j._o.hasta))) j._o = o;
         proxima = Math.min(proxima, fin);
       });
+      // El día que sale una preventa también hay que volver a pintar (deja de ser reserva).
+      var pre = preventaDe(j);
+      if (pre && pre.salida > t) proxima = Math.min(proxima, pre.salida - 1);
       j._precio = j._o ? j._o.contado : j.contado;
     });
     juegos = todos.filter(function (j) { return !j.solo_oferta || j._o; });
@@ -277,7 +280,7 @@
     // Nada va encima de la tapa: la consola y las etiquetas (Versión PS4, Preventa, Solo DLC) van debajo.
     var etiquetas = '<span class="etiqueta consola">' + escapar(j.consola) + '</span>' +
       (j._o ? etiquetaOferta(j._o) : '') +
-      (j.etiquetas || []).map(function (e) {
+      etiquetasDe(j).map(function (e) {
         return '<span class="etiqueta">' + escapar(e) + '</span>';
       }).join('');
     var tapa = j.imagen
@@ -730,7 +733,7 @@
     var datos = [['Audio', j.audio], ['Peso', j.peso], ['Género', (j.generos || []).join(', ')]].filter(function (d) { return d[1]; });
     var etiquetas = '<span class="etiqueta consola">' + escapar(j.consola) + '</span>' +
       (j._o ? etiquetaOferta(j._o) : '') +
-      (j.etiquetas || []).map(function (e) { return '<span class="etiqueta">' + escapar(e) + '</span>'; }).join('');
+      etiquetasDe(j).map(function (e) { return '<span class="etiqueta">' + escapar(e) + '</span>'; }).join('');
     fichaCuerpo.innerHTML =
       '<div class="ficha-cabeza">' +
         (j.imagen ? '<img class="ficha-tapa" src="' + escapar(j.imagen) + '" alt="" width="96" height="121">' : '<div class="ficha-tapa"></div>') +
@@ -802,12 +805,32 @@
 
   var MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
+  // "19/11/2026" → las 00:00 de ese día en Argentina. Sin año o mal escrita: NaN (sigue en preventa hasta que
+  // el catálogo le saque la marca).
+  function salidaDe(fecha) {
+    var m = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(fecha || '');
+    if (!m) return NaN;
+    function dos(n) { return ('0' + n).slice(-2); }
+    return Date.parse((m[3].length === 2 ? '20' + m[3] : m[3]) + '-' + dos(m[2]) + '-' + dos(m[1]) + 'T00:00:00-03:00');
+  }
+
+  // La preventa de un juego, o null si no tiene o si ya llegó el día de salida: desde las 00:00 de ese día (hora
+  // de Argentina) se muestra y se pide como cualquier juego, aunque catalog.json todavía traiga "Preventa 19/11/2026"
+  // (el robot la saca recién cuando la saca la tienda).
   function preventaDe(j) {
     for (var i = 0; i < (j.etiquetas || []).length; i++) {
       var m = /^preventa\s*(.*)$/i.exec(j.etiquetas[i]);
-      if (m) return { fecha: m[1].trim() };
+      if (!m) continue;
+      var fecha = m[1].trim(), salida = salidaDe(fecha);
+      return salida <= Date.now() ? null : { fecha: fecha, salida: salida };
     }
     return null;
+  }
+
+  // Las etiquetas que se ven en la tarjeta y en la ficha: la de preventa se va sola el día de salida.
+  function etiquetasDe(j) {
+    var pre = preventaDe(j);
+    return (j.etiquetas || []).filter(function (e) { return pre || !/^preventa(\s|$)/i.test(e); });
   }
 
   function fechaLarga(texto) {
@@ -831,6 +854,8 @@
     var primera = edicionesDestacado[0].juego;
     var enPreventa = edicionesDestacado.filter(function (e) { return e.preventa; })[0];
     var tapa = primera.imagen_grande || primera.imagen;
+    // "texto" suele invitar a reservar: ya disponible, se lee "texto_disponible" (si no está, el mismo "texto").
+    var bajada = enPreventa ? cfg.texto : (cfg.texto_disponible || cfg.texto);
     destacado.innerHTML =
       '<div class="destacado-cabeza">' +
         (tapa ? '<img class="destacado-tapa" src="' + escapar(tapa) + '" alt="Tapa de ' + escapar(cfg.titulo || primera.nombre) + '" width="480" height="605" fetchpriority="high">' : '') +
@@ -838,7 +863,7 @@
           '<span class="estado">' + (enPreventa ? 'Preventa' : 'Ya disponible') + '</span>' +
           '<h2 id="destacado-titulo">' + escapar(cfg.titulo || primera.nombre) + '</h2>' +
           (enPreventa && enPreventa.preventa.fecha ? '<p class="fecha">' + escapar(fechaLarga(enPreventa.preventa.fecha)) + '</p>' : '') +
-          (cfg.texto ? '<p class="bajada">' + escapar(cfg.texto) + '</p>' : '') +
+          (bajada ? '<p class="bajada">' + escapar(bajada) + '</p>' : '') +
           '<div class="consola-destacado"><span class="etiqueta consola">' + escapar(primera.consola) + '</span></div>' +
         '</div>' +
       '</div>' +
@@ -869,7 +894,7 @@
   });
 
   // ---------- Banners de la portada (js/banner.js) ----------
-  // Al tocar uno, baja hasta su destino justo debajo de la barra fija: "#destacado" (GTA 6, con precios y Reservar)
+  // Al tocar uno, baja hasta su destino justo debajo de la barra fija: "#destacado" (GTA 6, con precios y el botón de pedir)
   // o "#contenido" (la lista). Si el destacado no se ve, va a la lista; si estaba abierto PS Plus, vuelve la lista.
   document.addEventListener('mpl-banner', function (e) {
     var destino = e.detail === '#destacado' && !destacado.hidden ? destacado : contenido;

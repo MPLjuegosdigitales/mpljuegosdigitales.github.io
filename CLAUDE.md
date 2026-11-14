@@ -99,7 +99,13 @@ Organización MPLjuegosdigitales; trabajan dos socios: @MateoCipres y @LucaAlons
   así el buscador se ve en la primera pantalla. Carrusel (`js/banner.js`): pasa solo cada 6 s, se desliza con el
   dedo, puntitos debajo de la imagen, se pausa al tocarlo; con "reducir movimiento" no pasa solo; con uno solo
   visible, sin carrusel ni puntitos. Imágenes, texto alternativo, destino al tocarlo y hasta cuándo se ve cada uno
-  (`mostrar_hasta`, hora de Argentina) se cambian en `banner.json`, no en el código.
+  (`mostrar_hasta`, hora de Argentina) se cambian en `banner.json`, no en el código. `mostrar_desde` hace que un
+  banner aparezca recién ese minuto: el de lanzamiento releva al de preventa (uno hasta "18/11/2026 23:59", el otro
+  desde "19/11/2026 00:00") sin que se vean los dos ni ninguno. El bot no toca `banner.json` ni `img/banner/`.
+- Preventas: la etiqueta "Preventa dd/mm/aaaa" la pone el bot mientras la tenga la tienda. La web deja de tratarla
+  como preventa desde las 00:00 (Argentina) de ese día, aunque catalog.json la siga trayendo: se va la etiqueta, el
+  destacado dice "Ya disponible" con `texto_disponible` de destacado.json, el botón pasa a "Pedir" y los mensajes
+  de WhatsApp no dicen "reservar" ni "reserva".
 - Navegación: menú ☰ al lado del buscador, en la misma fila (la barra fija no crece; en pantallas de menos de 390 px
   el buscador dice solo "Buscá tu juego"). Abre una lista desde abajo con Tu pedido, PS Plus, Preguntas frecuentes,
   Horarios y atención y Consultar (`js/menu.js`). **Toda sección nueva se suma a ese menú, nunca a la barra fija.**
