@@ -1280,10 +1280,35 @@
     conCuotas = datos.mostrar_cuotas === true;
     refrescarOfertas();
     pintarConsolas();
-    if (datos.actualizado) {
-      var f = new Date(datos.actualizado);
-      $('actualizado').textContent = 'Precios actualizados el ' + f.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' }) + '.';
+    var texto = textoActualizado(datos.actualizado);
+    if (texto) $('actualizado').textContent = texto;
+  }
+
+  // Pie: "Precios actualizados el 24/11 a las 19:18." Siempre en hora de Argentina, aunque el celular esté en otra
+  // zona. "actualizado" viene de catalog.json ("2026-11-24T19:18-03:00") y cambia con cada publicación del bot,
+  // también con la liviana que corre al editar el stock.
+  function textoActualizado(actualizado) {
+    if (!actualizado) return '';
+    var f = new Date(actualizado);
+    if (isNaN(f.getTime())) return '';
+    var partes = {};
+    try {
+      new Intl.DateTimeFormat('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', day: '2-digit', month: '2-digit',
+                                         hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+        .formatToParts(f).forEach(function (p) { partes[p.type] = p.value; });
+    } catch (e) {
+      partes = {};
     }
+    if (!partes.day || !partes.hour) {
+      // Navegador sin zonas horarias: Argentina es UTC-3 todo el año.
+      var a = new Date(f.getTime() - 3 * 3600 * 1000);
+      var dos = function (n) { return (n < 10 ? '0' : '') + n; };
+      partes = { day: dos(a.getUTCDate()), month: dos(a.getUTCMonth() + 1), hour: dos(a.getUTCHours()),
+                 minute: dos(a.getUTCMinutes()) };
+    }
+    var d2 = function (v) { return ('0' + v).slice(-2); };      // algunos navegadores dan "1" en vez de "01"
+    return 'Precios actualizados el ' + d2(partes.day) + '/' + d2(partes.month) + ' a las ' + d2(partes.hour) + ':' +
+      d2(partes.minute) + '.';
   }
 
   // ---------- Barra fija: sombra solo cuando ya quedó pegada arriba ----------
